@@ -1,0 +1,117 @@
+
+mor1kx-debugsteptest.elf:     file format elf32-or32
+
+
+Disassembly of section .vectors:
+
+00000000 <.vectors>:
+	...
+ 100:	18 00 00 00 	l.movhi r0,0x0
+ 104:	a8 20 00 01 	l.ori r1,r0,0x1
+ 108:	c0 00 08 11 	l.mtspr r0,r1,0x11
+ 10c:	c1 40 00 00 	l.mtspr r0,r0,0x5000
+ 110:	18 80 00 00 	l.movhi r4,0x0
+ 114:	a8 84 10 00 	l.ori r4,r4,0x1000
+ 118:	44 00 20 00 	l.jr r4
+ 11c:	15 00 00 00 	l.nop 0x0
+	...
+ 200:	15 00 00 01 	l.nop 0x1
+	...
+ 500:	15 00 00 01 	l.nop 0x1
+	...
+ 600:	15 00 00 01 	l.nop 0x1
+	...
+ 700:	15 00 00 01 	l.nop 0x1
+	...
+ 800:	15 00 00 01 	l.nop 0x1
+
+Disassembly of section .text:
+
+00001000 <_start>:
+    1000:	04 00 00 02 	l.jal 1008 <_main>
+    1004:	15 00 00 00 	l.nop 0x0
+
+00001008 <_main>:
+    1008:	18 40 80 00 	l.movhi r2,0x8000
+
+0000100c <startwait>:
+    100c:	84 20 00 08 	l.lwz r1,0x8(r0)
+    1010:	e4 21 10 00 	l.sfne r1,r2
+    1014:	13 ff ff fe 	l.bf 100c <startwait>
+    1018:	15 00 00 00 	l.nop 0x0
+    101c:	18 20 00 00 	l.movhi r1,0x0
+    1020:	18 40 00 00 	l.movhi r2,0x0
+    1024:	18 60 00 00 	l.movhi r3,0x0
+    1028:	18 80 aa bb 	l.movhi r4,0xaabb
+    102c:	a8 84 cc dd 	l.ori r4,r4,0xccdd
+    1030:	c1 40 20 01 	l.mtspr r0,r4,0x5001
+    1034:	b4 a0 50 01 	l.mfspr r5,r0,0x5001
+    1038:	e4 04 28 00 	l.sfeq r4,r5
+    103c:	0c 00 00 29 	l.bnf 10e0 <testfailed>
+    1040:	15 00 00 00 	l.nop 0x0
+    1044:	04 00 00 2a 	l.jal 10ec <testfunc1>
+    1048:	9c 63 00 01 	l.addi r3,r3,0x1
+    104c:	18 40 00 00 	l.movhi r2,0x0
+    1050:	a8 42 10 ec 	l.ori r2,r2,0x10ec
+    1054:	19 20 00 00 	l.movhi r9,0x0
+    1058:	a9 29 10 64 	l.ori r9,r9,0x1064
+    105c:	44 00 10 00 	l.jr r2
+    1060:	9c 63 00 01 	l.addi r3,r3,0x1
+
+00001064 <return1>:
+    1064:	15 00 00 00 	l.nop 0x0
+    1068:	19 20 00 00 	l.movhi r9,0x0
+    106c:	a9 29 10 7c 	l.ori r9,r9,0x107c
+    1070:	e4 00 00 00 	l.sfeq r0,r0
+    1074:	10 00 00 1e 	l.bf 10ec <testfunc1>
+    1078:	9c 63 00 01 	l.addi r3,r3,0x1
+
+0000107c <return2>:
+    107c:	15 00 00 00 	l.nop 0x0
+    1080:	19 20 00 00 	l.movhi r9,0x0
+    1084:	a9 29 10 7c 	l.ori r9,r9,0x107c
+    1088:	e4 00 00 00 	l.sfeq r0,r0
+    108c:	0c 00 00 18 	l.bnf 10ec <testfunc1>
+    1090:	19 20 00 00 	l.movhi r9,0x0
+    1094:	a9 29 10 a4 	l.ori r9,r9,0x10a4
+    1098:	bc 00 00 01 	l.sfeqi r0,0x1
+    109c:	0c 00 00 14 	l.bnf 10ec <testfunc1>
+    10a0:	9c 63 00 01 	l.addi r3,r3,0x1
+
+000010a4 <return3>:
+    10a4:	15 00 00 00 	l.nop 0x0
+
+000010a8 <testresultcheck>:
+    10a8:	e4 01 18 00 	l.sfeq r1,r3
+    10ac:	0c 00 00 0d 	l.bnf 10e0 <testfailed>
+    10b0:	15 00 00 00 	l.nop 0x0
+
+000010b4 <testfinishcheck>:
+    10b4:	a9 e0 00 04 	l.ori r15,r0,0x4
+    10b8:	84 6f 00 00 	l.lwz r3,0x0(r15)
+    10bc:	15 00 00 02 	l.nop 0x2
+    10c0:	19 c0 80 00 	l.movhi r14,0x8000
+    10c4:	a9 ce 00 0d 	l.ori r14,r14,0xd
+    10c8:	e4 03 70 00 	l.sfeq r3,r14
+    10cc:	0f ff ff fa 	l.bnf 10b4 <testfinishcheck>
+    10d0:	15 00 00 00 	l.nop 0x0
+
+000010d4 <testok>:
+    10d4:	15 00 00 02 	l.nop 0x2
+    10d8:	a8 60 00 00 	l.ori r3,r0,0x0
+    10dc:	15 00 00 01 	l.nop 0x1
+
+000010e0 <testfailed>:
+    10e0:	18 60 ba aa 	l.movhi r3,0xbaaa
+    10e4:	a8 63 aa ad 	l.ori r3,r3,0xaaad
+    10e8:	15 00 00 01 	l.nop 0x1
+
+000010ec <testfunc1>:
+    10ec:	44 00 48 00 	l.jr r9
+    10f0:	9c 21 00 01 	l.addi r1,r1,0x1
+
+000010f4 <__CTOR_LIST__>:
+	...
+
+000010fc <__CTOR_END__>:
+	...
