@@ -1,0 +1,63 @@
+		    mor1kx development platform
+		    ===========================
+
+This project is a fork of ORPSoCv2 and is intended to be used to help develop
+and verify the mor1kx processor.
+
+The reasons why this is forked from ORPSoCv2 are:
+
+* things are very mor1kx-specific
+* maintaing the cycle accurate build in such a way that it can easily support
+  either the or1200 or mor1kx is rather hard and I'd rather focus on the mor1kx
+  * We really do need Verilator support becuase it's used for linting and for
+    verification, when we run the GCC regression suite on the generated model.
+
+Setup
+=====
+
+To set up the project, please symbolically link in the mor1kx git repo directory
+to rtl/verilog.
+
+Eg.
+	cd rtl/verilog
+	ln -s ~/path/to/git/mor1kx/rtl/verilog mor1kx
+
+This helps hacking on the mor1kx as well as the verification environment (we 
+don't want to check the mor1kx code into this environment).
+
+Then, symlink the two required include files to the include/ directory of
+the generic mor1kx build, and wherever else you need it:
+
+    	cd boards/generic/mor1kx/rtl/verilog/include
+	ln -s ../../../../../../rtl/verilog/mor1kx/mor1kx-defines.v
+	ln -s ../../../../../../rtl/verilog/mor1kx/mor1kx-sprs.v
+
+To get the verilated model running, the path to a compiled libor1kktrace
+(available from git://github.com/juliusbaxter/or1ktrace.git)
+needs to be symlinked in:
+	ln -s /path/to/libor1ktrace or1ktrace
+
+Words of Wisdom
+===============
+
+
+git doesn't like empty directories and makes them disappear when committing.
+
+To get things to work in the generic/mor1kx build you'll need to add the out/
+and modules/ directories as follows:
+
+        mkdir boards/generic/mor1kx/modules
+        mkdir boards/generic/mor1kx/sim/out
+
+
+Building the verilated model
+============================
+
+In boards/generic/mor1kx/sim/run do:
+
+   make prepare-vlt USER_VLT_FLAGS="-Wno-WIDTH"
+
+Add V=1 if you wish to have all of the build output.
+
+This first lints the design and then generates the C++ model and compiles it up
+into a nice fast cycle-accurate simulator.

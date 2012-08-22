@@ -1,0 +1,173 @@
+[timestart] 191414100
+[size] 2357 910
+[pos] -321 25
+*-16.736446 191750000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] orpsoc_testbench.
+[treeopen] orpsoc_testbench.dut.
+[treeopen] orpsoc_testbench.dut.mor1kx0.
+[treeopen] orpsoc_testbench.dut.mor1kx0.bus_gen.
+[treeopen] orpsoc_testbench.dut.mor1kx0.bus_gen.dbus_bridge.
+[treeopen] orpsoc_testbench.dut.mor1kx0.bus_gen.ibus_bridge.
+[treeopen] orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.
+[treeopen] orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.
+[treeopen] orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.
+[treeopen] orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_rf_fourstage.
+[treeopen] orpsoc_testbench.dut.ram_wb0.
+[treeopen] orpsoc_testbench.dut.ram_wb0.ram_wb_b3_0.
+@200
+-icache
+-
+-dcache
+-
+-misc
+@28
+orpsoc_testbench.dut.mor1kx0.bus_gen.dbus_bridge.wbm_cyc_o
+@22
+orpsoc_testbench.dut.mor1kx0.bus_gen.dbus_bridge.wbm_adr_o[31:0]
+orpsoc_testbench.dut.mor1kx0.bus_gen.dbus_bridge.wbm_dat_o[31:0]
+@28
+orpsoc_testbench.dut.mor1kx0.bus_gen.dbus_bridge.wbm_ack_i
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_lsu_fourstage.padv_execute_i
+@22
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_lsu_fourstage.rfb_i[31:0]
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_lsu_fourstage.alu_result_i[31:0]
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_execute_alu.alu_result_o[31:0]
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_execute_alu.adder_result[31:0]
+@28
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_execute_alu.alu_valid_o
+@22
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_execute_alu.rfa_i[31:0]
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_execute_alu.rfb_i[31:0]
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_execute_alu.a[31:0]
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_execute_alu.b[31:0]
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_execute_alu.pc_execute_i[31:0]
+@28
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_execute_alu.padv_i
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_lsu_fourstage.dbus_req_o
+@200
+-
+-RF
+@28
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_rf_fourstage.rf_wren
+@200
+-
+@28
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_rf_fourstage.rfa.rden_i
+@22
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_rf_fourstage.rfa.rdad_i[4:0]
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_rf_fourstage.rfa.rdda_o[31:0]
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_rf_fourstage.rfa.wrad_i[4:0]
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_rf_fourstage.rfa.wrda_i[31:0]
+@200
+-
+@28
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_rf_fourstage.rfb.rden_i
+@22
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_rf_fourstage.rfb.rdad_i[4:0]
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_rf_fourstage.rfb.rdda_o[31:0]
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_rf_fourstage.rfb.wrad_i[4:0]
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_rf_fourstage.rfb.wrda_i[31:0]
+@200
+-
+-execute
+@22
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_execute_ctrl_fourstage.pc_execute_i[31:0]
+@28
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_execute_ctrl_fourstage.execute_waiting_o
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_execute_ctrl_fourstage.lsu_except_dbus_i
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_execute_ctrl_fourstage.ctrl_except_dbus_o
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_execute_ctrl_fourstage.padv_i
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_execute_ctrl_fourstage.ctrl_except_illegal_o
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_execute_ctrl_fourstage.execute_except_illegal_i
+@200
+-execute_padv_i
+@28
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_ctrl_fourstage.decode_valid_i
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_ctrl_fourstage.execute_waiting_i
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_ctrl_fourstage.except_illegal_i
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_ctrl_fourstage.exception
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_ctrl_fourstage.exception_r
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_ctrl_fourstage.exception_re
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_ctrl_fourstage.fetch_branch_taken_i
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_ctrl_fourstage.fetch_valid_i
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_ctrl_fourstage.execute_waiting_r
+@200
+-
+-ctrl
+@28
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_ctrl_fourstage.decode_valid_i
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_ctrl_fourstage.padv_fetch_o
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_ctrl_fourstage.padv_decode_o
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_ctrl_fourstage.padv_execute_o
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_ctrl_fourstage.fetch_valid_i
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_ctrl_fourstage.op_rfe
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_ctrl_fourstage.exception_re
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_ctrl_fourstage.except_dbus_i
+@200
+-
+-WB
+@22
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_wb_mux_fourstage.rf_result_o[31:0]
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_wb_mux_fourstage.pc_execute_i[31:0]
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_wb_mux_fourstage.lsu_result_i[31:0]
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_wb_mux_fourstage.alu_result_i[31:0]
+@200
+-
+-LSU
+@22
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_lsu_fourstage.alu_result_i[31:0]
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_lsu_fourstage.dbus_dat_i[31:0]
+@28
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_lsu_fourstage.dbus_req_o
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_lsu_fourstage.lsu_except_dbus_o
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_lsu_fourstage.dbus_ack_i
+@200
+-
+-decode
+@22
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_decode.pc_decode_i[31:0]
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_decode.decode_insn_i[31:0]
+@28
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_decode.op_jr
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_decode.op_jbr
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_decode.padv_i
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_decode.pipeline_flush_i
+@200
+-
+-branch
+@28
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_ctrl_branch_fourstage.ctrl_branch_occur_o
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_ctrl_branch_fourstage.ctrl_branch_occur_r
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_ctrl_branch_fourstage.ctrl_branch_exception_i
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_ctrl_branch_fourstage.op_jbr_i
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_ctrl_branch_fourstage.op_jr_i
+@200
+-
+-fetch
+@28
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_fetch_fourstage.fetch_in_progress
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_fetch_fourstage.ibus_req_o
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_fetch_fourstage.ibus_ack_i
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_fetch_fourstage.pc_fetched
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_fetch_fourstage.padv_i
+@22
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_fetch_fourstage.pc_fetch[31:0]
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_fetch_fourstage.pc_fetch_next[31:0]
+@28
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_fetch_fourstage.pc_fetch_advance
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_fetch_fourstage.pc_fetch_advance_r
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_fetch_fourstage.branch_fetch
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_fetch_fourstage.branch_occur_i
+@22
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_fetch_fourstage.branch_dest_i[31:0]
+@28
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_fetch_fourstage.pc_fetch_take_branch_addr
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_fetch_fourstage.discard_current_fetch
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_fetch_fourstage.fetch_branch_taken_o
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_fetch_fourstage.will_branch
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_fetch_fourstage.fetch_valid_o
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.cpu_gen.mor1kx_cpu.mor1kx_fetch_fourstage.pipeline_flush_i
+@200
+-
+[pattern_trace] 1
+[pattern_trace] 0

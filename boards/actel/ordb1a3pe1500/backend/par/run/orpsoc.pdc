@@ -1,0 +1,76 @@
+#
+# IO banks setting
+#
+
+set_iobank Bank7 -vcci 3.30 -fixed no
+set_iobank Bank6 -vcci 3.30 -fixed no
+set_iobank Bank5 -vcci 3.30 -fixed no
+set_iobank Bank4 -vcci 3.30 -fixed no
+set_iobank Bank3 -vcci 3.30 -fixed no
+set_iobank Bank2 -vcci 3.30 -fixed no
+set_iobank Bank1 -vcci 3.30 -fixed no
+set_iobank Bank0 -vcci 3.30 -fixed no
+
+#
+# I/O constraints
+#
+
+set_io rst_n_pad_i -iostd LVTTL -REGISTER No -RES_PULL Up -fixed yes  -pinname 49
+set_io sys_clk_pad_i -iostd LVTTL -REGISTER No -RES_PULL None -fixed yes  -pinname 30
+set_io tck_pad_i -iostd LVTTL -REGISTER No -fixed yes -pinname 98
+set_io tdi_pad_i -iostd LVTTL -REGISTER No -fixed yes -pinname 95
+set_io tdo_pad_o -iostd LVTTL -REGISTER No -fixed yes -pinname 94
+set_io tms_pad_i -iostd LVTTL -REGISTER No -fixed yes -pinname 93
+set_io sdram_a_pad_o\[0\] -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -SKEW Off -OUT_LOAD 35 -fixed yes -pinname 194
+set_io sdram_a_pad_o\[1\] -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -SKEW Off -OUT_LOAD 35 -fixed yes -pinname 197
+set_io sdram_a_pad_o\[2\] -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -SKEW Off -OUT_LOAD 35 -fixed yes -pinname 199
+set_io sdram_a_pad_o\[3\] -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -SKEW Off -OUT_LOAD 35 -fixed yes -pinname 202
+set_io sdram_a_pad_o\[4\] -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -SKEW Off -OUT_LOAD 35 -fixed yes -pinname 203
+set_io sdram_a_pad_o\[5\] -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -SKEW Off -OUT_LOAD 35 -fixed yes -pinname 201
+set_io sdram_a_pad_o\[6\] -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -SKEW Off -OUT_LOAD 35 -fixed yes -pinname 198
+set_io sdram_a_pad_o\[7\] -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -SKEW Off -OUT_LOAD 35 -fixed yes -pinname 196
+set_io sdram_a_pad_o\[8\] -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -SKEW Off -OUT_LOAD 35 -fixed yes -pinname 193
+set_io sdram_a_pad_o\[9\] -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -SKEW Off -OUT_LOAD 35 -fixed yes -pinname 191
+set_io sdram_a_pad_o\[10\] -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -SKEW Off -OUT_LOAD 35 -fixed yes -pinname 192
+set_io sdram_a_pad_o\[11\] -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -SKEW Off -OUT_LOAD 35 -fixed yes -pinname 189
+set_io sdram_a_pad_o\[12\] -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -SKEW Off -OUT_LOAD 35 -fixed yes -pinname 185
+set_io sdram_ba_pad_o\[0\] -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -SKEW Off -OUT_LOAD 35 -fixed yes -pinname 188
+set_io sdram_ba_pad_o\[1\] -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -SKEW Off -OUT_LOAD 35 -fixed yes -pinname 190
+set_io sdram_ras_pad_o  -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -SKEW Off -OUT_LOAD 35 -fixed yes -pinname 182
+set_io sdram_cas_pad_o  -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -SKEW Off -OUT_LOAD 35 -fixed yes -pinname 181
+set_io sdram_we_pad_o   -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -SKEW Off -OUT_LOAD 35 -fixed yes -pinname 179
+set_io sdram_cke_pad_o  -iostd LVTTL -OUT_DRIVE 12 -SLEW High -RES_PULL None -SKEW Off -OUT_LOAD 35 -fixed yes -pinname 183
+set_io sdram_cs_n_pad_o -iostd LVTTL -OUT_DRIVE 12 -SLEW High -RES_PULL None -SKEW Off -OUT_LOAD 35 -fixed yes -pinname 184
+set_io sdram_dqm_pad_o\[0\]  -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -SKEW Off -OUT_LOAD 35 -fixed yes -pinname 177
+set_io sdram_dqm_pad_o\[1\]  -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -SKEW Off -OUT_LOAD 35 -fixed yes -pinname 180
+set_io sdram_dq_pad_io\[0\]  -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -SKEW Off -OUT_LOAD 35 -fixed yes -pinname 152
+set_io sdram_dq_pad_io\[1\]  -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -SKEW Off -OUT_LOAD 35 -fixed yes -pinname 160
+set_io sdram_dq_pad_io\[2\]  -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -SKEW Off -OUT_LOAD 35 -fixed yes -pinname 163
+set_io sdram_dq_pad_io\[3\]  -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -SKEW Off -OUT_LOAD 35 -fixed yes -pinname 165
+set_io sdram_dq_pad_io\[4\]  -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -SKEW Off -OUT_LOAD 35 -fixed yes -pinname 167
+set_io sdram_dq_pad_io\[5\]  -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -SKEW Off -OUT_LOAD 35 -fixed yes -pinname 169
+set_io sdram_dq_pad_io\[6\]  -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -SKEW Off -OUT_LOAD 35 -fixed yes -pinname 173
+set_io sdram_dq_pad_io\[7\]  -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -SKEW Off -OUT_LOAD 35 -fixed yes -pinname 175
+set_io sdram_dq_pad_io\[8\]  -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -SKEW Off -OUT_LOAD 35 -fixed yes -pinname 176
+set_io sdram_dq_pad_io\[9\]  -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -SKEW Off -OUT_LOAD 35 -fixed yes -pinname 174
+set_io sdram_dq_pad_io\[10\] -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -SKEW Off -OUT_LOAD 35 -fixed yes -pinname 172
+set_io sdram_dq_pad_io\[11\] -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -SKEW Off -OUT_LOAD 35 -fixed yes -pinname 168
+set_io sdram_dq_pad_io\[12\] -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -SKEW Off -OUT_LOAD 35 -fixed yes -pinname 166
+set_io sdram_dq_pad_io\[13\] -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -SKEW Off -OUT_LOAD 35 -fixed yes -pinname 164
+set_io sdram_dq_pad_io\[14\] -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -SKEW Off -OUT_LOAD 35 -fixed yes -pinname 161
+set_io sdram_dq_pad_io\[15\] -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -SKEW Off -OUT_LOAD 35 -fixed yes -pinname 159
+set_io spi0_miso_i -iostd LVTTL -REGISTER No -RES_PULL None -fixed yes -pinname 85
+set_io spi0_mosi_o -iostd LVTTL -REGISTER No -RES_PULL None -fixed yes -OUT_DRIVE 12 -SLEW High -SKEW Off -OUT_LOAD 35 -fixed yes -pinname 87
+set_io spi0_sck_o -iostd LVTTL -REGISTER No -RES_PULL None -fixed yes -OUT_DRIVE 12 -SLEW High -SKEW Off -OUT_LOAD 35 -fixed yes -pinname 90
+set_io spi0_hold_n_o -iostd LVTTL -REGISTER No -RES_PULL None -fixed yes -OUT_DRIVE 12 -SLEW High -SKEW Off -OUT_LOAD 35 -fixed yes -pinname 86
+set_io spi0_w_n_o -iostd LVTTL -REGISTER No -RES_PULL None -fixed yes -OUT_DRIVE 12 -SLEW High -SKEW Off -OUT_LOAD 35 -fixed yes -pinname 83
+set_io spi0_ss_o\[0\] -iostd LVTTL -REGISTER No -RES_PULL None -fixed yes -OUT_DRIVE 12 -SLEW High -SKEW Off -OUT_LOAD 35 -fixed yes -pinname 84
+set_io uart0_srx_pad_i -iostd LVTTL -REGISTER No -RES_PULL None -fixed yes -pinname 91
+set_io uart0_stx_pad_o -iostd LVTTL -REGISTER No -OUT_DRIVE 12 -SLEW High -RES_PULL None -SKEW Off -OUT_LOAD 35 -fixed yes -pinname 92
+set_io eth_clk_pad_i -iostd LVTTL -RES_PULL None -fixed yes -REGISTER No  -pinname 135
+set_io eth0_md_pad_io -iostd LVTTL -RES_PULL None -fixed yes -pinname 146
+set_io eth0_mdc_pad_o -iostd LVTTL -RES_PULL None -fixed yes -REGISTER No -OUT_DRIVE 12 -SLEW High -SKEW Off -OUT_LOAD 35 -pinname 145
+set_io eth0_smii_rx_pad_i -iostd LVTTL -RES_PULL None -fixed yes -REGISTER Yes  -pinname 144
+set_io eth0_smii_sync_pad_o -iostd LVTTL -RES_PULL None -fixed yes -REGISTER Yes -OUT_DRIVE 12 -SLEW High -SKEW Off -OUT_LOAD 35 -pinname 139
+set_io eth0_smii_tx_pad_o  -iostd LVTTL -RES_PULL None -fixed yes -REGISTER Yes -OUT_DRIVE 12 -SLEW High -SKEW Off -OUT_LOAD 35 -pinname 143
+
