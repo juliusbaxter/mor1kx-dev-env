@@ -46,7 +46,7 @@
 	
 
 */
-	
+#include <or1k-asm.h>	
 #include "spr-defs.h"
 
 /* =================================================== [ exceptions ] === */
@@ -66,8 +66,8 @@
 	.global _start
 	l.movhi r4, hi(_start)
 	l.ori 	r4, r4, lo(_start)
-	l.jr    r4
-	l.nop
+	OR1K_DELAYED_NOP(OR1K_INST(l.jr    r4))
+
 
 	// Illegal instruction handler
 	.org 0x700
@@ -89,10 +89,7 @@
 	.global _start
 _start:	
 	// Kick off test
-	l.jal   _main
-	l.nop
-	
-
+	OR1K_DELAYED_NOP(OR1K_INST(l.jal   _main))
 
 /* =================================================== [ main ] === */
 	
@@ -115,8 +112,8 @@ _main:
 	/* test sequence */
 	l.add	r3, r4, r3
 	l.lwz	r3, 0(r3)
-	l.jalr	r3
-	l.nop
+	OR1K_DELAYED_NOP(OR1K_INST(l.jalr	r3))
+	// Looks like JALR on no delay breaks here!
 	/* increment main loop counter */
 	l.addi	r2, r2, 1
 
@@ -127,8 +124,8 @@ _main:
 	/* test sequence */
 	l.add	r3, r4, r3
 	l.lwz	r3, 0(r3)
-	l.jr	r3
-	l.nop
+	OR1K_DELAYED_NOP(OR1K_INST(l.jr	r3))
+
 _L1:	
 	/* increment main loop counter */
 	l.addi	r2, r2, 1
@@ -142,12 +139,20 @@ _L1:
 	/* test sequence */
 	l.add	r3, r4, r3
 	l.lwz	r3, 0(r3)
-	l.jr	r3
+	OR1K_DELAYED(
 	/* increment "called" counter */	
-	l.addi	r2, r2, 1
+	OR1K_INST(l.addi	r2, r2, 1),
+	OR1K_INST(l.jr	r3)
+	)
+	
 _L2:	
 	/* increment "arrived" counter */
 	l.addi	r1, r1, 1
+
+	l.or	r3,r1,r1
+	l.nop	2
+	l.or	r3,r2,r2
+	l.nop	2
 	
 	/* Check results OK */
 	l.sfeq	r1,r2
@@ -169,5 +174,7 @@ test_ok:
 
 	.org 0x100000
 test_func:
-	l.jr	r9
-	l.addi	r1, r1, 1
+	OR1K_DELAYED(
+	OR1K_INST(l.addi	r1, r1, 1),
+	OR1K_INST(l.jr	r9)
+	)

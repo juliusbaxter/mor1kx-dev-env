@@ -2,11 +2,24 @@
 # Expects BOARD_ROOT to be set
 
 FPGA_VENDOR=generic
-BOARD_NAME=mor1kx-espresso
+BOARD_NAME=mor1kx-prontoespresso
 BOARD=$(FPGA_VENDOR)/$(BOARD_NAME)
 DESIGN_NAME=orpsoc
 
-MOR1KX_CPU=espresso
+MOR1KX_CPU=prontoespresso
+
+# This selects the sw driver for low-level things
+OPENRISC_CPU_DRIVER=mor1kx
+export OPENRISC_CPU_DRIVER
+
+# Pronto-espresso is without delay slot, but with hardware (serial) multiplier and divider
+OR32_TOOL_PREFIX=or1k-elf-
+export OR32_TOOL_PREFIX
+MARCH_FLAGS=-msoft-float -mhard-mul -mhard-div
+export MARCH_FLAGS
+
+BOARD_C_FLAGS=-mno-delay
+export BOARD_C_FLAGS
 
 # Path down to root of project
 PROJECT_ROOT=$(BOARD_ROOT)/../../..

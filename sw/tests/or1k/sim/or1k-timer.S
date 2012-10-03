@@ -36,7 +36,7 @@
 //// from http://www.opencores.org/lgpl.shtml                     ////
 ////                                                              ////
 //////////////////////////////////////////////////////////////////////
-	
+#include <or1k-asm.h>	
 #include "spr-defs.h"
 
 /* =================================================== [ exceptions ] === */
@@ -68,9 +68,10 @@
 	l.mtspr	r0, r11, SPR_TTMR
 	/* check which test we're doing */
 	l.sfltui r10, 3
-	l.bf	timer_rfe
+	OR1K_DELAYED(
 	/* increment exception counter regardless of test */
-	l.addi	r2, r2, 1
+	OR1K_INST(l.addi	r2, r2, 1),
+	OR1K_INST(l.bf	timer_rfe))
 	/* only clear the ttmr for test 3 */
 	l.mtspr r0,r0,SPR_TTMR
 timer_rfe:
@@ -134,15 +135,20 @@ _main:
 	/* loop checking r2 which will be incremented on interrupt */
 restart_timer_interrupt_check:
 	l.sfeq	r2, r0
+	OR1K_DELAYED(
+	OR1K_INST(l.mfspr	r4, r0, SPR_TTCR),
 	l.bf	restart_timer_interrupt_check
-	l.mfspr	r4, r0, SPR_TTCR
+	)
 
 	l.sfltu	r4, r6 /* timer should have reset and counting again */
-	l.bnf	test_fail
-	l.mfspr	r5, r0, SPR_TTCR
+	OR1K_DELAYED(
+	OR1K_INST(l.mfspr	r5, r0, SPR_TTCR),
+	OR1K_INST(l.bnf	test_fail)
+	)
+
 	l.sfleu	r5, r4 /* timer should still be going */
-	l.bf 	test_fail
-	l.nop
+	OR1K_DELAYED_NOP(l.bf 	test_fail)
+
 	l.mtspr r0,r0,SPR_TTMR /* clear ttmr, turn it off */
 
 	/* Continuous run check */
@@ -173,16 +179,18 @@ restart_timer_interrupt_check:
 	/* loop checking r2 which will be incremented on interrupt */
 continuous_timer_interrupt_check:
 	l.sfeq	r2, r0
-	l.bf	continuous_timer_interrupt_check
-	l.nop
+	OR1K_DELAYED_NOP(l.bf	continuous_timer_interrupt_check)
+	
 	l.mfspr	r4, r0, SPR_TTCR
 
 	l.sfltu	r4, r6 /* timer should have continued again */
-	l.bf	test_fail
-	l.mfspr	r5, r0, SPR_TTCR
+	OR1K_DELAYED(
+	OR1K_INST(l.mfspr	r5, r0, SPR_TTCR),
+	OR1K_INST(l.bf	test_fail)
+	)	
 	l.sfleu	r5, r4 /* timer should still be going */
-	l.bf 	test_fail
-	l.nop
+	OR1K_DELAYED_NOP(l.bf 	test_fail)
+
 	l.mtspr r0,r0,SPR_TTMR /* clear ttmr, turn it off */
 
 	/* single shot, but also do some testing of timer interrupts and
@@ -210,14 +218,17 @@ continuous_timer_interrupt_check:
 
 one_shot_main_loop:
 	l.sfgeui r6, TIMER_MAIN_LOOPS
-	l.bf	check_results
-	l.or 	r3, r6, r6
+	OR1K_DELAYED(
+	OR1K_INST(l.or 	r3, r6, r6),
+	OR1K_INST(l.bf	check_results)
+	)
 
 	/* check if the results match so far */
 	l.sfeq	r1,r2
-	l.bnf	test_fail
-	
-	l.nop	0x2
+	OR1K_DELAYED(
+	OR1K_INST(l.nop 0x2),
+	OR1K_INST(l.bnf	test_fail)
+	)
 
 	/*setup timer to go, loop until we should have had tick */
 	
@@ -231,46 +242,64 @@ one_shot_main_loop:
 	l.addi	r1, r1, 1
 
 	l.sfgeui r6, 100
-	l.bf	longer_interrupt_loop
-	/* start our instruction counter loop */
-	l.ori	r7,r0,2
+	OR1K_DELAYED(
+	/* start our instruction counter loop */	
+	OR1K_INST(l.ori	r7,r0,2),
+	OR1K_INST(l.bf	longer_interrupt_loop)
+	)	
+	
 interrupt_loop:
 	l.sfltu	r7, r6
-	l.bf	interrupt_loop
-	l.addi	r7, r7, 3
-
+	OR1K_DELAYED(
+	OR1K_INST(l.addi	r7, r7, 3),
+	OR1K_INST(l.bf	interrupt_loop)
+	)
 	/* loop done, increment main loop counter */
-	l.j	one_shot_main_loop
-	l.addi	r6, r6, 1
+	OR1K_DELAYED(
+	OR1K_INST(l.addi	r6, r6, 1),
+	OR1K_INST(l.j	one_shot_main_loop)
+	)
 
 longer_interrupt_loop:
 	l.sw	0x4(r0), r7
 	l.lwz	r8, 0x4(r0)
 	l.sfne	r7, r8
-	l.bf	test_fail
-	l.addi	r7, r7, 4
+	OR1K_DELAYED(
+	OR1K_INST(l.addi r7, r7, 4),
+	OR1K_INST(l.bf	test_fail)
+	)
 	l.sw	0x4(r0), r7
 	l.lwz	r8, 0x4(r0)
 	l.sfne	r7, r8
-	l.bf	test_fail
-	l.addi	r7, r7, 4
+	OR1K_DELAYED(
+	OR1K_INST(l.addi r7, r7, 4),
+	OR1K_INST(l.bf	test_fail)
+	)
 	l.sw	0x4(r0), r7
 	l.lwz	r8, 0x4(r0)
 	l.sfne	r7, r8
-	l.bf	test_fail
-	l.addi	r7, r7, 4
-	l.sw	0x4(r0), r7
-	l.lwz	r8, 0x4(r0)
-	l.sfne	r7, r8
-	l.bf	test_fail
-	l.addi	r7, r7, 4
-	l.sfltu	r7, r6
-	l.bf	longer_interrupt_loop
-	l.addi	r7, r7, 3
+	OR1K_DELAYED(
+	OR1K_INST(l.addi	r7, r7, 4),
+	OR1K_INST(l.bf	test_fail)
+	)
 
+	l.sw	0x4(r0), r7
+	l.lwz	r8, 0x4(r0)
+	l.sfne	r7, r8
+	OR1K_DELAYED(
+	OR1K_INST(l.addi	r7, r7, 4),
+	OR1K_INST(l.bf	test_fail)
+	)
+	l.sfltu	r7, r6
+	OR1K_DELAYED(
+	OR1K_INST(l.addi	r7, r7, 3),
+	OR1K_INST(l.bf	longer_interrupt_loop)
+	)
 	/* loop done, increment main loop counter */
-	l.j	one_shot_main_loop
-	l.addi	r6, r6, 1
+	OR1K_DELAYED(
+	OR1K_INST(l.addi	r6, r6, 1),
+	OR1K_INST(l.j	one_shot_main_loop)
+	)
 	
 check_results:	
 	/* Check results OK */

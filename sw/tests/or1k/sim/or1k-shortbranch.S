@@ -35,7 +35,7 @@
 ////                                                              ////
 //////////////////////////////////////////////////////////////////////
 	
-	
+#include <or1k-asm.h>	
 #include "spr-defs.h"
 
 /* =================================================== [ exceptions ] === */
@@ -55,8 +55,8 @@
 	.global _start
 	l.movhi r4, hi(_start)
 	l.ori 	r4, r4, lo(_start)
-	l.jr    r4
-	l.nop
+	OR1K_DELAYED_NOP(OR1K_INST(l.jr    r4))
+	
 
 	// Illegal instruction handler
 	.org 0x700
@@ -78,10 +78,7 @@
 	.global _start
 _start:	
 	// Kick off test
-	l.jal   _main
-	l.nop
-	
-
+	OR1K_DELAYED_NOP(OR1K_INST(l.jal   _main))
 
 /* =================================================== [ main ] === */
 	
@@ -95,6 +92,8 @@ _main:
 	/* set flag, will always branch with l.bf */
 	l.sfeq	r0,r0
 
+#ifdef __OR1K_DELAY__
+	
 #define NONE_PAST_DELAY_SLOT_TEST	\
 	l.addi	r1, r1, 1	;\
 	l.bf	0x2		;\
@@ -113,9 +112,30 @@ _main:
 	l.bf	0x4		;\
 	l.nop			;\
 	l.nop	0x1		;\
-	l.nop	0x1		;\	
+	l.nop	0x1		;\
 	l.addi	r2, r2, 1	
 
+#else
+
+#define NONE_PAST_DELAY_SLOT_TEST	\
+	l.addi	r1, r1, 1	;\
+	l.bf	0x4		;\
+	l.addi	r2, r2, 1	
+
+#define ONE_PAST_DELAY_SLOT_TEST	\
+	l.addi	r1, r1, 1	;\
+	l.bf	0x8		;\
+	l.nop	0x1		;\
+	l.addi	r2, r2, 1	
+
+#define TWO_PAST_DELAY_SLOT_TEST	\
+	l.addi	r1, r1, 1	;\
+	l.bf	0xc		;\
+	l.nop	0x1		;\
+	l.nop	0x1		;\
+	l.addi	r2, r2, 1	
+	
+#endif
 	NONE_PAST_DELAY_SLOT_TEST
 	NONE_PAST_DELAY_SLOT_TEST
 	NONE_PAST_DELAY_SLOT_TEST
@@ -201,5 +221,7 @@ test_ok:
 
 	.org 0x100000
 test_func:
-	l.jr	r9
-	l.addi	r1, r1, 1
+	OR1K_DELAYED(
+	OR1K_INST(l.addi r1, r1, 1),
+	OR1K_INST(l.jr	r9)
+	)

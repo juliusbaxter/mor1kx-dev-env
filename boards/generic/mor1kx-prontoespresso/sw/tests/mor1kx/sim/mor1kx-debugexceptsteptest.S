@@ -1,14 +1,8 @@
 /*
 
-	OR1K instruction alignment fetch exception test
-	
-	Jump to an invalid address from a l.jr instruction.
-
-	Should result in a bus error.
+	mor1kx debug exception step test code
 
 	Julius Baxter, julius@opencores.org
-
-	
 */
 //////////////////////////////////////////////////////////////////////
 ////                                                              ////
@@ -37,15 +31,7 @@
 ////                                                              ////
 //////////////////////////////////////////////////////////////////////
 	
-
-/*
-
-	Cause instruction bus error.
-
-	gpr1 counts each time we enter the handler.
-
-*/
-#include <or1k-asm.h>	
+	
 #include "spr-defs.h"
 
 /* =================================================== [ exceptions ] === */
@@ -65,25 +51,38 @@
 	.global _start
 	l.movhi r4, hi(_start)
 	l.ori 	r4, r4, lo(_start)
-	OR1K_DELAYED_NOP(OR1K_INST(l.jr    r4))
+	l.jr    r4
+	l.nop
 
-	// Bus error handler.
-	// Clobbers r3,r4, increments r1
-	// Steps over exception-causing instruction
 	.org 0x200
-
-	l.mfspr	r3,r0,SPR_EPCR_BASE	/* Get PC of bad jump instruction */
-	l.nop 	0x2
-#if defined(__OR1K_NODELAY__)
-	l.addi	r3,r3,4 	/* Step over jump insn */
-#else
-	l.addi	r3,r3,8 	/* Step over jump and delay slot */
-#endif	
-	l.mtspr	r0,r3,SPR_EPCR_BASE
-	l.addi	r1,r1,1		/* Increment exception counter */
-	l.or	r3,r1,r0	/* Move counter to r3 to report */
-	l.nop 	0x2
+	l.mfspr	r9, r0, SPR_EPCR_BASE
+	l.addi	r9, r9, 4
+	l.mtspr	r0, r9, SPR_EPCR_BASE
+	l.addi	r3, r3, 1
 	l.rfe
+	
+	.org 0x500
+	l.addi	r3, r3, 1
+	l.rfe
+
+
+	.org 0x600
+	l.mfspr	r9, r0, SPR_EPCR_BASE
+	l.addi	r9, r9, 4
+	l.mtspr	r0, r9, SPR_EPCR_BASE
+	l.addi	r3, r3, 1
+	l.rfe
+
+	
+	.org 0x700
+	l.mfspr	r9, r0, SPR_EPCR_BASE
+	l.addi	r9, r9, 4
+	l.mtspr	r0, r9, SPR_EPCR_BASE
+	l.addi	r3, r3, 1
+	l.rfe
+
+	.org 0x800
+	l.nop	0x1
 
 
 /* =================================================== [ text ] === */
@@ -104,31 +103,88 @@ _start:
 	.global _main	
 _main:
 
-	l.movhi	r1,0	/* clear r1 - used as exception handler counter */
-	l.movhi	r2,0	/* clear r2 - used as exception main function counter */
-
-	/* Generate an invalid addresses */
-	l.movhi	r5,0xee00
-	OR1K_DELAYED(
-	OR1K_INST(l.addi r2,r2,1),
-	OR1K_INST(l.jr	r5)
-	)
-
-	l.sfeq	r1,r2
-	OR1K_DELAYED_NOP(OR1K_INST(l.bf	test_ok))
-
-test_fail:	
-	l.movhi	r3,0xbaaa
-	l.ori	r3,r3,0xaaad
-	l.nop	0x1
-
-test_ok:
-	l.movhi	r3,0x8000
-	l.ori	r3,r3,0x000d
-	l.nop	0x2
-	l.ori 	r3, r0, 0 /* Clear R3 */
-	l.nop 	0x1 /* Exit simulation */
+	/* loop here waiting for the testbench to write a value into
+	memory */
+	/* start word is 0x80000000 */
+	l.movhi	r2, 0x8000
+startwait:
+	l.lwz	r1, 0x8(r0)
+	l.sfne	r1, r2
+	l.bf	startwait
 	l.nop
+	
+	l.movhi	r1,0	/* clear r1 */
+	l.movhi	r2,0	/* clear r2 */
+	l.movhi	r3,0	/* clear r2 */
+
+	/* Test bus error */
+	l.movhi	r4, hi(0xee000000)
+	/* first call */
+	l.addi	r1, r1, 1
+	l.jr	r4
+	l.nop
+	/* second call */
+	l.addi	r1, r1, 1
+	l.jr	r4
 	l.nop
 
+	/* Test lsu error */
+	l.movhi	r4, hi(0xee000000)
+	/* first call */
+	l.addi	r1, r1, 1
+	l.lwz	r8, 0(r4)
+	l.nop
+	/* second call */
+	l.addi	r1, r1, 1
+	l.lwz	r8, 0(r4)
+	l.nop
+
+	/* Test align error */
+	l.movhi	r4, hi(0xee000000)
+	/* first call */
+	l.addi	r1, r1, 1
+	l.lwz	r8, 1(r4)
+	l.nop
+	/* second call */
+	l.addi	r1, r1, 1
+	l.lwz	r8, 3(r4)
+	l.nop
+
+
+	/* Illegal instruction */
+	l.cust1
+	l.addi	r1, r1, 1
+
+	
+testresultcheck:
+	l.sfeq	r1, r3 /* check the function call counters match */
+	l.bnf	testfailed	/* they didn't */
+	l.nop
+
+testfinishcheck:
+	/* should have the word 0x8000000d at address 0x4 if we're to finish */
+	l.ori	r15, r0, 0x4
+	l.lwz 	r3, 0(r15)
+	l.nop 	0x2
+	l.movhi r14, 0x8000
+	l.ori	r14, r14, 0x000d
+
+	l.sfeq	r3,r14
+	/* if the word is not there, keep checking */
+	l.bnf	testfinishcheck
+	l.nop
+
+testok:
+	l.nop 	0x2
+	l.ori 	r3, r0, 0
+	l.nop 	0x1
+
+testfailed:
+	l.movhi r3, 0xbaaa
+	l.ori	r3, r3, 0xaaad
+	l.nop 	0x1
+	
+testfunc1:
+	l.jr	r9
+	l.addi	r1, r1,1
 	

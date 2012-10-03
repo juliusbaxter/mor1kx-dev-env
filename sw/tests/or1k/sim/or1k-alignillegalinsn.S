@@ -45,6 +45,7 @@
 ////                                                              ////
 //////////////////////////////////////////////////////////////////////
 
+#include <or1k-asm.h>
 #include "spr-defs.h"
 #include "board.h"
 	
@@ -84,8 +85,10 @@ _bus_handler:
 	l.nop	2
 	l.addi	r11,r11,1		/* Increment 1st exception counter */
 	l.sfeqi r2, 0xd /* Is this a data bus test, if so return with l.rfe */
-	l.bf 	1f
-	l.movhi r5, 0    /* r5 should be the one causing the error on dbus */
+	OR1K_DELAYED(
+	OR1K_INST(l.movhi r5, 0),    /* r5 should be the one causing the error on dbus */
+	OR1K_INST(l.bf 	1f)
+	)
 	/* Instruction bus error test return */
 	l.movhi r5, hi(0x44004800) /* Put "l.jr r9" instruction in r5 */
 	l.ori 	r5, r5, lo(0x44004800)
@@ -114,10 +117,12 @@ _illinsn_handler:
 	l.mfspr	r3,r0,SPR_EPCR_BASE	/* Get EPC */
 	l.nop	2
 	l.addi	r11,r11,1		/* Increment 1st exception counter */
+#ifdef __OR1K_DELAY__
 	/* Delay slot test needs this instruction "fixed" */
 	l.movhi	r5,0x1500		/* Put a "l.nop"  instruction in r5 */
 	l.sw	0x4(r0),r5	/* Write l.nop instruction to RAM addr 0x4 */
 	l.mtspr	r0,r0,SPR_ICBIR		/* Invalidate line 0 of cache */
+#endif
 	l.mtspr	r0,r0,SPR_EPCR_BASE	/* Jump to 0, which is l.jr r9 */
 	l.rfe
 
@@ -234,6 +239,7 @@ _align1:
 	l.addi	r12,r12,1 /* Increment 2nd exception counter */
 	l.nop
 
+#ifdef __OR1K_DELAY__
 	/* Now test them in delay slots */
 	l.ori	r5,r0,0x1 /* Half-word access, offset 1 */
 	l.j	1f  
@@ -321,6 +327,8 @@ _align1:
 	l.nop
 15:	l.addi 	r12,r12,1 /* Increment 2nd exception counter */
 
+#endif
+	
 	/* Check 1st and 2nd exception counters are equal */
 	l.sfeq	r11,r12			/* Should be equal */
 	l.bf	17f
@@ -343,11 +351,14 @@ _illegal1:
 	l.mtspr r0,r0,SPR_ICBIR /* Invalidate line 0 of cache */
 	/* Jump to 0x4 - illegal opcode instruction */
 	l.ori 	r6, r0, 0x4
-	l.jalr 	r6 		/* Jump to address 0x4, land on illegal insn */
-	l.addi 	r12,r12,1 	/* Increment 2nd exception counter */
+	OR1K_DELAYED(
+	OR1K_INST(l.addi 	r12,r12,1),      /* Increment 2nd exception counter */
+	OR1K_INST(l.jalr 	r6) 		/* Jump to address 0x4, land on illegal insn */
+ 	)
 	l.nop 			/* Should return here */	
 	l.nop
 
+#ifdef __OR1K_DELAY__
 	/* Test in delay slot */
 	
 	l.movhi r5, 0xee00 	/* Put an illegal instruction in r5 */
@@ -357,7 +368,8 @@ _illegal1:
 	             dslot instruction which will befixed by handler */
 	l.addi 	r12,r12,1 	/* Increment 2nd exception counter */
 	l.nop 			/* Should return here */
-
+#endif
+	
 	/* Check 1st and 2nd exception counters are equal */
 	l.sfeq	r11,r12		/* Should be equal */
 	l.bf 	1f
@@ -402,6 +414,8 @@ _dbus1:
 	l.sb 0(r5), r6
 	l.addi r12, r12, 1 /* Incremement secondary exception counter */	
 	l.nop
+
+#ifdef __OR1K_DELAY__
 	/* Delay slot tests */
 	/* Load word */	
 	l.movhi r5, 0xee00 /* Address to cause an error */	
@@ -439,8 +453,8 @@ _dbus1:
 	l.sb 0(r5), r6  /* Data bus error in delay slot */
 	l.nop
 6:	l.addi r12, r12, 1	
-
-
+#endif
+	
 /* Check 1st and 2nd exception counters are equal */
 	l.sfeq	r11,r12			/* Should be equal */
 	l.bf 7f

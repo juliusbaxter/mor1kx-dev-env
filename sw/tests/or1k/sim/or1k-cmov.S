@@ -3,7 +3,7 @@
  *
  * Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>
  */
-
+#include <or1k-asm.h>
 /* =================================================== [ exceptions ] === */
 	.section .vectors, "ax"
 
@@ -18,32 +18,31 @@
 	l.sfgtu	r5, r4
 	l.cmov	r6, r4, r5
 	l.sfnei	r6, 1
-	l.bf	fail
-	l.nop
+	OR1K_DELAYED_NOP(OR1K_INST(l.bf	fail))
 
 	// test false, r6 should contain r5 = 2
 	l.sfeq	r4, r5
 	l.cmov	r6, r4, r5
 	l.sfnei	r6, 2
-	l.bf	fail
-	l.nop
+	OR1K_DELAYED_NOP(OR1K_INST(l.bf	fail))	
 
 	// test true with dest = src, r6 should contain r6 = 1
 	l.or	r6, r0, r4
 	l.sfgtu	r5, r6
 	l.cmov	r6, r6, r5
 	l.sfnei	r6, 1
-	l.bf	fail
-	l.nop
+	OR1K_DELAYED_NOP(OR1K_INST(l.bf	fail))
 
 	// test false with dest = src, r6 should contain r6 = 2
 	l.or	r6, r0, r5
 	l.sfeq	r4, r6
 	l.cmov	r6, r4, r6
 	l.sfnei	r6, 2
-	l.bf	fail
-	l.nop
+	OR1K_DELAYED_NOP(OR1K_INST(l.bf	fail))
 
+	l.movhi	r3, 0x8000
+	l.ori	r3, r3, 0x000d
+	l.nop	2
 	l.movhi	r3, 0x6000
 	l.ori	r3, r3, 0x000d
 	l.nop 	1
@@ -52,3 +51,6 @@ fail:
 	l.movhi	r3, 0xbaaa
 	l.ori	r3, r3, 0xaaad
 	l.nop	1
+
+	.org	0x700
+	OR1K_DELAYED_NOP(OR1K_INST(l.j	fail))

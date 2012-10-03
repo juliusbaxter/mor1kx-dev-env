@@ -1,0 +1,79 @@
+[timestart] 32715000
+[size] 1000 806
+[pos] 0 -1
+*-18.474638 33006000 179510000 177970000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] orpsoc_testbench.
+[treeopen] orpsoc_testbench.dut.
+[treeopen] orpsoc_testbench.dut.mor1kx0.
+[treeopen] orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.
+[treeopen] orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.espresso.
+[treeopen] orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.espresso.mor1kx_cpu.
+[treeopen] orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.espresso.mor1kx_cpu.mor1kx_execute_alu.
+[treeopen] orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.espresso.mor1kx_cpu.mor1kx_rf_espresso.
+@29
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.espresso.mor1kx_cpu.mor1kx_execute_alu.mul_op
+@22
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.espresso.mor1kx_cpu.mor1kx_execute_alu.a[31:0]
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.espresso.mor1kx_cpu.mor1kx_execute_alu.b[31:0]
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.espresso.mor1kx_cpu.mor1kx_execute_alu.alu_result[31:0]
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.espresso.mor1kx_cpu.mor1kx_execute_alu.serialmultiply.mul_prod_r[63:0]
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.espresso.mor1kx_cpu.mor1kx_execute_alu.opc_alu_i[3:0]
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.espresso.mor1kx_cpu.mor1kx_execute_alu.opc_insn_i[5:0]
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.espresso.mor1kx_cpu.mor1kx_execute_alu.opc_alu_secondary_i[3:0]
+@28
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.espresso.mor1kx_cpu.mor1kx_execute_alu.mul_valid
+@22
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.espresso.mor1kx_cpu.mor1kx_ctrl_espresso.spr_npc[31:0]
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.espresso.mor1kx_cpu.mor1kx_ctrl_espresso.spr_ppc[31:0]
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.espresso.mor1kx_cpu.mor1kx_decode.decode_insn_i[31:0]
+@820
+orpsoc_testbench.monitor.execute_insn_disas[1:640]
+@c00200
+-rfa
+@22
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.espresso.mor1kx_cpu.mor1kx_rf_espresso.rfa.rdad_i[4:0]
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.espresso.mor1kx_cpu.mor1kx_rf_espresso.rfa.rdda_o[31:0]
+@1401200
+-rfa
+@c00200
+-rfb
+@22
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.espresso.mor1kx_cpu.mor1kx_rf_espresso.rfb.rdad_i[4:0]
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.espresso.mor1kx_cpu.mor1kx_rf_espresso.rfb.rdda_o[31:0]
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.espresso.mor1kx_cpu.mor1kx_rf_espresso.rfb.wrad_i[4:0]
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.espresso.mor1kx_cpu.mor1kx_rf_espresso.rfb.wrda_i[31:0]
+@28
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.espresso.mor1kx_cpu.mor1kx_rf_espresso.rfb.wren_i
+@1401200
+-rfb
+@200
+-
+@22
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.espresso.mor1kx_cpu.mor1kx_fetch_espresso.decode_insn_o[31:0]
+@28
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.espresso.mor1kx_cpu.mor1kx_fetch_espresso.fetch_advancing_o
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.espresso.mor1kx_cpu.mor1kx_fetch_espresso.padv_i
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.espresso.mor1kx_cpu.mor1kx_fetch_espresso.fetch_req
+@22
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.espresso.mor1kx_cpu.mor1kx_fetch_espresso.ibus_adr_o[31:0]
+@28
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.espresso.mor1kx_cpu.mor1kx_fetch_espresso.ibus_req_o
+@22
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.espresso.mor1kx_cpu.mor1kx_fetch_espresso.branch_dest_i[31:0]
+@28
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.espresso.mor1kx_cpu.mor1kx_fetch_espresso.branch_occur_i
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.espresso.mor1kx_cpu.mor1kx_fetch_espresso.branch_occur_r
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.espresso.mor1kx_cpu.mor1kx_fetch_espresso.branch_occur_re
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.espresso.mor1kx_cpu.mor1kx_fetch_espresso.jal_buffered
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.espresso.mor1kx_cpu.mor1kx_fetch_espresso.retain_fetch_pc
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.espresso.mor1kx_cpu.mor1kx_fetch_espresso.next_fetch_done_o
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.espresso.mor1kx_cpu.mor1kx_fetch_espresso.ibus_ack_i
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.espresso.mor1kx_cpu.mor1kx_fetch_espresso.next_insn_buffered
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.espresso.mor1kx_cpu.mor1kx_fetch_espresso.bus_access_done
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.espresso.mor1kx_cpu.mor1kx_fetch_espresso.taking_branch
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.espresso.mor1kx_cpu.mor1kx_fetch_espresso.execute_waiting_i
+@22
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.espresso.mor1kx_cpu.mor1kx_fetch_espresso.insn_buffer[31:0]
+orpsoc_testbench.dut.mor1kx0.mor1kx_cpu.espresso.mor1kx_cpu.mor1kx_fetch_espresso.decode_insn_o[31:0]
+[pattern_trace] 1
+[pattern_trace] 0

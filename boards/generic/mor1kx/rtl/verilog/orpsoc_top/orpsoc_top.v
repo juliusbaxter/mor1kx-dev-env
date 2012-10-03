@@ -651,6 +651,7 @@ module orpsoc_top
        .OPTION_DCACHE_LIMIT_WIDTH	(31),
 
        .OPTION_SHIFTER			("SERIAL"),
+     //.FEATURE_MULTIPLIER		("SERIAL"),
        .OPTION_CPU0			(MOR1KX_CPU0_OPTION_CPU)
        )
      mor1kx0

@@ -29,7 +29,7 @@
 ####                                                              ####
 ######################################################################
 
-OR32_TOOL_PREFIX=or32-elf-
+OR32_TOOL_PREFIX ?=or32-elf-
 
 OR32_LD=$(OR32_TOOL_PREFIX)ld
 OR32_AS=$(OR32_TOOL_PREFIX)as
@@ -42,7 +42,8 @@ OR32_OBJCOPY=$(OR32_TOOL_PREFIX)objcopy
 # SW_ROOT should be set by whatever is running this
 
 # Special case for CPU drivers
-CPU_DRIVER ?=$(SW_ROOT)/drivers/or1200
+OPENRISC_CPU_DRIVER ?=or1200
+CPU_DRIVER ?=$(SW_ROOT)/drivers/$(OPENRISC_CPU_DRIVER)
 
 DESIGN_NAME ?=orpsoc
 
@@ -71,7 +72,19 @@ RTL_VERILOG_INCLUDE_DIR=$(BOARD_PATH)/rtl/verilog/include
 endif
 
 COMMON_SW_DRIVERS=$(shell ls $(SW_ROOT)/drivers )
-COMMON_SW_DRIVERS_WITHOUT_BOARD_DRIVERS=$(filter-out $(BOARD_SPECIFIC_DRIVERS),$(COMMON_SW_DRIVERS))
+
+# Depending on which CPU was selected, we don't want the others!
+ifneq ($(OPENRISC_CPU_DRIVER), or1200)
+UNWANTED_CPU_DRIVERS +=or1200
+endif
+ifneq ($(OPENRISC_CPU_DRIVER), mor1kx)
+UNWANTED_CPU_DRIVERS +=mor1kx
+endif
+
+COMMON_SW_DRIVERS_WITHOUT_UNWANTED_CPU_DRIVERS=$(filter-out $(UNWANTED_CPU_DRIVERS),$(COMMON_SW_DRIVERS))
+
+# Now get rid of the drivers we have in the board directory
+COMMON_SW_DRIVERS_WITHOUT_BOARD_DRIVERS=$(filter-out $(BOARD_SPECIFIC_DRIVERS),$(COMMON_SW_DRIVERS_WITHOUT_UNWANTED_CPU_DRIVERS))
 
 #
 # Create paths pointing to each driver directory
@@ -133,11 +146,12 @@ MARCH_FLAGS ?=-msoft-mul -msoft-div -msoft-float
 OR32_CFLAGS ?=-g -nostdlib -O2 $(MARCH_FLAGS) \
 		$(INCLUDE_FLAGS) \
 		-I$(SW_ROOT)/lib/include \
+		$(BOARD_C_FLAGS)
 
 LINK_SCRIPT_OPT ?=-T$(CPU_DRIVER)/link.ld
 
-OR32_LDFLAGS ?=-L$(SW_ROOT)/lib -lorpsoc -lgcc $(LINK_SCRIPT_OPT) -e 256 
-OR32_ARFLAGS ?=-r
+OR32_LDFLAGS ?=-L$(SW_ROOT)/lib -lorpsoc -lgcc $(LINK_SCRIPT_OPT) -e 256 $(BOARD_LD_FLAGS)
+OR32_ARFLAGS ?=-r $(BOARD_AR_FLAGS)
 # RTL_VERILOG_INCLUDE_DIR *MUST* be set!
 # Backup one - default, but may be wrong!
 RTL_VERILOG_INCLUDE_DIR ?= $(SW_ROOT)/../rtl/verilog/include
