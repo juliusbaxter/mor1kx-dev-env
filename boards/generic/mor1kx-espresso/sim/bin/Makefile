@@ -54,8 +54,10 @@ include $(BOARD_ROOT)/Makefile.inc
 include $(PROJECT_ROOT)/scripts/make/Makefile-board-benchsrc.inc
 
 # Software tests we'll run
-TEST ?= or1200-simple
-TESTS ?= or1k-insnfetchalign		\
+TEST ?= o1k-rfe
+
+TESTS ?= or1k-rfe			\
+	or1k-insnfetchalign		\
 	or1k-insnfetcherror		\
 	or1k-systemcall			\
 	or1k-trap			\
@@ -69,16 +71,17 @@ TESTS ?= or1k-insnfetchalign		\
 	or1k-alignillegalinsn		\
 	or1k-lwjr			\
 	or1k-shortbranch		\
+	or1k-cmov			\
 	or1k-timer			\
 	or1k-tickrfforward		\
 	or1k-dsx			\
-	or1200-intsyscall		\
-	or1200-ticksyscall		\
-	or1200-ffl1			\
-	or1200-sf			\
-	or1200-simple			\
-	or1200-basic			\
-	or1200-cbasic			\
+	or1k-intsyscall			\
+	or1k-ticksyscall		\
+	or1k-ffl1			\
+	or1k-sf				\
+	or1k-simple			\
+	or1k-basic			\
+	or1k-cbasic			\
 	uart-simple			\
 	mor1kx-debugsteptest		\
 	mor1kx-debugexceptsteptest

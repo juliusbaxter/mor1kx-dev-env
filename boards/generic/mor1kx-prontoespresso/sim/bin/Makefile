@@ -57,8 +57,9 @@ include $(PROJECT_ROOT)/scripts/make/Makefile-board-benchsrc.inc
 	or1k-jr				\
 
 # Software tests we'll run
-TEST ?= or1200-simple
-TESTS ?= or1k-insnfetchalign		\
+TEST ?= or1k-basic
+TESTS ?= or1k-rfe			\
+	or1k-insnfetchalign		\
 	or1k-insnfetcherror		\
 	or1k-systemcall			\
 	or1k-trap			\
