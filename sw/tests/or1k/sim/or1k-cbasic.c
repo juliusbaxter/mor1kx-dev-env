@@ -68,7 +68,7 @@ signed long test_arith(int i)
 	int j;
 	
 	for(j = i; j < 40; j++) {
-	  
+
 		mul += j*j*i;
 #if 0
 		report(mul);
@@ -78,7 +78,7 @@ signed long test_arith(int i)
 		report(div);
 #endif
 	}
-	
+
 	report (mul+div); 
 	return (mul + div);
 }

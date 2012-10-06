@@ -15,14 +15,17 @@
 
 
 	The test does the following:
-	Uses the intgen module to schedule interrupts to see if they clash
-	with system calls.
+	Uses the intgen module to schedule interrupts which should occur
+	around the same time as system calls. The software will need
+	to execute in the correct order for the test to pass, which
+	ensures that the interrupts and system calls have been correctly
+	handled.
 
 	Julius Baxter, ORSoC AB, julius.baxter@orsoc.se
 */
 //////////////////////////////////////////////////////////////////////
 ////                                                              ////
-//// Copyright (C) 2011 Authors and OPENCORES.ORG                 ////
+//// Copyright (C) 2011, 2012 Authors and OPENCORES.ORG           ////
 ////                                                              ////
 //// This source file may be used and distributed without         ////
 //// restriction provided that this copyright statement is not    ////
@@ -152,10 +155,8 @@ _main:
 	l.movhi r15, 0
 	l.movhi r6, 0
 	l.movhi r10, 0
-
-
-	
-	// Assumes r12 is intgen's base address
+	l.movhi	r11, 0 // register to store some calculation values
+	// set up r12 to hold intgen's base address
 	l.movhi	r12,hi(INTGEN_BASE)
 	
 #define INTGEN_LOAD(x)	\
@@ -165,28 +166,198 @@ _main:
 	
 	/* Test begin */
 	
-	l.nop
-	INTGEN_LOAD(4)
+	INTGEN_LOAD(2)
+	// Do something....
+	l.addi	r11,r11,1
 	l.sys 0x1
-	l.nop
-	INTGEN_LOAD(5)
-	l.nop
+	
+	INTGEN_LOAD(3)
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
 	l.sys 0x2
-	l.nop
-	INTGEN_LOAD(6)	
-	l.sys 0x3
-	l.nop
-	INTGEN_LOAD(7)
-	l.nop
+	
+	INTGEN_LOAD(4)
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
 	l.sys 0x4
+	
+	INTGEN_LOAD(5)
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.sys 0x8
+	
+	// Try other way around
+	l.sys 0x10
+	
+	INTGEN_LOAD(1)
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	INTGEN_LOAD(6)
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.sys 0x20
+	
+	INTGEN_LOAD(7)
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.sys 0x40
+	
+	INTGEN_LOAD(8)
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.sys 0x80
+	
+	INTGEN_LOAD(9)
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.sys 0x100
+	
+	INTGEN_LOAD(10)
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.sys 0x200
+	
+	INTGEN_LOAD(11)
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.sys 0x400
+	
+	INTGEN_LOAD(12)
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.sys 0x800
+	
+	INTGEN_LOAD(13)
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1	
+	l.sys 0x1000
+	
+	INTGEN_LOAD(14)
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1	
+	l.addi	r11,r11,1	
+	l.sys 0x2000
+	
+	INTGEN_LOAD(15)
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.sys 0x4000
+	
+	INTGEN_LOAD(16)
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.addi	r11,r11,1
+	l.sys 0x8000
+
+	l.sfnei	r11,136
+	l.bf _fail
 	l.nop
-	l.ori	r5,r0,1	
-	l.sys 0x5
-	l.sb	0(r12),r5
-	l.nop
-	l.nop
-	l.nop
-	l.sfnei r6, 0xf /* Should equal 15, 0xf */
+	
+	l.ori	r7,r0,0xffff
+	l.sfne r6, r7 /* r6 should be 0xffff */
 	l.bf _fail
 	l.nop
 

@@ -96,20 +96,20 @@ _main:
 	
 #define NONE_PAST_DELAY_SLOT_TEST	\
 	l.addi	r1, r1, 1	;\
-	l.bf	0x2		;\
+	l.bf	0x8		;\
 	l.nop			;\
 	l.addi	r2, r2, 1	
 
 #define ONE_PAST_DELAY_SLOT_TEST	\
 	l.addi	r1, r1, 1	;\
-	l.bf	0x3		;\
+	l.bf	0xc		;\
 	l.nop			;\
 	l.nop	0x1		;\
 	l.addi	r2, r2, 1	
 
 #define TWO_PAST_DELAY_SLOT_TEST	\
 	l.addi	r1, r1, 1	;\
-	l.bf	0x4		;\
+	l.bf	0x10		;\
 	l.nop			;\
 	l.nop	0x1		;\
 	l.nop	0x1		;\
