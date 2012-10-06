@@ -111,7 +111,6 @@ startwait:
 	l.lwz	r1, 0x8(r0)
 	l.sfne	r1, r2
 	l.bf	startwait
-	l.nop
 	
 	l.movhi	r1,0	/* clear r1 */
 	l.movhi	r2,0	/* clear r2 */
@@ -122,34 +121,30 @@ startwait:
 	/* first call */
 	l.addi	r1, r1, 1
 	l.jr	r4
-	l.nop
+
 	/* second call */
 	l.addi	r1, r1, 1
 	l.jr	r4
-	l.nop
 
 	/* Test lsu error */
 	l.movhi	r4, hi(0xee000000)
 	/* first call */
 	l.addi	r1, r1, 1
 	l.lwz	r8, 0(r4)
-	l.nop
+
 	/* second call */
 	l.addi	r1, r1, 1
 	l.lwz	r8, 0(r4)
-	l.nop
 
 	/* Test align error */
 	l.movhi	r4, hi(0xee000000)
 	/* first call */
 	l.addi	r1, r1, 1
 	l.lwz	r8, 1(r4)
-	l.nop
+
 	/* second call */
 	l.addi	r1, r1, 1
 	l.lwz	r8, 3(r4)
-	l.nop
-
 
 	/* Illegal instruction */
 	l.cust1
@@ -159,7 +154,6 @@ startwait:
 testresultcheck:
 	l.sfeq	r1, r3 /* check the function call counters match */
 	l.bnf	testfailed	/* they didn't */
-	l.nop
 
 testfinishcheck:
 	/* should have the word 0x8000000d at address 0x4 if we're to finish */
@@ -172,7 +166,6 @@ testfinishcheck:
 	l.sfeq	r3,r14
 	/* if the word is not there, keep checking */
 	l.bnf	testfinishcheck
-	l.nop
 
 testok:
 	l.nop 	0x2
@@ -185,6 +178,7 @@ testfailed:
 	l.nop 	0x1
 	
 testfunc1:
-	l.jr	r9
 	l.addi	r1, r1,1
+	l.jr	r9
+
 	

@@ -31,7 +31,7 @@
 ////                                                              ////
 //////////////////////////////////////////////////////////////////////
 	
-	
+#include <or1k-asm.h>	
 #include "spr-defs.h"
 
 /* =================================================== [ exceptions ] === */
@@ -52,7 +52,7 @@
 	l.movhi r4, hi(_start)
 	l.ori 	r4, r4, lo(_start)
 	l.jr    r4
-	l.nop
+
 
 	.org 0x200
 	l.nop 0x1
@@ -78,9 +78,6 @@
 _start:	
 	// Kick off test
 	l.jal   _main
-	l.nop
-	
-
 
 /* =================================================== [ main ] === */
 	
@@ -95,7 +92,6 @@ startwait:
 	l.lwz	r1, 0x8(r0)
 	l.sfne	r1, r2
 	l.bf	startwait
-	l.nop
 	
 	l.movhi	r1,0	/* clear r1 */
 	l.movhi	r2,0	/* clear r2 */
@@ -111,20 +107,22 @@ startwait:
 	l.mfspr	r5, r0, SPR_TTCR
 	l.sfeq	r4, r5
 	l.bnf	testfailed
-	l.nop
 
 	/* now call the test function a few ways, ensuring that
 	the counter is incremented */
+
 	/* jal - this will make sure the link reg looks good */
-	l.jal	testfunc1
 	l.addi	r3, r3, 1
+	l.jal	testfunc1
+
 	/* call the function another way */
 	l.movhi r2, hi(testfunc1)
 	l.ori	r2, r2, lo(testfunc1)
 	l.movhi r9, hi(return1)
 	l.ori	r9, r9, lo(return1)
-	l.jr	r2
 	l.addi	r3, r3, 1
+	l.jr	r2
+
 return1:
 	l.nop
 
@@ -132,8 +130,9 @@ return1:
 	l.movhi r9, hi(return2)
 	l.ori	r9, r9, lo(return2)
 	l.sfeq	r0, r0 /* Set flag */
-	l.bf	testfunc1
 	l.addi	r3, r3, 1
+	l.bf	testfunc1
+
 return2:
 	l.nop
 
@@ -147,15 +146,16 @@ return2:
 	l.movhi r9, hi(return3)
 	l.ori	r9, r9, lo(return3)
 	l.sfeqi	r0, 1 /* Clear flag */
-	l.bnf	testfunc1
 	l.addi	r3, r3, 1
+	l.bnf	testfunc1
+
 return3:
 	l.nop
 
 testresultcheck:
 	l.sfeq	r1, r3 /* check the function call counters match */
 	l.bnf	testfailed	/* they didn't */
-	l.nop
+
 
 testfinishcheck:
 	/* should have the word 0x8000000d at address 0x4 if we're to finish */
@@ -168,7 +168,7 @@ testfinishcheck:
 	l.sfeq	r3,r14
 	/* if the word is not there, keep checking */
 	l.bnf	testfinishcheck
-	l.nop
+
 
 testok:
 	l.nop 	0x2
@@ -181,6 +181,7 @@ testfailed:
 	l.nop 	0x1
 	
 testfunc1:
-	l.jr	r9
 	l.addi	r1, r1,1
+	l.jr	r9
+
 	
