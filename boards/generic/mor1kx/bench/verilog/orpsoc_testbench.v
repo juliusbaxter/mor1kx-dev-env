@@ -72,10 +72,6 @@ module orpsoc_testbench;
    wire 		     uart0_srx_pad_i;
 `endif
 
-`ifdef MOR1KX
-   parameter MOR1KX_CPU0_OPTION_CPU = "CAPPUCCINO";
-`endif
-   
    orpsoc_top dut
      (
       .clk_pad_i                        (clk),
@@ -94,8 +90,6 @@ module orpsoc_testbench;
 
 
 `ifdef MOR1KX
-   defparam dut.MOR1KX_CPU0_OPTION_CPU = MOR1KX_CPU0_OPTION_CPU;
-
    /* Instantiate debug monitor */
    mor1kx_monitor monitor();
 `endif

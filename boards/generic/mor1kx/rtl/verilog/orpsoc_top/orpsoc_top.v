@@ -628,9 +628,6 @@ module orpsoc_top
 
 `ifdef MOR1KX
 
-   parameter MOR1KX_CPU0_OPTION_CPU = "CAPPUCCINO";
-   
-   
    wire [19:0] 				  cpu_irq;
 
    mor1kx
@@ -650,9 +647,11 @@ module orpsoc_top
        .OPTION_DCACHE_WAYS		(2),
        .OPTION_DCACHE_LIMIT_WIDTH	(31),
 
+       .FEATURE_DSX                     ("ENABLED"),
+					 
        .OPTION_SHIFTER			("SERIAL"),
      //.FEATURE_MULTIPLIER		("SERIAL"),
-       .OPTION_CPU0			(MOR1KX_CPU0_OPTION_CPU)
+       .OPTION_CPU0			("CAPPUCCINO")
        )
      mor1kx0
 					(
