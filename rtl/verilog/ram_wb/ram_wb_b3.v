@@ -33,8 +33,8 @@ module ram_wb_b3(/*AUTOARG*/
    
    parameter bytes_per_dw = (dw/8);
    parameter adr_width_for_num_word_bytes = 2; //(log2(bytes_per_dw))
-   parameter mem_words = (mem_size_bytes/bytes_per_dw);   
-
+   parameter mem_words = (mem_size_bytes/bytes_per_dw);
+   
    // synthesis attribute ram_style of mem is block
    reg [dw-1:0] 	mem [ 0 : mem_words-1 ]   /* verilator public */ /* synthesis ram_style = no_rw_check */;
 
@@ -58,13 +58,34 @@ module ram_wb_b3(/*AUTOARG*/
    // Wire to indicate addressing error
    wire 			   addr_err;   
    
+   parameter random_start_delay = 0;
+   reg 			random_value;
+   reg 			random_start_delay_done;
+   reg 			wb_stb_i_r;
+
+   wire 		wb_stb_i_re;
+   wire 		gated_wb_stb_i;
+   
+
+   assign gated_wb_stb_i = random_start_delay_done ? wb_stb_i : random_value;
+      
+   always @(posedge wb_clk_i)
+     if (wb_rst_i)
+	  random_start_delay_done <= !random_start_delay;
+     else if (random_start_delay)
+       begin
+	  if (!wb_stb_i)
+	    random_start_delay_done <= 0;
+	  if (!random_start_delay_done & wb_stb_i)
+	    random_start_delay_done <= random_value;
+       end
    
    // Logic to detect if there's a burst access going on
    assign wb_b3_trans_start = ((wb_cti_i == 3'b001)|(wb_cti_i == 3'b010)) & 
-			      wb_stb_i & !wb_b3_trans;
+			      gated_wb_stb_i & !wb_b3_trans;
    
    assign  wb_b3_trans_stop = ((wb_cti_i == 3'b111) & 
-			      wb_stb_i & wb_b3_trans & wb_ack_o) | wb_err_o;
+			      gated_wb_stb_i & wb_b3_trans & wb_ack_o) | wb_err_o;
    
    always @(posedge wb_clk_i)
      if (wb_rst_i)
@@ -113,7 +134,7 @@ module ram_wb_b3(/*AUTOARG*/
        adr <= 0;
      else if (using_burst_adr)
        adr <= burst_adr_counter;
-     else if (wb_cyc_i & wb_stb_i)
+     else if (wb_cyc_i & gated_wb_stb_i)
        adr <= wb_adr_i[mem_adr_width-1:2];
 
    /* Memory initialisation.
@@ -169,14 +190,14 @@ module ram_wb_b3(/*AUTOARG*/
        wb_ack_o_r <= 1'b0;
      else if (wb_cyc_i) // We have bus
        begin
-	  if (addr_err & wb_stb_i)
+	  if (addr_err & gated_wb_stb_i)
 	    begin
 	       wb_ack_o_r <= 1;
 	    end
 	  else if (wb_cti_i == 3'b000)
 	    begin
 	       // Classic cycle acks
-	       if (wb_stb_i)
+	       if (gated_wb_stb_i)
 		 begin
 		    if (!wb_ack_o_r)
 		      wb_ack_o_r <= 1;
@@ -187,7 +208,7 @@ module ram_wb_b3(/*AUTOARG*/
 	  else if ((wb_cti_i == 3'b001) | (wb_cti_i == 3'b010))
 	    begin
 	       // Increment/constant address bursts
-	       if (wb_stb_i)
+	       if (gated_wb_stb_i)
 		 wb_ack_o_r <= 1;
 	       else
 		 wb_ack_o_r <= 0;
@@ -196,7 +217,7 @@ module ram_wb_b3(/*AUTOARG*/
 	    begin
 	       // End of cycle
 	       if (!wb_ack_o_r)
-		 wb_ack_o_r <= wb_stb_i;
+		 wb_ack_o_r <= gated_wb_stb_i;
 	       else
 		 wb_ack_o_r <= 0;
 	    end
@@ -252,5 +273,20 @@ module ram_wb_b3(/*AUTOARG*/
       mem[addr] = data;
    endfunction // set_mem32   
    
+
+   // Random ACK negation logic
+   generate
+      if (random_start_delay)
+	begin : lfsr
+	   reg [31:0] lfsr;
+	   always @(posedge wb_clk_i)
+	     if (wb_rst_i)
+	       lfsr <= 32'h273e2d4a;
+	     else lfsr <= {lfsr[30:0], ~(lfsr[30]^lfsr[6]^lfsr[4]^lfsr[1]^lfsr[0])};
+	   always @(posedge wb_clk_i)
+	     random_value <= lfsr[26];   
+	end
+   endgenerate
+
 endmodule // ram_wb_b3
 
