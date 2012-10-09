@@ -103,6 +103,8 @@ private:
 	static const uint32_t NOP_GET_TICKS = 6;	//!< Get # ticks running
 	static const uint32_t NOP_GET_PS = 7;	//!< Get picosecs/cycle
 
+	static const uint32_t NOP_EXIT_SILENT = 12;	//!< Silent end of simulation
+
 	static const uint32_t NOP_CNT_RESET1 = 16;	/* Reset statistics counter 1 */
 	static const uint32_t NOP_CNT_RESET2 = 17;	/* Reset statistics counter 2 */
 	static const uint32_t NOP_CNT_RESET3 = 18;	/* Reset statistics counter 3 */

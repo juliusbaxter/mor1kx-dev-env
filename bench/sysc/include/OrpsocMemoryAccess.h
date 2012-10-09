@@ -42,7 +42,8 @@ class Vorpsoc_top_orpsoc_top;
 //Old ram_wbclass: class Vorpsoc_top_ram_wb_sc_sw__D20_A19_M800000;
 //class Vorpsoc_top_wb_ram_b3__D20_A17_M800000;
 //class Vorpsoc_top_ram_wb_b3__pi3;
-class Vorpsoc_top_ram_wb_b3__pi7;
+//class Vorpsoc_top_ram_wb_b3__pi7;
+class Vorpsoc_top_ram_wb_b3__M800000_MB17;
 // SoC Arbiter class - will also change if any modifications to bus architecture
 //class Vorpsoc_top_wb_conbus_top__pi1;
 
@@ -69,7 +70,8 @@ public:
 private:
 
 	/*Vorpsoc_top_ram_wb_sc_sw *//*Vorpsoc_top_ram_wb_sc_sw__D20_A19_M800000 *//*Vorpsoc_top_wb_ram_b3__D20_A17_M800000 *ram_wb_sc_sw; */
-	Vorpsoc_top_ram_wb_b3__pi7 *wishbone_ram;
+	//Vorpsoc_top_ram_wb_b3__pi7 *wishbone_ram;
+	Vorpsoc_top_ram_wb_b3__M800000_MB17 *wishbone_ram;
 	// Arbiter
 	//Vorpsoc_top_wb_conbus_top__pi1 *wb_arbiter;
 

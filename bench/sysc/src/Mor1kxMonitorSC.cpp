@@ -44,9 +44,11 @@ int monitor_to_gdb_pipe[2][2];	// [0][] - monitor to gdb, [1][] - gdb to
 
 static OrpsocMor1kxAccess * globalOrpsocAccessor;
 static OrpsocMemoryAccess * globalMemoryAccessor;
+#ifdef USE_OR1KTRACE
 extern "C" {
 #include <or1ktrace.h>
 }
+#endif
 
 SC_HAS_PROCESS(Mor1kxMonitorSC);
 
@@ -328,7 +330,9 @@ Mor1kxMonitorSC::Mor1kxMonitorSC(sc_core::sc_module_name name,
 
   if (trace_enabled)
     {
+#ifdef USE_OR1KTRACE
       or1ktrace_init(callback_getMem32, callback_getGpr, callback_getSpr, 0);
+#endif
     }
 
   // Record roughly when we begin execution
@@ -397,11 +401,14 @@ Mor1kxMonitorSC::checkInstruction()
     executeInsn = accessor->getExInsn();
     insn_count++;
     //cout << "insn!" << endl;
+
+#ifdef USE_OR1KTRACE
     if (trace_enabled)
       {
 	or1ktrace_gen_trace_string(accessor->getExPC(), disastr);
 	cout << disastr << endl;
       }
+#endif
 
     // Extract MSB of instruction
     insnMSByte = (executeInsn >> 24) & 0xff;
@@ -520,6 +527,24 @@ Mor1kxMonitorSC::checkInstruction()
 	    cycles_3 = cycle_count;
 	  }
 	  break;
+
+	case NOP_EXIT_SILENT:
+	  r3 = accessor->getGpr(3);
+	  *returnCode = (uint32_t) r3;
+	  if (perf_summary)
+	    perfSummary();
+	  if (logging_enabled)
+	    statusFile.close();
+	  if (profiling_enabled)
+	    profileFile.close();
+	  if (bus_trans_log_enabled)
+	    busTransLog.close();
+	  memdump();
+	  gSimRunning = 0;
+	  sc_stop();
+	  break;
+
+
 	default:
 	  break;
 	}

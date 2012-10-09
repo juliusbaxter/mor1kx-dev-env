@@ -33,9 +33,9 @@
 #include "Vorpsoc_top_orpsoc_top.h"
 // Need RAM instantiation has parameters after module name
 // Include for ram_wb
-#include "Vorpsoc_top_ram_wb__A20_D20_M800000_MB17.h"
+#include "Vorpsoc_top_ram_wb__M800000_MB17.h"
 // Include for ram_wb_b3
-#include "Vorpsoc_top_ram_wb_b3__pi7.h"
+#include "Vorpsoc_top_ram_wb_b3__M800000_MB17.h"
 
 //! Constructor for the ORPSoC access class
 
