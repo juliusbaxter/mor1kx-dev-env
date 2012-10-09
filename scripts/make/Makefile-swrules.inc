@@ -27,9 +27,11 @@ flash16.in: $(SW_TEST_DIR)/$(TEST).flash16
 	$(Q)if [ -L $@ ]; then unlink $@; fi
 	$(Q)ln -s $< $@
 
+ifeq ($(USER_ELF),)
 sram.vmem: $(SW_TEST_DIR)/$(TEST).vmem
 	$(Q)if [ -L $@ ]; then unlink $@; fi
 	$(Q)ln -s $< $@
+endif
 
 .PHONY: $(SW_TEST_DIR)/$(TEST).flashin
 $(SW_TEST_DIR)/$(TEST).flashin:
@@ -37,9 +39,27 @@ $(SW_TEST_DIR)/$(TEST).flashin:
 	$(Q)$(MAKE) -C $(SW_TEST_DIR) $(TEST).flashin
 
 .PHONY: $(SW_TEST_DIR)/$(TEST).vmem
+
+# If USER_ELF was specified, then we need a slightly different way of
+# generating the VMEM file from it than a usual test
+ifeq ($(USER_ELF),)
 $(SW_TEST_DIR)/$(TEST).vmem:
 	$(Q) echo; echo "\t### Compiling software ###"; echo;
 	$(Q)$(MAKE) -C $(SW_TEST_DIR) $(TEST).vmem
+else
+
+ELF_FILE=$(USER_ELF)
+ELF_FILE_NOTDIR=$(notdir $(USER_ELF))
+ELF_FILE_NOTDIR_BASENAME=$(basename $(ELF_FILE_NOTDIR))
+
+sram.vmem: $(USER_ELF)
+	$(Q) echo; echo "\t### Generating VMEM from user ELF ###"; echo;
+	$(Q)$(MAKE) -C $(COMMON_SW_DIR)/lib \
+	USER_ELF_BIN=`pwd`/$(ELF_FILE_NOTDIR_BASENAME).bin \
+	USER_ELF_VMEM=`pwd`/$(ELF_FILE_NOTDIR_BASENAME).vmem \
+	gen-user-elf-vmem
+	$(Q)cp -v $(ELF_FILE_NOTDIR_BASENAME).vmem $@
+endif
 
 .PHONY: $(SW_TEST_DIR)/$(TEST).flash16
 $(SW_TEST_DIR)/$(TEST).flash16:
@@ -61,7 +81,7 @@ sw-elf: $(SW_TEST_DIR)/$(TEST).elf
 $(SW_TEST_DIR)/$(TEST).elf:
 	$(Q) echo; echo "\t### Compiling software ###"; echo;
 	$(Q)$(MAKE) -C $(SW_TEST_DIR) $(TEST).elf
-	
+
 #
 # Clean rules
 #
