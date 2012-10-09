@@ -40,8 +40,8 @@ class Vorpsoc_top_mor1kx_cpu__pi3;
 class Vorpsoc_top_mor1kx_cpu_prontoespresso__pi4;
 #endif
 #ifdef MOR1KX_CPU_espresso
-class Vorpsoc_top_mor1kx_cpu__pi6;
-class Vorpsoc_top_mor1kx_cpu_espresso__pi9;
+class Vorpsoc_top_mor1kx_cpu__pi3;
+class Vorpsoc_top_mor1kx_cpu_espresso__pi4;
 #endif
 #ifdef MOR1KX_CPU_fourstage
 class Vorpsoc_top_mor1kx_cpu__pi5;
@@ -80,8 +80,8 @@ private:
 	Vorpsoc_top_mor1kx_cpu_prontoespresso__pi4 * mor1kx_cpu;
 #endif
 #ifdef MOR1KX_CPU_espresso
-	Vorpsoc_top_mor1kx_cpu__pi6* mor1kx_cpu_wrapper;
-	Vorpsoc_top_mor1kx_cpu_espresso__pi9 * mor1kx_cpu;
+	Vorpsoc_top_mor1kx_cpu__pi3* mor1kx_cpu_wrapper;
+	Vorpsoc_top_mor1kx_cpu_espresso__pi4 * mor1kx_cpu;
 #endif
 #ifdef MOR1KX_CPU_fourstage
 	Vorpsoc_top_mor1kx_cpu__pi5* mor1kx_cpu_wrapper;

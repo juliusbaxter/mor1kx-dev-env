@@ -40,8 +40,8 @@
 #include "Vorpsoc_top_mor1kx_cpu_prontoespresso__pi4.h"
 #endif
 #ifdef MOR1KX_CPU_espresso
-#include "Vorpsoc_top_mor1kx_cpu__pi6.h"
-#include "Vorpsoc_top_mor1kx_cpu_espresso__pi9.h"
+#include "Vorpsoc_top_mor1kx_cpu__pi3.h"
+#include "Vorpsoc_top_mor1kx_cpu_espresso__pi4.h"
 #endif
 #ifdef MOR1KX_CPU_cappuccino
 #include "Vorpsoc_top_mor1kx_cpu__pi5.h"
