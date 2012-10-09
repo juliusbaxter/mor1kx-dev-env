@@ -4,7 +4,12 @@ SIM_VLT_DIR ?= $(SIM_DIR)/vlt
 # Verilator model build rules
 ################################################################################
 
-OR1KTRACE=$(PROJECT_ROOT)/or1ktrace
+ifeq ($(USE_OR1KTRACE), 1)
+OR1KTRACE_PATH=$(PROJECT_ROOT)/or1ktrace
+OR1KTRACE_COMPILE=-I$(OR1KTRACE_PATH)/include -L$(OR1KTRACE_PATH)/lib -lor1ktrace
+OR1KTRACE_CPPFLAGS=-I$(OR1KTRACE_PATH)/include
+OR1KTRACE_LDDFLAGS=-L$(OR1KTRACE_PATH)/.libs
+endif
 
 VLT_EXE=Vorpsoc_top
 VLT_SCRIPT=verilator.scr
@@ -141,7 +146,7 @@ $(SIM_VLT_DIR)/$(VLT_EXE): $(SIM_VLT_DIR)/lib$(VLT_EXE).a \
 		-I$(VERILATOR_ROOT)/include -I$(SYSTEMC)/include -o $(VLT_EXE) \
 		-L. -L$(COMMON_BENCH_SYSC_SRC_DIR) -L$(SYSTEMC)/$(SYSC_LIB_ARCH_DIR) \
 		OrpsocMain.o -l$(VLT_EXE) -lmodules -lsystemc \
-		-I$(OR1KTRACE)/include -L$(OR1KTRACE)/lib -lor1ktrace -liberty -lz
+		$(OR1KTRACE_COMPILE) -liberty -lz
 
 # Now compile the top level systemC "testbench" module from the systemC source 
 # path
@@ -169,8 +174,8 @@ $(SIM_VLT_DIR)/verilated.o: $(SYSC_MODEL_SOURCES)
 	@echo; echo "\tCompiling verilated.o"; echo
 	$(Q)cd $(SIM_VLT_DIR) && \
 	export CXXFLAGS=$(VLT_DEBUG_COMPILE_FLAGS); \
-	export USER_CPPFLAGS="$(VLT_CPPFLAGS) -I$(OR1KTRACE)"; \
-	export USER_LDDFLAGS="$(VLT_CPPFLAGS) -L$(OR1KTRACE)/.libs"; \
+	export USER_CPPFLAGS="$(VLT_CPPFLAGS) $(OR1KTRACE_CPPFLAGS)"; \
+	export USER_LDDFLAGS="$(VLT_CPPFLAGS) $(OR1KTRACE_LDDFLAGS)"; \
 	$(MAKE) -f $(VLT_EXE).mk verilated.o
 
 print-sysmod-objs:
