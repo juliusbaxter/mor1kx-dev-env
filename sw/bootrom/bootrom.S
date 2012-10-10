@@ -183,3 +183,21 @@ spi_xfer_poll:
 	l.nop
 	l.nop 
 #endif
+
+
+#ifdef BOOTROM_WAIT_150US
+
+	l.movhi r0,0
+	l.movhi r1,hi(BOOTROM_WAIT_LOOPS)
+	l.ori	r1,r1,lo(BOOTROM_WAIT_LOOPS)
+	l.movhi	r2,0
+waitloop:
+	l.addi	r2,r2,1
+	l.sfne	r1,r2
+	l.bf	waitloop
+	l.nop
+	l.ori	r1,r0,0x100 /*reset vector*/
+	l.jr	r1
+	l.nop
+
+#endif
