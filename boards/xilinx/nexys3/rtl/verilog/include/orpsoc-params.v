@@ -80,14 +80,14 @@ parameter uart0_addr_width = 3;
 // ROM
 parameter wbs_i_rom0_data_width = 32;
 parameter wbs_i_rom0_addr_width = 6;
-parameter rom0_wb_adr = 4'he;
+parameter rom0_wb_adr = 4'hd;
 
 // CFI flash
 parameter wbs_i_cellram_data_width = 32;
 parameter wbs_i_cellram_addr_width = 32;
 parameter wbs_d_cellram_data_width = 32;
 parameter wbs_d_cellram_addr_width = 32;
-parameter cellram_wb_adr = 4'hf;
+parameter cellram_wb_adr = 4'h0;
 
 // MC0 (SDRAM, or other)
 parameter wbs_i_mc0_data_width = 32;   
@@ -105,8 +105,12 @@ parameter wbm_eth0_addr_width = 32;
 //parameter internal_sram_adr_width_for_span = 25;   
 //parameter internal_sram_mem_span = 32'h0080_0000; /* 8MB */
 //parameter internal_sram_adr_width_for_span = 23;   
-parameter internal_sram_mem_span = 32'h0001_0000; /* 64KB */
-parameter internal_sram_adr_width_for_span = 17;   
+parameter internal_sram_mem_span = 32'h0000_8000; /* 32KB */
+parameter internal_sram_adr_width_for_span = 16;   
+//parameter internal_sram_mem_span = 32'h0000_4000; /* 16KB */
+//parameter internal_sram_adr_width_for_span = 15;
+//parameter internal_sram_mem_span = 32'h0000_0100; /* 16KB */
+//parameter internal_sram_adr_width_for_span = 15;   
 
 
 //////////////////////////////////////////////////////
@@ -142,11 +146,12 @@ parameter ibus_arb_slave2_adr = cellram_wb_adr; // Flash
 ///////////////////////////
 // Has auto foward to last slave when no address hits
 parameter dbus_arb_wb_addr_match_width = 8;
-parameter dbus_arb_wb_num_slaves = 5;
+parameter dbus_arb_wb_num_slaves = 4;
 // Slave addresses
 parameter dbus_arb_slave0_adr = 4'h0; // Main memory (SDRAM/FPGA SRAM)
-parameter dbus_arb_slave1_adr = eth0_wb_adr; // Ethernet 0
-parameter dbus_arb_slave2_adr = cellram_wb_adr; // Flash
+parameter dbus_arb_slave1_adr = cellram_wb_adr; // Flash
+parameter dbus_arb_slave2_adr = eth0_wb_adr; // Ethernet 0
+
 
 ///////////////////////////////
 //                           //

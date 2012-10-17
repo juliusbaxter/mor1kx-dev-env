@@ -49,7 +49,7 @@
  `define BOARD_CLOCK_PERIOD 10000 // 200MHz (pS accuracy for Xilinx sims.) 
 
  `define JTAG_DEBUG
-// `define RAM_WB
+ `define RAM_WB
 // `define XILINX_SSRAM
  `define CELLRAM
  `define UART0
@@ -72,24 +72,14 @@
 //`define ARBITER_IBUS_REGISTERING
 `define ARBITER_IBUS_WATCHDOG
 // Watchdog timeout: 2^(ARBITER_IBUS_WATCHDOG_TIMER_WIDTH+1) cycles
-// This has to be kind of long, as DDR2 initialisation can take a little while
-// and after reset, and if this is too short we'll always get bus error.
-`ifdef XILINX_DDR2
- `define ARBITER_IBUS_WATCHDOG_TIMER_WIDTH 20
-`else
  `define ARBITER_IBUS_WATCHDOG_TIMER_WIDTH 6
-`endif
 
 // Data bus arbiter
 
 //`define ARBITER_DBUS_REGISTERING
-`define ARBITER_DBUS_WATCHDOG
+//`define ARBITER_DBUS_WATCHDOG
 // Watchdog timeout: 2^(ARBITER_DBUS_WATCHDOG_TIMER_WIDTH+1) cycles
-`ifdef XILINX_DDR2
- `define ARBITER_DBUS_WATCHDOG_TIMER_WIDTH 20
-`else
  `define ARBITER_DBUS_WATCHDOG_TIMER_WIDTH 6
-`endif
 
 // Byte bus (peripheral bus) arbiter
 // Don't really need the watchdog here - the databus will pick it up
