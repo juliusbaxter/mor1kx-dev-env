@@ -54,7 +54,7 @@ include $(BOARD_ROOT)/Makefile.inc
 include $(PROJECT_ROOT)/scripts/make/Makefile-board-benchsrc.inc
 
 # Software tests we'll run
-TEST ?= o1k-rfe
+TEST ?= or1k-simple
 
 TESTS ?= or1k-rfe			\
 	or1k-insnfetchalign		\
