@@ -51,7 +51,7 @@ module clkgen
 `endif      
 
    // Asynchronous, active low reset in
-   rst_n_pad_i
+   rst_i
    
    );
 
@@ -66,19 +66,14 @@ module clkgen
 `endif      
    
    // Asynchronous, active low reset (pushbutton, typically)
-   input  rst_n_pad_i;
+   input  rst_i;
    
    // First, deal with the asychronous reset
    wire   async_rst;
-   wire   async_rst_n;
 
    // Xilinx synthesis tools appear cluey enough to instantiate buffers when and
    // where they're needed, so we do simple assigns for this tech.
-   assign async_rst_n = rst_n_pad_i;   
-
-   // Everyone likes active-high reset signals...
-   assign async_rst = ~async_rst_n;
-   
+   assign async_rst = rst_i;   
    
 `ifdef JTAG_DEBUG   
    assign dbg_tck_o = tck_pad_i;
