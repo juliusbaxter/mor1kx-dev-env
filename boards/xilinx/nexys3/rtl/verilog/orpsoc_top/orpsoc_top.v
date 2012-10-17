@@ -70,17 +70,19 @@ module orpsoc_top
     eth0_rst_n_o,
  `endif
 `endif
+
+    leds, switches,
   
     sys_clk_in,
 
-    rst_n_pad_i  
+    rst_i  
 
     );
 
 `include "orpsoc-params.v"   
 
    input sys_clk_in;
-   input rst_n_pad_i;
+   input rst_i;
    
 `ifdef JTAG_DEBUG    
    output tdo_pad_o;
@@ -111,10 +113,6 @@ module orpsoc_top
 `ifdef SPI0
    output 	 spi0_mosi_o;
   output [spi0_ss_width-1:0] spi0_ss_o;
-   /* via STARTUP_VIRTEX5
-   output 		     spi0_sck_o;
-   input 		      spi0_miso_i;
-    */
 `endif
 `ifdef I2C0
    inout 		      i2c0_sda_io, i2c0_scl_io;
@@ -142,6 +140,10 @@ module orpsoc_top
    output 		      eth0_rst_n_o;
  `endif
 `endif //  `ifdef ETH0
+
+   output reg [7:0] 	      leds;
+   input [7:0] 		      switches;
+
    
    ////////////////////////////////////////////////////////////////////////
    //
@@ -153,8 +155,6 @@ module orpsoc_top
    // Wires
    //
    wire 		      wb_clk, wb_rst;
-   wire 		      ddr2_if_clk, ddr2_if_rst;
-   wire 		      clk200;
    wire 		      dbg_tck;
 
    
@@ -170,7 +170,7 @@ module orpsoc_top
       .dbg_tck_o                 (dbg_tck),
 `endif
       // Asynchronous active low reset
-      .rst_n_pad_i               (rst_n_pad_i)
+      .rst_i                    (rst_i)
       );
 
    
@@ -426,7 +426,15 @@ module orpsoc_top
    // Wishbone instruction bus arbiter
    //
    
-   arbiter_ibus arbiter_ibus0
+   arbiter_ibus
+     #(
+       .internal_sram_mem_span	(internal_sram_mem_span),
+       .wb_addr_match_width	(ibus_arb_addr_match_width),
+       .slave0_adr		(ibus_arb_slave0_adr), // flash ROM
+       .slave1_adr		(ibus_arb_slave1_adr), // main memory
+       .slave2_adr		(ibus_arb_slave2_adr) // cellular RAM
+       )
+     arbiter_ibus0
      (
       // Instruction Bus Master
       // Inputs to arbiter from master
@@ -496,17 +504,22 @@ module orpsoc_top
       .wb_clk				(wb_clk),
       .wb_rst				(wb_rst));
 
-   defparam arbiter_ibus0.wb_addr_match_width = ibus_arb_addr_match_width;
-
-   defparam arbiter_ibus0.slave0_adr = ibus_arb_slave0_adr; // flash ROM
-   defparam arbiter_ibus0.slave1_adr = ibus_arb_slave1_adr; // main memory
-   defparam arbiter_ibus0.slave2_adr = ibus_arb_slave2_adr; // CFI flash
-
    //
    // Wishbone data bus arbiter
    //
    
-   arbiter_dbus arbiter_dbus0
+   arbiter_dbus
+     #(
+       // These settings are from top level params file
+       .wb_addr_match_width	(dbus_arb_wb_addr_match_width),
+       .wb_num_slaves		(dbus_arb_wb_num_slaves),
+       .slave0_adr		(dbus_arb_slave0_adr),
+       .slave1_adr		(dbus_arb_slave1_adr),
+       .slave2_adr		(dbus_arb_slave2_adr),
+       .internal_sram_mem_span	(internal_sram_mem_span)
+       )
+
+arbiter_dbus0
      (
       // Master 0
       // Inputs to arbiter from master
@@ -555,31 +568,31 @@ module orpsoc_top
       .wbs0_err_o			(wbs_d_mc0_err_o),
       .wbs0_rty_o			(wbs_d_mc0_rty_o),
 
-      .wbs1_adr_i			(wbs_d_eth0_adr_i),
-      .wbs1_dat_i			(wbs_d_eth0_dat_i),
-      .wbs1_sel_i			(wbs_d_eth0_sel_i),
-      .wbs1_we_i			(wbs_d_eth0_we_i),
-      .wbs1_cyc_i			(wbs_d_eth0_cyc_i),
-      .wbs1_stb_i			(wbs_d_eth0_stb_i),
-      .wbs1_cti_i			(wbs_d_eth0_cti_i),
-      .wbs1_bte_i			(wbs_d_eth0_bte_i),
-      .wbs1_dat_o			(wbs_d_eth0_dat_o),
-      .wbs1_ack_o			(wbs_d_eth0_ack_o),
-      .wbs1_err_o			(wbs_d_eth0_err_o),
-      .wbs1_rty_o			(wbs_d_eth0_rty_o),
+      .wbs1_adr_i			(wbs_d_cellram_adr_i),
+      .wbs1_dat_i			(wbs_d_cellram_dat_i),
+      .wbs1_sel_i			(wbs_d_cellram_sel_i),
+      .wbs1_we_i			(wbs_d_cellram_we_i),
+      .wbs1_cyc_i			(wbs_d_cellram_cyc_i),
+      .wbs1_stb_i			(wbs_d_cellram_stb_i),
+      .wbs1_cti_i			(wbs_d_cellram_cti_i),
+      .wbs1_bte_i			(wbs_d_cellram_bte_i),
+      .wbs1_dat_o			(wbs_d_cellram_dat_o),
+      .wbs1_ack_o			(wbs_d_cellram_ack_o),
+      .wbs1_err_o			(wbs_d_cellram_err_o),
+      .wbs1_rty_o			(wbs_d_cellram_rty_o),
 
-      .wbs2_adr_i			(wbs_d_cellram_adr_i),
-      .wbs2_dat_i			(wbs_d_cellram_dat_i),
-      .wbs2_sel_i			(wbs_d_cellram_sel_i),
-      .wbs2_we_i			(wbs_d_cellram_we_i),
-      .wbs2_cyc_i			(wbs_d_cellram_cyc_i),
-      .wbs2_stb_i			(wbs_d_cellram_stb_i),
-      .wbs2_cti_i			(wbs_d_cellram_cti_i),
-      .wbs2_bte_i			(wbs_d_cellram_bte_i),
-      .wbs2_dat_o			(wbs_d_cellram_dat_o),
-      .wbs2_ack_o			(wbs_d_cellram_ack_o),
-      .wbs2_err_o			(wbs_d_cellram_err_o),
-      .wbs2_rty_o			(wbs_d_cellram_rty_o),
+      .wbs2_adr_i			(wbs_d_eth0_adr_i),
+      .wbs2_dat_i			(wbs_d_eth0_dat_i),
+      .wbs2_sel_i			(wbs_d_eth0_sel_i),
+      .wbs2_we_i			(wbs_d_eth0_we_i),
+      .wbs2_cyc_i			(wbs_d_eth0_cyc_i),
+      .wbs2_stb_i			(wbs_d_eth0_stb_i),
+      .wbs2_cti_i			(wbs_d_eth0_cti_i),
+      .wbs2_bte_i			(wbs_d_eth0_bte_i),
+      .wbs2_dat_o			(wbs_d_eth0_dat_o),
+      .wbs2_ack_o			(wbs_d_eth0_ack_o),
+      .wbs2_err_o			(wbs_d_eth0_err_o),
+      .wbs2_rty_o			(wbs_d_eth0_rty_o),
       
       .wbs3_adr_i			(wbm_b_d_adr_o),
       .wbs3_dat_i			(wbm_b_d_dat_o),
@@ -598,18 +611,23 @@ module orpsoc_top
       .wb_clk			(wb_clk),
       .wb_rst			(wb_rst));
 
-   // These settings are from top level params file
-   defparam arbiter_dbus0.wb_addr_match_width = dbus_arb_wb_addr_match_width;
-   defparam arbiter_dbus0.wb_num_slaves = dbus_arb_wb_num_slaves;
-   defparam arbiter_dbus0.slave0_adr = dbus_arb_slave0_adr;
-   defparam arbiter_dbus0.slave1_adr = dbus_arb_slave1_adr;
-   defparam arbiter_dbus0.slave2_adr = dbus_arb_slave2_adr;
 
    //
    // Wishbone byte-wide bus arbiter
    //   
    
-   arbiter_bytebus arbiter_bytebus0
+   arbiter_bytebus 
+     #(   
+	  .wb_addr_match_width(bbus_arb_wb_addr_match_width),
+	  .wb_num_slaves(bbus_arb_wb_num_slaves),
+
+	  .slave0_adr(bbus_arb_slave0_adr),
+	  .slave1_adr(bbus_arb_slave1_adr),
+	  .slave2_adr(bbus_arb_slave2_adr),
+	  .slave3_adr(bbus_arb_slave3_adr),
+	  .slave4_adr(bbus_arb_slave4_adr)
+	  )
+   arbiter_bytebus0
      (
 
       // Master 0
@@ -694,15 +712,6 @@ module orpsoc_top
       .wb_clk			(wb_clk),
       .wb_rst			(wb_rst));
 
-   defparam arbiter_bytebus0.wb_addr_match_width = bbus_arb_wb_addr_match_width;
-   defparam arbiter_bytebus0.wb_num_slaves = bbus_arb_wb_num_slaves;
-
-   defparam arbiter_bytebus0.slave0_adr = bbus_arb_slave0_adr;
-   defparam arbiter_bytebus0.slave1_adr = bbus_arb_slave1_adr;
-   defparam arbiter_bytebus0.slave2_adr = bbus_arb_slave2_adr;
-   defparam arbiter_bytebus0.slave3_adr = bbus_arb_slave3_adr;
-   defparam arbiter_bytebus0.slave4_adr = bbus_arb_slave4_adr;
-
 
 `ifdef JTAG_DEBUG   
    ////////////////////////////////////////////////////////////////////////
@@ -729,7 +738,7 @@ module orpsoc_top
       .tdo_pad_o			(tdo_pad_o),
       .tms_pad_i			(tms_pad_i),
       .tck_pad_i			(dbg_tck),
-      .trst_pad_i			(async_rst),
+      .trst_pad_i			(rst_i),
       .tdi_pad_i			(tdi_pad_i),
       
       .tdo_padoe_o			(tdo_padoe_o),
@@ -892,7 +901,7 @@ module orpsoc_top
        .OPTION_CPU0("PRONTO_ESPRESSO"),
        .OPTION_PIC_TRIGGER("LATCHED_LEVEL"),
        // Boot out of bootrom
-       .OPTION_RESET_PC(32'he0000000)
+       .OPTION_RESET_PC({rom0_wb_adr,28'd0})
        )
      mor1kx0
      (
@@ -970,7 +979,7 @@ module orpsoc_top
       .tck_i				(dbg_tck),
       .tdi_i				(jtag_tap_tdo),
       .tdo_o				(dbg_if_tdo),      
-      .rst_i				(wb_rst),
+      .rst_i				(rst_i),
       .shift_dr_i			(jtag_tap_shift_dr),
       .pause_dr_i			(jtag_tap_pause_dr),
       .update_dr_i			(jtag_tap_update_dr),
@@ -1013,77 +1022,6 @@ module orpsoc_top
    ////////////////////////////////////////////////////////////////////////   
 `endif // !`ifdef JTAG_DEBUG
    
-`ifdef XILINX_DDR2
-   ////////////////////////////////////////////////////////////////////////
-   //
-   // Xilinx MIG DDR2 controller, Wishbone interface
-   // 
-   ////////////////////////////////////////////////////////////////////////
-   xilinx_ddr2 xilinx_ddr2_0
-     (
-      .wbm0_adr_i                       (wbm_eth0_adr_o), 
-      .wbm0_bte_i                       (wbm_eth0_bte_o), 
-      .wbm0_cti_i                       (wbm_eth0_cti_o), 
-      .wbm0_cyc_i                       (wbm_eth0_cyc_o), 
-      .wbm0_dat_i                       (wbm_eth0_dat_o), 
-      .wbm0_sel_i                       (wbm_eth0_sel_o),
-      .wbm0_stb_i                       (wbm_eth0_stb_o), 
-      .wbm0_we_i                        (wbm_eth0_we_o),
-      .wbm0_ack_o                       (wbm_eth0_ack_i), 
-      .wbm0_err_o                       (wbm_eth0_err_i), 
-      .wbm0_rty_o                       (wbm_eth0_rty_i), 
-      .wbm0_dat_o                       (wbm_eth0_dat_i),
-      
-      .wbm1_adr_i                       (wbs_d_mc0_adr_i), 
-      .wbm1_bte_i                       (wbs_d_mc0_bte_i), 
-      .wbm1_cti_i                       (wbs_d_mc0_cti_i), 
-      .wbm1_cyc_i                       (wbs_d_mc0_cyc_i), 
-      .wbm1_dat_i                       (wbs_d_mc0_dat_i), 
-      .wbm1_sel_i                       (wbs_d_mc0_sel_i),
-      .wbm1_stb_i                       (wbs_d_mc0_stb_i), 
-      .wbm1_we_i                        (wbs_d_mc0_we_i),
-      .wbm1_ack_o                       (wbs_d_mc0_ack_o), 
-      .wbm1_err_o                       (wbs_d_mc0_err_o), 
-      .wbm1_rty_o                       (wbs_d_mc0_rty_o),
-      .wbm1_dat_o                       (wbs_d_mc0_dat_o),
-      
-      .wbm2_adr_i                       (wbs_i_mc0_adr_i), 
-      .wbm2_bte_i                       (wbs_i_mc0_bte_i), 
-      .wbm2_cti_i                       (wbs_i_mc0_cti_i), 
-      .wbm2_cyc_i                       (wbs_i_mc0_cyc_i), 
-      .wbm2_dat_i                       (wbs_i_mc0_dat_i), 
-      .wbm2_sel_i                       (wbs_i_mc0_sel_i),
-      .wbm2_stb_i                       (wbs_i_mc0_stb_i), 
-      .wbm2_we_i                        (wbs_i_mc0_we_i),
-      .wbm2_ack_o                       (wbs_i_mc0_ack_o), 
-      .wbm2_err_o                       (wbs_i_mc0_err_o), 
-      .wbm2_rty_o                       (wbs_i_mc0_rty_o), 
-      .wbm2_dat_o                       (wbs_i_mc0_dat_o),
-      
-      .wb_clk                           (wb_clk),
-      .wb_rst                           (wb_rst),
-      
-      .ddr2_a  				(ddr2_a[12:0]),
-      .ddr2_ba				(ddr2_ba[1:0]),
-      .ddr2_ras_n			(ddr2_ras_n),
-      .ddr2_cas_n			(ddr2_cas_n),
-      .ddr2_we_n			(ddr2_we_n),
-      .ddr2_cs_n			(ddr2_cs_n),
-      .ddr2_odt				(ddr2_odt),
-      .ddr2_cke				(ddr2_cke),
-      .ddr2_dm				(ddr2_dm[7:0]),
-      .ddr2_ck				(ddr2_ck[1:0]),
-      .ddr2_ck_n			(ddr2_ck_n[1:0]),
-      .ddr2_dq				(ddr2_dq[63:0]),
-      .ddr2_dqs				(ddr2_dqs[7:0]),
-      .ddr2_dqs_n			(ddr2_dqs_n[7:0]),
-      .ddr2_if_clk                      (ddr2_if_clk),
-      .clk200      		        (clk200),
-      .ddr2_if_rst                      (ddr2_if_rst)
-      );
-   
-`endif
-
 
    ////////////////////////////////////////////////////////////////////////
    //
@@ -1117,7 +1055,13 @@ module orpsoc_top
    // 
    ////////////////////////////////////////////////////////////////////////
 
-   ram_wb ram_wb0
+   ram_wb 
+   #(.aw(wb_aw),
+     .dw(wb_dw),
+     .mem_size_bytes(internal_sram_mem_span),
+     .mem_adr_width(internal_sram_adr_width_for_span)
+     )
+   ram_wb0
      (
       // Wishbone slave interface 0
       .wbm0_dat_i			(wbs_i_mc0_dat_i),
@@ -1161,19 +1105,13 @@ module orpsoc_top
       // Clock, reset
       .wb_clk_i				(wb_clk),
       .wb_rst_i				(wb_rst));
-   
-   defparam ram_wb0.aw = wb_aw;
-   defparam ram_wb0.dw = wb_dw;
-   
-   defparam ram_wb0.mem_size_bytes = internal_sram_mem_span;
-   defparam ram_wb0.mem_adr_width = internal_sram_adr_width_for_span;
    ////////////////////////////////////////////////////////////////////////
 `endif //  `ifdef RAM_WB
 
 `ifdef CELLRAM
 
    /* Lighweight arbiter between instruction and data busses going
-    into the CFI controller */
+    into the cellram controller */
 
    wire [31:0] 				  cellram_wb_adr_i;
    wire [31:0] 				  cellram_wb_dat_i;
@@ -1186,7 +1124,7 @@ module orpsoc_top
 
    reg [1:0] 				  cellram_mst_sel;
    
-reg [9:0] 				  cellram_arb_timeout;
+   reg [9:0] 				  cellram_arb_timeout;
    wire 				  cellram_arb_reset;
    
    always @(posedge wb_clk)
@@ -1195,9 +1133,9 @@ reg [9:0] 				  cellram_arb_timeout;
      else begin
 	if (cellram_mst_sel==2'b00) begin
 	   /* wait for new access from masters. data takes priority */
-	   if (wbs_d_mc0_cyc_i & wbs_d_mc0_stb_i)
+	   if (wbs_d_cellram_cyc_i & wbs_d_cellram_stb_i)
 	     cellram_mst_sel[1] <= 1;
-	   else if (wbs_i_mc0_cyc_i & wbs_i_mc0_stb_i)
+	   else if (wbs_i_cellram_cyc_i & wbs_i_cellram_stb_i)
 	     cellram_mst_sel[0] <= 1;
 	end
 	else begin
@@ -1213,28 +1151,28 @@ reg [9:0] 				  cellram_arb_timeout;
      else if (|cellram_rst_counter)
        cellram_rst_counter <= cellram_rst_counter - 1;
    
-   assign cellram_wb_adr_i = cellram_mst_sel[0] ? wbs_i_mc0_adr_i :
-			   wbs_d_mc0_adr_i;
-   assign cellram_wb_dat_i = cellram_mst_sel[0] ? wbs_i_mc0_dat_i :
-			   wbs_d_mc0_dat_i;
-   assign cellram_wb_stb_i = (cellram_mst_sel[0] ?  wbs_i_mc0_stb_i :
-			   cellram_mst_sel[1]  ? wbs_d_mc0_stb_i : 0) &
+   assign cellram_wb_adr_i = cellram_mst_sel[0] ? wbs_i_cellram_adr_i :
+			   wbs_d_cellram_adr_i;
+   assign cellram_wb_dat_i = cellram_mst_sel[0] ? wbs_i_cellram_dat_i :
+			   wbs_d_cellram_dat_i;
+   assign cellram_wb_stb_i = (cellram_mst_sel[0] ?  wbs_i_cellram_stb_i :
+			   cellram_mst_sel[1]  ? wbs_d_cellram_stb_i : 0) &
 			   !(|cellram_rst_counter);
-   assign cellram_wb_cyc_i = cellram_mst_sel[0] ?  wbs_i_mc0_cyc_i :
-			   cellram_mst_sel[1] ?  wbs_d_mc0_cyc_i : 0;
-   assign cellram_wb_we_i = cellram_mst_sel[0] ? wbs_i_mc0_we_i :
-			  wbs_d_mc0_we_i;
-   assign cellram_wb_sel_i = cellram_mst_sel[0] ? wbs_i_mc0_sel_i :
-			  wbs_d_mc0_sel_i;
+   assign cellram_wb_cyc_i = cellram_mst_sel[0] ?  wbs_i_cellram_cyc_i :
+			   cellram_mst_sel[1] ?  wbs_d_cellram_cyc_i : 0;
+   assign cellram_wb_we_i = cellram_mst_sel[0] ? wbs_i_cellram_we_i :
+			  wbs_d_cellram_we_i;
+   assign cellram_wb_sel_i = cellram_mst_sel[0] ? wbs_i_cellram_sel_i :
+			  wbs_d_cellram_sel_i;
 
-   assign wbs_i_mc0_dat_o = cellram_wb_dat_o;
-   assign wbs_d_mc0_dat_o = cellram_wb_dat_o;
-   assign wbs_i_mc0_ack_o = cellram_wb_ack_o & cellram_mst_sel[0];
-   assign wbs_d_mc0_ack_o = cellram_wb_ack_o & cellram_mst_sel[1];
-   assign wbs_i_mc0_err_o = cellram_arb_reset & cellram_mst_sel[0];
-   assign wbs_i_mc0_rty_o = 0;
-   assign wbs_d_mc0_err_o = cellram_arb_reset & cellram_mst_sel[1];
-   assign wbs_d_mc0_rty_o = 0;
+   assign wbs_i_cellram_dat_o = cellram_wb_dat_o;
+   assign wbs_d_cellram_dat_o = cellram_wb_dat_o;
+   assign wbs_i_cellram_ack_o = cellram_wb_ack_o & cellram_mst_sel[0];
+   assign wbs_d_cellram_ack_o = cellram_wb_ack_o & cellram_mst_sel[1];
+   assign wbs_i_cellram_err_o = cellram_arb_reset & cellram_mst_sel[0];
+   assign wbs_i_cellram_rty_o = 0;
+   assign wbs_d_cellram_err_o = cellram_arb_reset & cellram_mst_sel[1];
+   assign wbs_d_cellram_rty_o = 0;
 
    
    always @(posedge wb_clk)
@@ -1284,6 +1222,8 @@ reg [9:0] 				  cellram_arb_timeout;
       );
 
 
+`else
+
    assign wbs_i_cellram_dat_o = 0;
    assign wbs_i_cellram_ack_o = 0;
    assign wbs_i_cellram_err_o = 0;
@@ -1293,21 +1233,6 @@ reg [9:0] 				  cellram_arb_timeout;
    assign wbs_d_cellram_ack_o = 0;
    assign wbs_d_cellram_err_o = 0;
    assign wbs_d_cellram_rty_o = 0;
-
-   
-`else
-
-   assign wbs_i_mc0_dat_o = 0;
-   assign wbs_i_mc0_ack_o = 0;
-   assign wbs_i_mc0_err_o = 0;
-   assign wbs_i_mc0_rty_o = 0;
-
-   assign wbs_d_mc0_dat_o = 0;
-   assign wbs_d_mc0_ack_o = 0;
-   assign wbs_d_mc0_err_o = 0;
-   assign wbs_d_mc0_rty_o = 0;
-   
-   
    
 `endif //  `ifdef CELLRAM
    
@@ -1816,6 +1741,32 @@ reg [9:0] 				  cellram_arb_timeout;
    assign cpu_irq[28] = 0;
    assign cpu_irq[29] = 0;
    assign cpu_irq[30] = 0;
+
+
+   // debug output
+   always @*
+     begin
+	case(switches)
+	  8'h0: begin
+	     leds = {6'd0,wb_rst,rst_i};
+	     
+	  end
+	  8'h1: begin
+	     leds = {cellram_adv_n_o,cellram_ce_n_o,cellram_clk_o,cellram_oe_n_o,
+                     cellram_we_n_o,cellram_cre_o,cellram_ub_n_o,cellram_lb_n_o};
+	  end
+	  8'h2: begin
+	     leds = {or1k_dbg_stall_i,or1k_dbg_bp_o,
+		     wbm_i_or12_err_i, wbm_d_or12_err_i,
+		     wbm_d_or12_stb_o,wbm_d_or12_cyc_o,
+		     wbm_i_or12_stb_o,wbm_i_or12_cyc_o};
+	  end
+	  default:
+	    leds = switches;
+	endcase // case (switches)
+	
+     end
+
    
 endmodule // orpsoc_top
 
