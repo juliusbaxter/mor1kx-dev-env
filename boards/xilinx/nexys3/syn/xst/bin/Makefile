@@ -33,6 +33,12 @@
 ####                                                              ####
 ######################################################################
 
+
+# Note: Crashes during XST, netgen or timing report generation with:
+# LD_PRELOAD=/opt/xilinx/13.2/ISE_DS/ISE/lib/lin/libXst2_Core.so
+# as per: http://www.xilinx.com/support/answers/43865.htm
+# The following thread is also useful:
+# http://forums.xilinx.com/t5/EDK-and-Platform-Studio/Core-dump/td-p/144456/page/2
 # Name of the directory we're currently in
 CUR_DIR=$(shell pwd)
 
@@ -58,7 +64,10 @@ SYN_VERILOG_DEFINES=synthesis-defines.v
 SYNDIR_SYN_VERILOG_DEFINES=$(SYN_RUN_DIR)/$(SYN_VERILOG_DEFINES)
 $(SYNDIR_SYN_VERILOG_DEFINES):
 	$(Q)echo "\`define SYNTHESIS" > $@
-	$(Q)echo "\`define XILINX" >> $@
+	$(Q)echo "\`define XILINX" >> $@\
+# This next one triggers the preload of wb_ram model
+# of 4 byte-wide .vmem files, sram0.vmem - sram3.vmem
+	$(Q)echo "\`define XILINX_SYNTHESIS_PRELOAD" >> $@
 	$(Q)echo "" >> $@
 
 GENERATED_DEFINES = $(BOOTROM_VERILOG)
@@ -142,8 +151,11 @@ $(XCF_FILE):
 	$(Q)echo "# 100 MHz user clock" >> $@
 	$(Q)echo "NET \"sys_clk_in\" TNM_NET = sys_clk_pin;" >> $@
 	$(Q)echo "TIMESPEC TS_sys_clk_pin = PERIOD sys_clk_pin 10 ns HIGH 50%;" >> $@
+	$(Q)echo "# 10 MHz JTAG debug clock" >> $@
+	$(Q)echo "NET \"tck_pad_i\" TNM_NET = jtag_clk_pin;" >> $@
+	$(Q)echo "TIMESPEC TS_jtag_clk_pin = PERIOD jtag_clk_pin 100 ns HIGH 50%;" >> $@
 	$(Q)echo "# Ignore the reset logic" >> $@
-	$(Q)echo "NET rst_n_pad_i* TIG;" >> $@
+	$(Q)echo "NET rst_i* TIG;" >> $@
 
 # XST command
 $(NGC_FILE): $(PRJ_FILE) $(XST_FILE) $(XCF_FILE) $(GENERATED_DEFINES)
