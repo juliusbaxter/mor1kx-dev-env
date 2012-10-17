@@ -53,6 +53,8 @@ module mor1kx_monitor();
    
    assign clk = `CPU_clk;
 
+   integer cycle_counter = 0 ;
+   
    /* Log file management code */
    initial
      begin
@@ -78,51 +80,10 @@ module mor1kx_monitor();
    
    always @(negedge `CPU_clk) begin
       
-     if (`EXECUTE_STAGE_ADV)
-       begin
-	  insns = insns + 1;
-	  execute_insn = `EXECUTE_STAGE_INSN;
-
-`ifdef MOR1KX_MONITOR_TRACE_ENABLE
-	  mor1k_trace_print(execute_insn, `CPU_SR, `EXECUTE_PC, `CPU_FLAG);
-`endif
-	  
-	  // Check instructions for simulation controls
-	  if (execute_insn == 32'h15_00_00_01)
-	    begin
-	       $fdisplay(fgeneral,"%0t:exit(0x%08h);",$time,`GPR_GET(3));
-	       $fdisplay(ftrace,"exit(0x%08h);",`GPR_GET(3));
-	       $display("exit(0x%08h);",`GPR_GET(3));
-	       $finish;
-	    end
-	  if (execute_insn == 32'h15_00_00_02)
-	    begin
-	       $fdisplay(fgeneral,"%0t:report(0x%08h);",$time,`GPR_GET(3));
-	       $fdisplay(ftrace,"report(0x%08h);",`GPR_GET(3));
-	       $display("report(0x%08h);",`GPR_GET(3));
-	    end
-	  if (execute_insn == 32'h15_00_00_04)
-	    begin
-	       $write("%c",`GPR_GET(3));
-	       $fdisplay(fgeneral, "%0t: l.nop putc (%c)", $time,`GPR_GET(3));
-	    end
-	  if (execute_insn == 32'h15_00_00_0c)
-	    begin
-	       // Silent exit
-	       $finish;
-	       
-	    end
-	  
-       end // if (`EXECUTE_STAGE_ADV)
-   end
-
-
-/*   
-   always @(`EXECUTE_STAGE_INSN) begin
-      #1;
+      cycle_counter = cycle_counter + 1;
       
-     if (`EXECUTE_STAGE_ADV)
-       begin
+      if (`EXECUTE_STAGE_ADV)
+	begin
 	  insns = insns + 1;
 	  execute_insn = `EXECUTE_STAGE_INSN;
 
@@ -149,6 +110,18 @@ module mor1kx_monitor();
 	       $write("%c",`GPR_GET(3));
 	       $fdisplay(fgeneral, "%0t: l.nop putc (%c)", $time,`GPR_GET(3));
 	    end
+	  if (execute_insn == 32'h15_00_00_05)
+	    begin
+	       cycle_counter = 0;
+	       $fdisplay(fgeneral, "%0t: l.nop reset counter", $time);
+	       $display(fgeneral, "%0t: l.nop reset counter", $time);
+	    end
+	   if (execute_insn == 32'h15_00_00_06)
+	     begin
+		$display(fgeneral, "%0t: l.nop report cycle coutned: %d", $time, cycle_counter);
+		$fdisplay(fgeneral, "%0t: l.nop report cycle coutned: %d", $time, cycle_counter);
+	    end	   
+
 	  if (execute_insn == 32'h15_00_00_0c)
 	    begin
 	       // Silent exit
@@ -158,7 +131,6 @@ module mor1kx_monitor();
 	  
        end // if (`EXECUTE_STAGE_ADV)
    end
-*/
    
    task mor1k_trace_print;
       input [31:0] insn;
