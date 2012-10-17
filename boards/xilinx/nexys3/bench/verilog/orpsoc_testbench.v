@@ -115,7 +115,6 @@ module orpsoc_testbench;
    wire 	     cellram_ce_n_o;
    wire 	     cellram_clk_o;
    wire 	     cellram_oe_n_o;
-   wire 	     cellram_rst_n_o;
    wire 	     cellram_wait_i;
    wire 	     cellram_we_n_o;
    wire 	     cellram_cre_o;
@@ -123,8 +122,11 @@ module orpsoc_testbench;
    wire 	     cellram_lb_n_o;
 `endif //  `ifdef CELLRAM
 
-   
+`ifdef GATELEVEL_SIM
+   orpsoc_top_gl dut
+`else   
    orpsoc_top dut
+`endif     
      (
 `ifdef JTAG_DEBUG          
       .tms_pad_i			(tms_pad_i),
@@ -139,7 +141,6 @@ module orpsoc_testbench;
       .cellram_ce_n_o                     (cellram_ce_n_o),
       .cellram_clk_o                      (cellram_clk_o),
       .cellram_oe_n_o                     (cellram_oe_n_o),
-      .cellram_rst_n_o                    (cellram_rst_n_o),
       .cellram_wait_i                     (cellram_wait_i),
       .cellram_we_n_o                     (cellram_we_n_o),
       .cellram_cre_o                      (cellram_cre_o),
@@ -190,10 +191,11 @@ module orpsoc_testbench;
 
       .sys_clk_in                       (clk),
 
-      .rst_n_pad_i			(rst_n)      
+      .rst_i			        (~rst_n)      
       );
-
-   `ifdef OR1200
+`ifdef RTL_SIM
+   
+`ifdef OR1200
    //
    // Instantiate OR1200 monitor
    //
@@ -217,6 +219,7 @@ module orpsoc_testbench;
    mor1kx_monitor monitor();
 `endif
    
+`endif //  `ifdef RTL_SIM
 
 `ifdef JTAG_DEBUG   
  `ifdef VPI_DEBUG
@@ -380,7 +383,7 @@ module orpsoc_testbench;
       );
    
    // Loopback UART lines
-   assign uart0_srx_pad_i = uart0_stx_pad_o;
+   //assign uart0_srx_pad_i = uart0_stx_pad_o;
 
 `endif //  `ifdef UART0
 
