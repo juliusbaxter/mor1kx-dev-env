@@ -214,9 +214,13 @@ ENTRY(_start)
 	/* Jump to main program entry point (argc = argv = 0) */
 	CLEAR_GPR(r3)
 	CLEAR_GPR(r4)
+	/* nop to reset cycle counter */
+	l.nop	0x5
 	OR1K_DELAYED_NOP(OR1K_INST(l.jal   main))
 	
 	/* If program exits, call exit routine */
+	/* report cycles */
+	l.nop	0x6
 	l.addi  r3, r11, 0
 	OR1K_DELAYED_NOP(OR1K_INST(l.jal   exit))
 

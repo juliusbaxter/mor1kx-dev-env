@@ -213,10 +213,13 @@ ENTRY(_start)
 	/* Jump to main program entry point (argc = argv = 0) */
 	CLEAR_GPR(r3)
 	CLEAR_GPR(r4)
+	
+	l.nop	0x5
 	l.jal   main
 	l.nop
 	
 	/* If program exits, call exit routine */
+	l.nop	0x6
 	l.addi  r3, r11, 0
 	l.jal   exit
 	l.nop
