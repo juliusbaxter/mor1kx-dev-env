@@ -137,7 +137,8 @@ download: $(BIT_FILE) $(BATCH_FILE)
 #This target uses netgen to make a simulation netlist
 netlist: $(PARRED_NCD)
 	@echo; echo "\t#### Generating netlist ####";
-	$(Q)netgen -ofmt verilog -sim -dir netlist -pcf $(PCF_FILE) $<
+	$(Q)netgen -ofmt verilog -sim -dir netlist -pcf $(PCF_FILE) \
+	-tm orpsoc_top_gl -ism $<
 
 #This one uses TRCE to make a timing report
 timingreport: $(PARRED_NCD)
