@@ -119,6 +119,10 @@ module arbiter_ibus
    parameter slave1_adr = 8'h00; // Main memory (SDRAM/FPGA SRAM)
    parameter slave2_adr = 8'hf0; // External flash
 
+   // Hack to allow address 0 to extend from an SRAM to a larger slower
+   // memory
+   parameter internal_sram_mem_span = 32'h0000_8000;
+
 `define WB_ARB_ADDR_MATCH_SEL wb_adr_width-1:wb_adr_width-wb_addr_match_width
    
    input wb_clk;
@@ -289,10 +293,10 @@ module arbiter_ibus
 			 slave0_adr;
 
    assign slave_sel[1] = wbm_adr_o_r[`WB_ARB_ADDR_MATCH_SEL] ==
-			 slave1_adr;
+			 slave1_adr && (wbm_adr_o_r<internal_sram_mem_span);
 
    assign slave_sel[2] = wbm_adr_o_r[`WB_ARB_ADDR_MATCH_SEL] ==
-			 slave2_adr;
+			 slave1_adr && (wbm_adr_o_r>=internal_sram_mem_span);
 
    // Slave out assigns
    assign wbs0_adr_i = wbm_adr_o_r;
@@ -354,11 +358,10 @@ module arbiter_ibus
 			 slave0_adr;
 
    assign slave_sel[1] = wbm_adr_o[`WB_ARB_ADDR_MATCH_SEL] ==
-			 slave1_adr;
+			 slave1_adr && (wbm_adr_o<internal_sram_mem_span);
 
    assign slave_sel[2] = wbm_adr_o[`WB_ARB_ADDR_MATCH_SEL] ==
-			 slave2_adr;
-
+			 slave1_adr && (wbm_adr_o>=internal_sram_mem_span);
    
    // Slave out assigns
    assign wbs0_adr_i = wbm_adr_o;

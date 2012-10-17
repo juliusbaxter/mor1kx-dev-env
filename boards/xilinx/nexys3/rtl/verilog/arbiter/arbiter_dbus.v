@@ -354,6 +354,8 @@ module arbiter_dbus
 
    parameter wb_num_slaves = 2; // must also (un)comment things if changing
 
+   parameter internal_sram_mem_span = 32'h0000_8000; // 32KB
+
    // Slave addresses - these should be defparam'd from top level
    // Declare them as you need them
    parameter slave0_adr = 0;
@@ -804,6 +806,9 @@ module arbiter_dbus
    assign master_sel[0] = wbm0_cyc_o & !wbm1_cyc_o;
    assign master_sel[1] = wbm1_cyc_o;
 
+   reg [1:0] 		     master_sel_r;
+   always @(posedge wb_clk)
+     master_sel_r <= master_sel;
 
    // Master input mux, priority to debug master
    assign wbm_adr_o = master_sel[1] ? wbm1_adr_o :
@@ -818,10 +823,10 @@ module arbiter_dbus
    assign wbm_we_o = master_sel[1] ? wbm1_we_o :
 		      wbm0_we_o;
    
-   assign wbm_cyc_o = master_sel[1] ? wbm1_cyc_o :
+   assign wbm_cyc_o = master_sel_r[1] ? wbm1_cyc_o :
 		      wbm0_cyc_o;
 
-   assign wbm_stb_o = master_sel[1] ? wbm1_stb_o :
+   assign wbm_stb_o = master_sel_r[1] ? wbm1_stb_o :
 		     wbm0_stb_o;
 
    assign wbm_cti_o = master_sel[1] ? wbm1_cti_o :
@@ -870,8 +875,10 @@ module arbiter_dbus
    //
    // Slave selects
    //
-   assign wb_slave_sel[0] = wbm_adr_o[31:28] == slave0_adr;
-   assign wb_slave_sel[1] = wbm_adr_o[`WB_ARB_ADDR_MATCH_SEL] == slave1_adr;
+   assign wb_slave_sel[0] = wbm_adr_o[31:28] == slave0_adr && (wbm_adr_o<internal_sram_mem_span);
+   
+   //assign wb_slave_sel[1] = wbm_adr_o[`WB_ARB_ADDR_MATCH_SEL] == slave1_adr;
+   assign wb_slave_sel[1] = wbm_adr_o[31:28] == slave0_adr && (wbm_adr_o>=internal_sram_mem_span);
    assign wb_slave_sel[2] = wbm_adr_o[31:28] == slave2_adr;
    
    // Auto select last slave when others are not selected
@@ -926,14 +933,22 @@ module arbiter_dbus
    
 `endif // !`ifdef ARBITER_DBUS_WATCHDOG
    
-
+   // Note slave 0 and 1 now generate their cyc and stb signals
+   // based on combinatorial input from the bus. This results in
+   // a path through this arbiter.
+   // This was to stop the problem seemingly caused by the hack which
+   // allows the bottom part of memory to be placed in on-chip SRAM and
+   // then the higher area of memory to then be in another memory. Ie.
+   // the cellular RAM.
+   // The problem resulted in the cyc and stb signals going high for
+   // a cycle to the wrong slave and then being deasserted again.
    
    // Slave 0 inputs
    assign wbs0_adr_i = wbm_adr_o;
    assign wbs0_dat_i = wbm_dat_o;
    assign wbs0_sel_i = wbm_sel_o;
-   assign wbs0_cyc_i = wbm_cyc_o & wb_slave_sel_r[0];
-   assign wbs0_stb_i = wbm_stb_o & wb_slave_sel_r[0];   
+   assign wbs0_cyc_i = wbm_cyc_o & wb_slave_sel[0];
+   assign wbs0_stb_i = wbm_stb_o & wb_slave_sel[0];   
    assign wbs0_we_i =  wbm_we_o;
    assign wbs0_cti_i = wbm_cti_o;
    assign wbs0_bte_i = wbm_bte_o;
@@ -946,8 +961,8 @@ module arbiter_dbus
    assign wbs1_adr_i = wbm_adr_o;
    assign wbs1_dat_i = wbm_dat_o;
    assign wbs1_sel_i = wbm_sel_o;
-   assign wbs1_cyc_i = wbm_cyc_o & wb_slave_sel_r[1];
-   assign wbs1_stb_i = wbm_stb_o & wb_slave_sel_r[1];   
+   assign wbs1_cyc_i = wbm_cyc_o & wb_slave_sel[1];
+   assign wbs1_stb_i = wbm_stb_o & wb_slave_sel[1];   
    assign wbs1_we_i =  wbm_we_o;
    assign wbs1_cti_i = wbm_cti_o;
    assign wbs1_bte_i = wbm_bte_o;
