@@ -1,4 +1,4 @@
-//`include "synthesis-defines.v"
+`include "synthesis-defines.v"
 module ram_wb_b3(/*AUTOARG*/
    // Outputs
    wb_ack_o, wb_err_o, wb_rty_o, wb_dat_o,
@@ -35,11 +35,24 @@ module ram_wb_b3(/*AUTOARG*/
    parameter adr_width_for_num_word_bytes = 2; //(log2(bytes_per_dw))
    parameter mem_words = (mem_size_bytes/bytes_per_dw);
    
+   // synthesis translate_off
    // synthesis attribute ram_style of mem is block
-   reg [dw-1:0] 	mem [ 0 : mem_words-1 ]   /* verilator public */ /* synthesis ram_style = no_rw_check */;
+   reg [dw-1:0] 	mem [ 0 : mem_words-1 ]   /* verilator public */;
+   //synthesis translate_on
 
+   // synthesis attribute ram_style of mem0 is block
+   // synthesis attribute ram_style of mem1 is block
+   // synthesis attribute ram_style of mem2 is block
+   // synthesis attribute ram_style of mem3 is block
+   reg [(dw/4)-1:0] 	mem0 [ 0 : mem_words-1 ]   /* verilator public */ /* synthesis ram_style = no_rw_check */;
+   reg [(dw/4)-1:0] 	mem1 [ 0 : mem_words-1 ]   /* verilator public */ /* synthesis ram_style = no_rw_check */;
+   reg [(dw/4)-1:0] 	mem2 [ 0 : mem_words-1 ]   /* verilator public */ /* synthesis ram_style = no_rw_check */;
+   reg [(dw/4)-1:0] 	mem3 [ 0 : mem_words-1 ]   /* verilator public */ /* synthesis ram_style = no_rw_check */;
+
+   parameter mem_addr_reg_width = mem_adr_width-adr_width_for_num_word_bytes;
+   
    // Register to address internal memory array
-   reg [(mem_adr_width-adr_width_for_num_word_bytes)-1:0] adr;
+   reg [mem_addr_reg_width-1:0] adr;
    
    wire [31:0] 			   wr_data;
 
@@ -48,8 +61,6 @@ module ram_wb_b3(/*AUTOARG*/
    reg 				   wb_b3_trans;
    wire 			   wb_b3_trans_start, wb_b3_trans_stop;
    
-   // Register to use for counting the addresses when doing burst accesses
-   reg [mem_adr_width-adr_width_for_num_word_bytes-1:0]  burst_adr_counter;
    reg [2:0] 			   wb_cti_i_r;
    reg [1:0] 			   wb_bte_i_r;
    wire 			   using_burst_adr;
@@ -59,7 +70,7 @@ module ram_wb_b3(/*AUTOARG*/
    wire 			   addr_err;   
    
    parameter random_start_delay = 0;
-   reg 			random_value;
+   reg 			random_value = 0;
    reg 			random_start_delay_done;
    reg 			wb_stb_i_r;
 
@@ -95,27 +106,6 @@ module ram_wb_b3(/*AUTOARG*/
      else if (wb_b3_trans_stop)
        wb_b3_trans <= 0;
 
-   // Burst address generation logic
-   always @(/*AUTOSENSE*/adr or wb_ack_o or wb_adr_i or wb_b3_trans
-	    or wb_b3_trans_start or wb_bte_i_r or wb_cti_i_r)
-     if (wb_b3_trans_start)
-       // Kick off burst_adr_counter, this assumes 4-byte words when getting
-       // address off incoming Wishbone bus address! 
-       // So if dw is no longer 4 bytes, change this!
-       burst_adr_counter = wb_adr_i[mem_adr_width-1:2];
-     else if ((wb_cti_i_r == 3'b010) & wb_ack_o & wb_b3_trans)
-       // Incrementing burst
-       begin
-	  if (wb_bte_i_r == 2'b00) // Linear burst
-	    burst_adr_counter = adr + 1;
-	  if (wb_bte_i_r == 2'b01) // 4-beat wrap burst
-	    burst_adr_counter[1:0] = adr[1:0] + 1;
-	  if (wb_bte_i_r == 2'b10) // 8-beat wrap burst
-	    burst_adr_counter[2:0] = adr[2:0] + 1;
-	  if (wb_bte_i_r == 2'b11) // 16-beat wrap burst
-	    burst_adr_counter[3:0] = adr[3:0] + 1;
-       end // if ((wb_cti_i_r == 3'b010) & wb_ack_o_r)
-
    always @(posedge wb_clk_i)
      wb_bte_i_r <= wb_bte_i;
 
@@ -133,7 +123,25 @@ module ram_wb_b3(/*AUTOARG*/
      if(wb_rst_i)
        adr <= 0;
      else if (using_burst_adr)
-       adr <= burst_adr_counter;
+       begin
+	  if (wb_b3_trans_start)
+	    // Kick off burst_adr_counter, this assumes 4-byte words when 
+	    // getting address off incoming Wishbone bus address! 
+	    // So if dw is no longer 4 bytes, change this!
+	    adr <= wb_adr_i[mem_adr_width-1:2];
+	  else if ((wb_cti_i_r == 3'b010) & wb_ack_o & wb_b3_trans)
+	    // Incrementing burst
+	    begin
+	       if (wb_bte_i_r == 2'b00) // Linear burst
+		 adr <= adr + 1;
+	       if (wb_bte_i_r == 2'b01) // 4-beat wrap burst
+		 adr[1:0] <= adr[1:0] + 1;
+	       if (wb_bte_i_r == 2'b10) // 8-beat wrap burst
+		 adr[2:0] <= adr[2:0] + 1;
+	       if (wb_bte_i_r == 2'b11) // 16-beat wrap burst
+		 adr[3:0] <= adr[3:0] + 1;
+	    end // if ((wb_cti_i_r == 3'b010) & wb_ack_o_r)
+       end // if (using_burst_adr)
      else if (wb_cyc_i & gated_wb_stb_i)
        adr <= wb_adr_i[mem_adr_width-1:2];
 
@@ -141,45 +149,81 @@ module ram_wb_b3(/*AUTOARG*/
     If not Verilator model, always do load, otherwise only load when called
     from SystemC testbench.
     */
-// synthesis translate_off
    parameter memory_file = "sram.vmem";
+// synthesis translate_off
+
+   integer i;
+
+   task load_byte_rams;
+      begin
+	$readmemh(memory_file, mem);	
+	for(i=0;i<mem_words;i=i+1)
+	  begin
+	     if (!(mem[i]===32'hxxxxxxxx)) begin
+		mem0[i] = mem[i][31:24];
+		mem1[i] = mem[i][23:16];
+		mem2[i] = mem[i][15:8];
+		mem3[i] = mem[i][7:0];
+	     end
+	  end // initial begin
+	$display("%m: Preloaded with %d words",i);
+	 
+      end
+   endtask // load_byte_rams
+
 
 `ifdef verilator
    
    task do_readmemh;
       // verilator public
-      $readmemh(memory_file, mem);
+      load_byte_rams();
    endtask // do_readmemh
    
-`else
+`endif
    
+   //synthesis translate_on   
+  
    initial
      begin
-	$readmemh(memory_file, mem);
-     end
 
-`endif // !`ifdef verilator
-   
-//synthesis translate_on
+`ifdef XILINX_SYNTHESIS_PRELOAD
+	$readmemh("sram0.vmem", mem0);
+	$readmemh("sram1.vmem", mem1);
+	$readmemh("sram2.vmem", mem2);
+	$readmemh("sram3.vmem", mem3);
+`endif
+	
+`ifndef verilator
+ `ifndef SYNTHESIS
+	load_byte_rams();
+ `endif
+`endif
+	
+     end
    
    assign wb_rty_o = 0;
 
-   // mux for data to ram, RMW on part sel != 4'hf
-   assign wr_data[31:24] = wb_sel_i[3] ? wb_dat_i[31:24] : wb_dat_o[31:24];
-   assign wr_data[23:16] = wb_sel_i[2] ? wb_dat_i[23:16] : wb_dat_o[23:16];
-   assign wr_data[15: 8] = wb_sel_i[1] ? wb_dat_i[15: 8] : wb_dat_o[15: 8];
-   assign wr_data[ 7: 0] = wb_sel_i[0] ? wb_dat_i[ 7: 0] : wb_dat_o[ 7: 0];
-   
    wire ram_we;
    assign ram_we = wb_we_i & wb_ack_o;
 
-   assign wb_dat_o = mem[adr];
+   assign wb_dat_o = {mem0[adr],mem1[adr],mem2[adr],mem3[adr]};
     
    // Write logic
    always @ (posedge wb_clk_i)
      begin
 	if (ram_we)
-	  mem[adr] <= wr_data;
+	  begin
+	     if (wb_sel_i[3])
+	       mem0[adr] <= wb_dat_i[31:24];
+	     if (wb_sel_i[2])
+	       mem1[adr] <= wb_dat_i[23:16];
+	     if (wb_sel_i[1])
+	       mem2[adr] <= wb_dat_i[15:8];
+	     if (wb_sel_i[0])
+	       mem3[adr] <= wb_dat_i[7:0];
+	     
+	     //mem[adr] <= wr_data;
+	  end
      end
    
    // Ack Logic
@@ -243,25 +287,24 @@ module ram_wb_b3(/*AUTOARG*/
    //
    // Access functions
    //
-   
+   // synthesis translate_off
    // Function to access RAM (for use by Verilator).
    function [31:0] get_mem32;
       // verilator public
       input [aw-1:0] 		addr;
-      get_mem32 = mem[addr];
+      get_mem32 = {mem0[addr],mem1[addr],mem2[addr],mem3[addr]};
    endfunction // get_mem32   
 
    // Function to access RAM (for use by Verilator).
    function [7:0] get_mem8;
       // verilator public
       input [aw-1:0] 		addr;
-            reg [31:0] 		temp_word;
       begin
-	 temp_word = mem[{addr[aw-1:2],2'd0}];
 	 // Big endian mapping.
-	 get_mem8 = (addr[1:0]==2'b00) ? temp_word[31:24] :
-		    (addr[1:0]==2'b01) ? temp_word[23:16] :
-		    (addr[1:0]==2'b10) ? temp_word[15:8] : temp_word[7:0];
+	 get_mem8 = (addr[1:0]==2'b00) ? mem0[{addr[(mem_addr_reg_width+2)-1:2]}] :
+		    (addr[1:0]==2'b01) ? mem1[{addr[(mem_addr_reg_width+2)-1:2]}] :
+		    (addr[1:0]==2'b10) ? mem2[{addr[(mem_addr_reg_width+2)-1:2]}] : 
+		    mem3[{addr[(mem_addr_reg_width+2)-1:2]}];
 	 end
    endfunction // get_mem8   
 
@@ -270,9 +313,14 @@ module ram_wb_b3(/*AUTOARG*/
       // verilator public
       input [aw-1:0] 		addr;
       input [dw-1:0] 		data;
-      mem[addr] = data;
+      begin
+	 mem0[addr] = data[31:24];
+	 mem1[addr] = data[23:16];
+	 mem2[addr] = data[15:8];
+	 mem3[addr] = data[7:0];
+      end
    endfunction // set_mem32   
-   
+   // synthesis translate_on
 
    // Random ACK negation logic
    generate

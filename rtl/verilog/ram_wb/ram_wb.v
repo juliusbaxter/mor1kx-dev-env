@@ -166,7 +166,14 @@ module ram_wb
    assign wbm2_err_o = input_select[2] ? wbs_ram_err_o : 0;
    assign wbm2_rty_o = 0;
 
-   ram_wb_b3 ram_wb_b3_0
+   ram_wb_b3 
+     #(
+	  .aw(aw),
+	  .dw(dw),
+	  .mem_size_bytes(mem_size_bytes),
+	  .mem_adr_width(mem_adr_width)
+	  )
+   ram_wb_b3_0
      (
       // Outputs
       .wb_ack_o				(wbs_ram_ack_o),
@@ -184,11 +191,6 @@ module ram_wb
       .wb_we_i				(wbs_ram_we_i),
       .wb_clk_i				(wb_clk_i),
       .wb_rst_i				(wb_rst_i));
-
-   defparam ram_wb_b3_0.aw = aw;
-   defparam ram_wb_b3_0.dw = dw;
-   defparam ram_wb_b3_0.mem_size_bytes = mem_size_bytes;
-   defparam ram_wb_b3_0.mem_adr_width = mem_adr_width;
 
 endmodule // ram_wb
 
