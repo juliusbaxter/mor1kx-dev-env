@@ -56,7 +56,8 @@ module or1200_monitor;
 `endif   
    integer    r3;
    integer    insns;
-
+   integer    cycles = 0;
+   
 
    //
    // Initialization
@@ -347,6 +348,10 @@ module or1200_monitor;
 	end
      end
 
+   always @(posedge `CPU_CORE_CLK)
+     cycles = cycles + 1;
+   
+   
    //
    // Hooks for:
    // - displaying registers
@@ -399,6 +404,15 @@ module or1200_monitor;
 	   $write("%c", r3);
 	   $fdisplay(fgeneral, "%t: l.nop putc (%c)", $time, r3);
 	end
+	if (`OR1200_TOP.`CPU_cpu.`CPU_ctrl.wb_insn == 32'h1500_0005) begin
+	   $display("%t: l.nop reset cycle counter", $time);
+	   $fdisplay(fgeneral, "%t: l.nop reset cycle counter", $time);
+	   cycles = 0;
+	end
+	if (`OR1200_TOP.`CPU_cpu.`CPU_ctrl.wb_insn == 32'h1500_0006) begin
+	   $display("%t: l.nop report cycle counter %d", $time, cycles);
+	   $fdisplay(fgeneral, "%t: l.nop report cycle counter %d", $time, cycles);
+	end		
 `ifdef OR1200_MONITOR_SPRS	
 	if (`OR1200_TOP.`CPU_cpu.`CPU_sprs.spr_we)
 	  $fdisplay(fspr, "%t: Write to SPR : [%h] <- %h", $time,
