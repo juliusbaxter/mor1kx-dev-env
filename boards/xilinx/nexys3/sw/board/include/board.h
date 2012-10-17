@@ -13,9 +13,9 @@
 // synthesis time. See bootloader/bootloader.S for details on each option.
 #ifndef PRELOAD_RAM
 //#define BOOTROM_SPI_FLASH
-//#define BOOTROM_GOTO_RESET
-#define BOOTROM_WAIT_150US
-#define BOOTROM_WAIT_LOOPS 800
+#define BOOTROM_GOTO_RESET
+//#define BOOTROM_WAIT_150US
+//#define BOOTROM_WAIT_LOOPS 800
 //#define BOOTROM_LOOP_AT_ZERO
 //#define BOOTROM_LOOP_IN_ROM
 #else
