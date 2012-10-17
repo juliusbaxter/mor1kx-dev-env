@@ -77,12 +77,12 @@ TESTS ?= or1k-rfe			\
 include $(PROJECT_ROOT)/scripts/make/Makefile-simulators.inc
 
 # Gets turned into verilog `define
-SIM_TYPE=RTL
+SIM_TYPE?=RTL
 
 SIMULATOR ?= $(MODELSIM)
 
 # Want the 16-bit wide word
-SIM_SW_IMAGE ?=flash16.in
+SIM_SW_IMAGE ?=sram.vmem
 
 # Include the test-defines.v generation rule
 include $(PROJECT_ROOT)/scripts/make/Makefile-sim-definesgen.inc
