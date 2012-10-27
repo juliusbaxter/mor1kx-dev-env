@@ -114,12 +114,12 @@ module mor1kx_monitor();
 	    begin
 	       cycle_counter = 0;
 	       $fdisplay(fgeneral, "%0t: l.nop reset counter", $time);
-	       $display(fgeneral, "%0t: l.nop reset counter", $time);
+	       $display("l.nop reset counter");
 	    end
 	   if (execute_insn == 32'h15_00_00_06)
 	     begin
-		$display(fgeneral, "%0t: l.nop report cycle coutned: %d", $time, cycle_counter);
-		$fdisplay(fgeneral, "%0t: l.nop report cycle coutned: %d", $time, cycle_counter);
+		$fdisplay(fgeneral, "%0t: l.nop report cycle counted: %d", $time, cycle_counter);
+		$display("l.nop report cycle counted: %d", cycle_counter);		
 	    end	   
 
 	  if (execute_insn == 32'h15_00_00_0c)
