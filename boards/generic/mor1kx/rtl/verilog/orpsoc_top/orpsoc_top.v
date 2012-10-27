@@ -648,9 +648,7 @@ module orpsoc_top
        .OPTION_DCACHE_LIMIT_WIDTH	(31),
 
        .FEATURE_DSX                     ("ENABLED"),
-					 
-       .OPTION_SHIFTER			("SERIAL"),
-     //.FEATURE_MULTIPLIER		("SERIAL"),
+       .FEATURE_DIVIDER                 ("SERIAL"),
        .OPTION_CPU0			("CAPPUCCINO")
        )
      mor1kx0
