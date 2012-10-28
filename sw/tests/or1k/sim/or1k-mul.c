@@ -16,7 +16,7 @@ static int smul_errors, umul_errors;
 #define VERBOSE_TESTS 0
 
 // Make this bigger when running on FPGA target. For simulation it's enough.
-#define NUM_TESTS 20
+#define NUM_TESTS 2000000
 
 int 
 or1k_mul(int multiplicant, int multiplier)
@@ -40,11 +40,13 @@ void
 check_mul(int multiplicand, int multiplier, int expected_result)
 {
 #if VERBOSE_TESTS
-  printf("l.mul 0x%.8x * 0x%.8x = (SW) 0x%.8x : ", multiplicand, multiplier,
-	 expected_result);
+  printf("l.mul  0x%.8x * 0x%.8x (%11d * %11d)= (SW) 0x%.8x (%11d) : ", multiplicand, multiplier, 
+	 multiplicand, multiplier, expected_result, expected_result);
 #endif
   int result =  or1k_mul(multiplicand, multiplier);
+#if VERBOSE_TESTS==0
   report(result);
+#endif
   if ( result != expected_result)
     {
       printf("l.mul  0x%.8x * 0x%.8x = (SW) 0x%.8x : ", multiplicand, multiplier,
@@ -65,18 +67,20 @@ check_mulu(unsigned int multiplicand, unsigned int multiplier,
 	   unsigned int expected_result)
 {
 #if VERBOSE_TESTS
-  printf("l.mulu 0x%.8x * 0x%.8x = (SW) 0x%.8x : ", multiplicand, multiplier,
-	 expected_result);
+  printf("l.mulu 0x%.8x * 0x%.8x (%11d * %11d)= (SW) 0x%.8x (%11d) : ", multiplicand, multiplier, 
+	 multiplicand, multiplier, expected_result, expected_result);
 #endif
 
   unsigned int result =  or1k_mulu(multiplicand, multiplier);
+#if VERBOSE_TESTS==0
   report(result);
+#endif
   if ( result != expected_result)
     {
       printf("l.mulu 0x%.8x * 0x%.8x = (SW) 0x%.8x : ", multiplicand, multiplier,
 	     expected_result);
       
-      printf("(HW) 0x%.8x - MISMATCH\n",result);
+      printf("(HW) 0x%.8x (%d) - MISMATCH\n",result, result);
       umul_errors++;
     }
 #if VERBOSE_TESTS
@@ -125,11 +129,20 @@ main(void)
   while(i < NUM_TESTS)
     {
 
-      n = rand() >> 20;
-      d = (rand() >> 24);
+      //n = rand() >> 20;
+      n = rand();
+      if (n&(1<<(rand()&0x7)))
+	n = (n>>(rand()&0x15));
 
+      d = rand();
+      if (d&(1<<(rand()&0x7)))
+	d = (d>>(rand()&0x15));
+
+#if VERBOSE_TESTS
+      printf("Test %d\n", i);
+#else
       report(0x10101010);
-
+#endif
       
       if (n&0x10) // Randomly select if we should negate n
 	{
@@ -158,32 +171,45 @@ main(void)
       else if (!(n & 0x80000000) && !(d & 0x80000000))
 	expected_result = mul_soft(n, d);
 
-
+#if VERBOSE_TESTS==0
       /* Report things */
       report(n);
       report(d);
       report(expected_result);
+#endif
 
-
-      /* Signed mulide */
+      /* Signed multiply */
       check_mul(n, d, expected_result);
       
 
       /* Unsigned mulide test */
-      /* Ensure numerator's bit 31 is clear */
-      n >>= 1;
+      /* Ensure both are positive */
+      if (n&(1<<31))
+	{
+	  // 2's complement of n
+	  n = ~n + 1;
+	}
+      
+      if (d&(1<<31))
+	{
+	  // 2's complement of d
+	  d = ~d + 1;
+	}
 
       expected_result = mul_soft(n, d);
 
+#if VERBOSE_TESTS==0
       /* Report things */
       report(n);
       report(d);
       report(expected_result);
+#endif
       
-      /* Unsigned mulide */
+      /* Unsigned multiply */
       check_mulu(n, d, expected_result);
-      
+#if VERBOSE_TESTS==0
       report(i);
+#endif
       i++;
 
     }

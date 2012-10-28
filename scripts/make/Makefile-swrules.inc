@@ -18,6 +18,11 @@ endif
 .PHONY : sw
 sw: $(SIM_SW_IMAGE)
 
+ifeq ($(GCC_TESTS), 1)
+
+include $(PROJECT_ROOT)/scripts/make/Makefile-gccregression.inc
+
+else
 
 flash.in: $(SW_TEST_DIR)/$(TEST).flashin
 	$(Q)if [ -L $@ ]; then unlink $@; fi
@@ -88,3 +93,5 @@ $(SW_TEST_DIR)/$(TEST).elf:
 
 clean-sim-test-sw:
 	$(Q)if [ -e $(SIM_SW_IMAGE) ]; then unlink $(SIM_SW_IMAGE); fi
+
+endif

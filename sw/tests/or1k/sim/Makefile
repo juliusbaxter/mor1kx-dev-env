@@ -9,5 +9,5 @@ include $(SW_ROOT)/Makefile.inc
 	$(Q)$(OR32_OBJCOPY) -O binary $< $@
 
 clean:
-	$(Q)rm -f *.elf *.bin *.vmem *.flashin *.dis
+	$(Q)rm -f *.elf *.bin *.vmem *.flashin *.dis *.flash16
 
