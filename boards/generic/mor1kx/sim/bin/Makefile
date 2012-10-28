@@ -52,11 +52,9 @@ include $(BOARD_ROOT)/Makefile.inc
 
 # Simulation-specific paths and files from this one
 include $(PROJECT_ROOT)/scripts/make/Makefile-board-benchsrc.inc
-#	or1k-alignillegalinsn		\
-#	or1k-dsx			\
 
 # Software tests we'll run
-TEST ?= o1k-rfe
+TEST ?= or1k-simple
 TESTS ?= or1k-rfe			\
 	or1k-insnfetchalign		\
 	or1k-insnfetcherror		\
@@ -72,6 +70,7 @@ TESTS ?= or1k-rfe			\
 	or1k-alignillegalinsn		\
 	or1k-lwjr			\
 	or1k-shortbranch		\
+	or1k-shortjump  		\
 	or1k-cmov			\
 	or1k-timer			\
 	or1k-tickrfforward		\

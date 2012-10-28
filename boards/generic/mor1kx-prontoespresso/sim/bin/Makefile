@@ -70,6 +70,7 @@ TESTS ?= or1k-rfe			\
 	or1k-lwjr			\
 	or1k-cmov			\
 	or1k-shortbranch		\
+	or1k-shortjump  		\
 	or1k-timer			\
 	or1k-tickrfforward		\
 	or1k-intsyscall			\

@@ -71,6 +71,7 @@ TESTS ?= or1k-rfe			\
 	or1k-alignillegalinsn		\
 	or1k-lwjr			\
 	or1k-shortbranch		\
+	or1k-shortjump  		\
 	or1k-cmov			\
 	or1k-timer			\
 	or1k-tickrfforward		\
