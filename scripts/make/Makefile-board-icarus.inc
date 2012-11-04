@@ -50,7 +50,7 @@ $(ICARUS_SCRIPT):  $(RTL_VERILOG_SRC) $(RTL_VERILOG_INCLUDES) \
 # Icarus design compilation rule
 $(ICARUS_SIM_EXE): $(ICARUS_SCRIPT) $(TEST_DEFINES_VLG) 
 	$(Q)echo; echo "\t### Compiling ###"; echo
-	$(Q) $(ICARUS_COMPILE) -s$(RTL_TESTBENCH_TOP_NAME) -c $< -o $@
+	$(Q) $(ICARUS_COMPILE) -s$(RTL_TESTBENCH_TOP_NAME) -Winfloop -c $< -o $@
 
 # Icarus simulation run rule
 $(ICARUS): $(ICARUS_SIM_EXE) $(ICARUS_VPI_LIB)
