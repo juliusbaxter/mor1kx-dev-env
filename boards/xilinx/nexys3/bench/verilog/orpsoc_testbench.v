@@ -224,7 +224,7 @@ module orpsoc_testbench;
 `ifdef JTAG_DEBUG   
  `ifdef VPI_DEBUG
    // Debugging interface
-   vpi_debug_module vpi_dbg
+   vpi_debug_module #(.Tck(50)) vpi_dbg
      (
       .tms(tms_pad_i), 
       .tck(tck_pad_i), 
@@ -316,12 +316,12 @@ module orpsoc_testbench;
 	
  `endif	
 
- `ifdef SIMULATOR_MODELSIM
+// `ifdef SIMULATOR_MODELSIM
 	// Modelsim can GZip VCDs on the fly if given in the suffix
-  `define VCD_SUFFIX   ".vcd.gz"
- `else
+//  `define VCD_SUFFIX   ".vcd.gz"
+// `else
   `define VCD_SUFFIX   ".vcd"
- `endif
+// `endif
 	
  `ifndef SIM_QUIET
 	$display("* VCD in %s\n", {"../out/",`TEST_NAME_STRING,`VCD_SUFFIX});
@@ -416,7 +416,7 @@ module orpsoc_testbench;
   */
 
 
-   cellram #(.DEBUG(0))
+   cellram #(.DEBUG(0), .MEM_BITS(25)) // MEM_BITS=25 gives full 16MB memory
      cellram 
      (
       .clk	(cellram_clk_o), 
