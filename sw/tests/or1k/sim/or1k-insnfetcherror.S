@@ -114,6 +114,11 @@ _main:
 	OR1K_INST(l.jr	r5)
 	)
 
+	OR1K_DELAYED(
+	OR1K_INST(l.addi r2,r2,1),
+	OR1K_INST(l.jalr r5)
+	)
+
 	l.sfeq	r1,r2
 	OR1K_DELAYED_NOP(OR1K_INST(l.bf	test_ok))
 
