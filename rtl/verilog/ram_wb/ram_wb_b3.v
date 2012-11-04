@@ -1,4 +1,6 @@
-`include "synthesis-defines.v"
+`ifdef SYNTHESIS
+ `include "synthesis-defines.v"
+`endif
 module ram_wb_b3(/*AUTOARG*/
    // Outputs
    wb_ack_o, wb_err_o, wb_rty_o, wb_dat_o,
