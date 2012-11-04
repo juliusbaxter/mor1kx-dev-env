@@ -80,7 +80,9 @@ modelsim_dut.scr: $(RTL_VERILOG_SRC) $(RTL_VERILOG_INCLUDES) $(BOOTROM_VERILOG)
 	$(Q)echo "+libext+.v" >> $@;
 	$(Q)for module in $(BOARD_RTL_VERILOG_MODULES); do if [ -d $(BOARD_RTL_VERILOG_DIR)/$$module ]; then echo "-y " $(BOARD_RTL_VERILOG_DIR)/$$module >> $@; fi; done
 	$(Q)for module in $(COMMON_RTL_VERILOG_MODULES); do if [ -d $(COMMON_RTL_VERILOG_DIR)/$$module ]; then echo "-y " $(COMMON_RTL_VERILOG_DIR)/$$module >> $@; fi; done
-	$(Q)echo "-y " $(BOARD_BACKEND_VERILOG_DIR) >> $@;
+ifneq ($(BOARD_BACKEND_VERILOG_DIR), )
+	echo "-y " $(BOARD_BACKEND_VERILOG_DIR) >> $@;
+endif
 	$(Q)if [ ! -z "$$GATELEVEL_MODULES" ]; \
 		then echo "-y " $(BOARD_SYN_OUT_DIR) >> $@; \
 		echo "+libext+.vm" >> $@; \
@@ -159,6 +161,18 @@ $(MODELSIM): modelsim_bench.scr $(TEST_DEFINES_VLG) $(BACKEND_LIB) $(VPI_LIBS) w
 	$(Q)echo; echo "\t### Compiling testbench ###"; echo
 	$(Q)vlog $(QUIET) -nologo -incr $(BENCH_TOP_FILE) -f $<
 	$(Q)$(MGC_VOPT_EXE) $(QUIET) $(RTL_TESTBENCH_TOP_NAME) $(VOPT_ARGS) -L $(BACKEND_LIB) -o tb
+	$(Q)echo; echo "\t### Launching simulation ###"; echo
+	$(Q)vsim $(VSIM_ARGS) $(MGC_VSIM_TGT)
+endif
+
+
+.PHONY : $(MODELSIM)
+ifeq ($(FPGA_VENDOR),generic)
+$(MODELSIM): modelsim_bench.scr $(TEST_DEFINES_VLG) $(VPI_LIBS) work
+	$(Q)echo; echo "\t### Compiling testbench ###"; echo
+	$(Q)vlog $(QUIET) -nologo -incr $(BENCH_TOP_FILE) -f $<
+	$(Q)$(MGC_VOPT_EXE) $(QUIET) $(RTL_TESTBENCH_TOP_NAME) $(VOPT_ARGS) \
+		-o tb
 	$(Q)echo; echo "\t### Launching simulation ###"; echo
 	$(Q)vsim $(VSIM_ARGS) $(MGC_VSIM_TGT)
 endif

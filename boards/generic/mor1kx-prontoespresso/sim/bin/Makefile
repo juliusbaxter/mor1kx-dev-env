@@ -53,9 +53,6 @@ include $(BOARD_ROOT)/Makefile.inc
 # Simulation-specific paths and files from this one
 include $(PROJECT_ROOT)/scripts/make/Makefile-board-benchsrc.inc
 
-#or1k-jmp			\
-	or1k-jr				\
-
 # Software tests we'll run
 TEST ?= or1k-basic
 TESTS ?= or1k-rfe			\
@@ -90,6 +87,7 @@ include $(PROJECT_ROOT)/scripts/make/Makefile-simulators.inc
 SIM_TYPE=RTL
 
 SIMULATOR ?= $(ICARUS)
+#SIMULATOR ?= $(MODELSIM)
 
 # Include the test-defines.v generation rule
 include $(PROJECT_ROOT)/scripts/make/Makefile-sim-definesgen.inc
@@ -97,7 +95,11 @@ include $(PROJECT_ROOT)/scripts/make/Makefile-sim-definesgen.inc
 #
 # Icarus make rules for RTL tests
 #
+ifeq (SIMULATOR,$(MODELSIM))
+include $(PROJECT_ROOT)/scripts/make/Makefile-board-modelsim.inc
+else
 include $(PROJECT_ROOT)/scripts/make/Makefile-board-icarus.inc
+endif
 
 #
 # RTL test rules
