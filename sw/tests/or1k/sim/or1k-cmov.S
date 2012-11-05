@@ -45,6 +45,8 @@
 	l.nop	2
 	l.movhi	r3, 0x6000
 	l.ori	r3, r3, 0x000d
+	l.nop	2
+	l.movhi	r3, 0
 	l.nop 	1
 
 fail:
