@@ -77,6 +77,8 @@ TESTS ?= or1k-rfe			\
 	or1k-dsx			\
 	or1k-intsyscall			\
 	or1k-ticksyscall		\
+	or1k-intloop    		\
+	or1k-tickloop   		\
 	or1k-ffl1			\
 	or1k-sf				\
 	or1k-simple			\

@@ -75,6 +75,8 @@ TESTS ?= or1k-rfe			\
 	or1k-cmov			\
 	or1k-timer			\
 	or1k-tickrfforward		\
+	or1k-intloop    		\
+	or1k-tickloop   		\
 	or1k-dsx			\
 	or1k-intsyscall			\
 	or1k-ticksyscall		\
