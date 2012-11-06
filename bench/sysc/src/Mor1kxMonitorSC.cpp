@@ -235,7 +235,7 @@ Mor1kxMonitorSC::Mor1kxMonitorSC(sc_core::sc_module_name name,
   }
   /* checkInstruction monitors the bus for special NOP instructionsl */
   SC_METHOD(checkInstruction);
-  sensitive << clk.pos();
+  sensitive << clk.neg();
   dont_initialize();
 
   if (profiling_enabled) {

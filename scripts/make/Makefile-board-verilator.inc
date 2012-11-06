@@ -5,10 +5,12 @@ SIM_VLT_DIR ?= $(SIM_DIR)/vlt
 ################################################################################
 
 ifeq ($(USE_OR1KTRACE), 1)
-OR1KTRACE_PATH=$(PROJECT_ROOT)/or1ktrace
-OR1KTRACE_COMPILE=-I$(OR1KTRACE_PATH)/include -L$(OR1KTRACE_PATH)/lib -lor1ktrace
-OR1KTRACE_CPPFLAGS=-I$(OR1KTRACE_PATH)/include
-OR1KTRACE_LDDFLAGS=-L$(OR1KTRACE_PATH)/.libs
+ifeq (,$(OR1KTRACE_ROOT))
+$(error USE_OR1KTRACE is set but OR1KTRACE_ROOT is not. Need it to know where to look for the or1ktrace libs and headers.)
+endif
+OR1KTRACE_CPPFLAGS=-I$(OR1KTRACE_ROOT)/include -DUSE_OR1KTRACE
+VLT_CFLAGS += $(OR1KTRACE_CPPFLAGS)
+OR1KTRACE_LDFLAGS=-L$(OR1KTRACE_ROOT)/lib -lor1ktrace
 endif
 
 VLT_EXE=Vorpsoc_top
@@ -54,8 +56,8 @@ endif
 # then run this through the Verilator tool with:
 # verilator_profcfunc gprof.out > vprof.out
 ifdef VLT_EXECUTION_PROFILE_BUILD
-VLT_CPPFLAGS +=-g -pg
-# Maybe add these to VLT_CPPFLAGS: -ftest-coverage -fprofile-arcs
+VLT_CFLAGS +=-g -pg
+# Maybe add these to VLT_CFLAGS: -ftest-coverage -fprofile-arcs
 VLT_FLAGS +=-profile-cfuncs
 endif
 
@@ -64,24 +66,24 @@ endif
 # checking the efficiency of the model - not really useful for checking code 
 # or the function of the model.
 ifdef VLT_DO_PERFORMANCE_PROFILE_BUILD
-VLT_CPPFLAGS += -fprofile-generate -fbranch-probabilities -fvpt \
+VLT_CFLAGS += -fprofile-generate -fbranch-probabilities -fvpt \
 		-funroll-loops -fpeel-loops -ftracer
 else
-#VLT_CPPFLAGS +=-fprofile-use -Wcoverage-mismatch
-VLT_CPPFLAGS +=-Wcoverage-mismatch
+#VLT_CFLAGS +=-fprofile-use -Wcoverage-mismatch
+VLT_CFLAGS +=-Wcoverage-mismatch
 endif
 
 # Set VLT_IN_GDB=1 when making if going to run the cycle accurate model 
 # executable in GDB.
 ifdef VLT_IN_GDB
-VLT_CPPFLAGS +=-g -O0 
+VLT_CFLAGS +=-g -O0 
 else
 # The default optimisation flag applied to all of the cycle accurate model files
-VLT_CPPFLAGS +=-O3
+VLT_CFLAGS +=-O3
 endif
 
 ifdef MOR1KX_CPU
-VLT_CPPFLAGS += -DMOR1KX_CPU_$(MOR1KX_CPU)
+VLT_CFLAGS += -DMOR1KX_CPU_$(MOR1KX_CPU)
 endif
 
 # VCD Enabled by default when building, enable it at runtime
@@ -142,18 +144,18 @@ $(SIM_VLT_DIR)/$(VLT_EXE): $(SIM_VLT_DIR)/lib$(VLT_EXE).a \
 	$(Q)echo; echo "\tGenerating simulation executable"; echo
 	$(Q)cd $(SIM_VLT_DIR) && \
 		g++ $(VLT_DEBUG_COMPILE_FLAGS) \
-		$(VLT_CPPFLAGS) -I$(COMMON_BENCH_SYSC_INCLUDE_DIR) -I$(SIM_VLT_DIR) \
+		$(VLT_CFLAGS) -I$(COMMON_BENCH_SYSC_INCLUDE_DIR) -I$(SIM_VLT_DIR) \
 		-I$(VERILATOR_ROOT)/include -I$(SYSTEMC)/include -o $(VLT_EXE) \
 		-L. -L$(COMMON_BENCH_SYSC_SRC_DIR) -L$(SYSTEMC)/$(SYSC_LIB_ARCH_DIR) \
 		OrpsocMain.o -l$(VLT_EXE) -lmodules -lsystemc \
-		$(OR1KTRACE_COMPILE) -liberty -lz
+		$(OR1KTRACE_LDFLAGS) -liberty -lz
 
 # Now compile the top level systemC "testbench" module from the systemC source 
 # path
 $(SIM_VLT_DIR)/OrpsocMain.o: $(COMMON_BENCH_SYSC_SRC_DIR)/OrpsocMain.cpp
 	@echo; echo "\tCompiling top level SystemC testbench"; echo
 	cd $(SIM_VLT_DIR) && \
-	g++ $(VLT_DEBUG_COMPILE_FLAGS) $(VLT_CPPFLAGS) $(TRACE_FLAGS) \
+	g++ $(VLT_DEBUG_COMPILE_FLAGS) $(VLT_CFLAGS) $(TRACE_FLAGS) \
 	-I$(COMMON_BENCH_SYSC_INCLUDE_DIR) -I$(SIM_VLT_DIR) \
 	-I$(VERILATOR_ROOT)/include -I$(SYSTEMC)/include -c \
 	$(COMMON_BENCH_SYSC_SRC_DIR)/OrpsocMain.cpp 
@@ -174,8 +176,8 @@ $(SIM_VLT_DIR)/verilated.o: $(SYSC_MODEL_SOURCES)
 	@echo; echo "\tCompiling verilated.o"; echo
 	$(Q)cd $(SIM_VLT_DIR) && \
 	export CXXFLAGS=$(VLT_DEBUG_COMPILE_FLAGS); \
-	export USER_CPPFLAGS="$(VLT_CPPFLAGS) $(OR1KTRACE_CPPFLAGS)"; \
-	export USER_LDDFLAGS="$(VLT_CPPFLAGS) $(OR1KTRACE_LDDFLAGS)"; \
+	export USER_CPPFLAGS="$(VLT_CFLAGS)"; \
+	export USER_LDDFLAGS="$(VLT_CFLAGS) $(OR1KTRACE_LDDFLAGS)"; \
 	$(MAKE) -f $(VLT_EXE).mk verilated.o
 
 print-sysmod-objs:
@@ -188,8 +190,8 @@ $(VLT_MODULES_OBJS):
 	for SYSCMODEL in $(SYSC_MODELS_BUILD); do \
 		echo;echo "\t$$SYSCMODEL"; echo; \
 		export CXXFLAGS=$(VLT_DEBUG_COMPILE_FLAGS); \
-		export USER_CPPFLAGS="$(VLT_CPPFLAGS) -I$(COMMON_BENCH_SYSC_INCLUDE_DIR) -I$(COMMON_SW_DIR)/lib/include"; \
-		export USER_LDDFLAGS="$(VLT_CPPFLAGS)"; \
+		export USER_CPPFLAGS="$(VLT_CFLAGS) -I$(COMMON_BENCH_SYSC_INCLUDE_DIR) -I$(COMMON_SW_DIR)/lib/include"; \
+		export USER_LDDFLAGS="$(VLT_CFLAGS)"; \
 		 $(MAKE) -f $(VLT_EXE).mk $$SYSCMODEL.o; \
 	done	
 
@@ -197,8 +199,8 @@ $(SIM_VLT_DIR)/$(VLT_EXE)__ALL.a: $(SIM_VLT_DIR)/$(VLT_EXE).mk \
 		$(SYSC_MODEL_SOURCES)
 	@echo; echo "\tCompiling main design"; echo
 	$(Q)cd $(SIM_VLT_DIR) && \
-	export USER_CPPFLAGS="$(VLT_CPPFLAGS)"; \
-	export USER_LDDFLAGS="$(VLT_CPPFLAGS)"; \
+	export USER_CPPFLAGS="$(VLT_CFLAGS)"; \
+	export USER_LDDFLAGS="$(VLT_CFLAGS)"; \
 	$(MAKE) -f $(VLT_EXE).mk $(VLT_EXE)__ALL.a
 
 $(SIM_VLT_DIR)/$(VLT_EXE).mk: $(SIM_VLT_DIR)/$(VLT_SCRIPT) \
@@ -213,7 +215,7 @@ $(SIM_VLT_DIR)/$(VLT_EXE).mk: $(SIM_VLT_DIR)/$(VLT_SCRIPT) \
 # SystemC modules library
 $(COMMON_BENCH_SYSC_SRC_DIR)/libmodules.a:
 	@echo; echo "\tCompiling SystemC modules"; echo
-	export VLT_CPPFLAGS="$(VLT_CPPFLAGS)"; \
+	export VLT_CFLAGS="$(VLT_CFLAGS)"; \
 	export SCRIPT_INCDIRS=-I$(COMMON_SW_DIR)/lib/include; \
 	$(MAKE) -C $(COMMON_BENCH_SYSC_SRC_DIR) \
 	-f $(COMMON_BENCH_SYSC_SRC_DIR)/Modules.make $(VLT_SYSC_DEBUG_DEFINE) 
