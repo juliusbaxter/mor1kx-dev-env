@@ -142,6 +142,9 @@ module orpsoc_testbench;
       if (`TEST_NAME_STRING=="mor1kx-debugtest") begin : mor1kx_dbg_stim
 	 mor1kx_debug_test_stim mor1kx_debug_test_stim();
       end
+      if (`TEST_NAME_STRING=="mor1kx-debugbkpnttest") begin : mor1kx_dbg_bkpnt_stim
+	 mor1kx_debug_bkpnt_test_stim mor1kx_debug_bkpnt_test_stim();
+      end
       else if (`TEST_NAME_STRING=="mor1kx-debugsteptest" ||
 	       `TEST_NAME_STRING=="mor1kx-debugexceptsteptest") 
 	begin : mor1kx_dbg_step_stim

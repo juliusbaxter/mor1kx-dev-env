@@ -81,6 +81,7 @@ TESTS ?= or1k-rfe			\
 	or1k-cbasic			\
 	uart-simple			\
 	mor1kx-debugsteptest		\
+	mor1kx-debugbkpnttest		\
 	mor1kx-debugexceptsteptest
 
 include $(PROJECT_ROOT)/scripts/make/Makefile-simulators.inc
