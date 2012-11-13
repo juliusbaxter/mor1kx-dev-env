@@ -35,7 +35,7 @@
 // ORPSoC-specific simulation include
 `include "test-defines.v"
 
-module mor1kx_monitor();
+module mor1kx_monitor #(parameter LOG_DIR= "../out") ();
 
    // General output file descriptor
    integer    fgeneral = 0;
@@ -60,8 +60,8 @@ module mor1kx_monitor();
    initial
      begin
 	$timeformat (-9, 2, " ns", 12);
-	fgeneral = $fopen({"../out/",`TEST_NAME_STRING,"-general.log"});
-	ftrace = $fopen({"../out/",`TEST_NAME_STRING,"-trace.log"});
+	fgeneral = $fopen({LOG_DIR,"/",`TEST_NAME_STRING,"-general.log"});
+	ftrace = $fopen({LOG_DIR,"/",`TEST_NAME_STRING,"-trace.log"});
      end
   
    /* Simulation support code */
