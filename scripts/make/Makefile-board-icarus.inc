@@ -56,4 +56,4 @@ $(ICARUS_SIM_EXE): $(ICARUS_SCRIPT) $(TEST_DEFINES_VLG)
 $(ICARUS): $(ICARUS_SIM_EXE) $(ICARUS_VPI_LIB)
 	$(Q)echo; echo "\t### Launching simulation ###"; echo
 	$(Q) $(ICARUS_RUN) $(ICARUS_VPI_ARGS) -l ../out/$(ICARUS_RUN).log $< \
-	$(ICARUS_LXT_DUMP)
+	$(ICARUS_LXT_DUMP) +trace_enable
