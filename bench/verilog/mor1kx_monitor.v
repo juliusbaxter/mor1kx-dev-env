@@ -21,11 +21,6 @@
 
 `include "test-defines.v" // indicate if we should trace or not
 
-`define MOR1KX_MONITOR_TRACE_ENABLE
-`ifdef TRACE
- `define MOR1KX_MONITOR_TRACE_TO_SCREEN
-`endif
-
 // OR1K ISA defines used in this file
 
 `define OR1K_OPCODE_POS 31:26
@@ -51,6 +46,12 @@ module mor1kx_monitor();
 
    parameter OPTION_OPERAND_WIDTH = 32;
    
+   reg 	TRACE_ENABLE;
+   initial TRACE_ENABLE = $test$plusargs("trace_enable");
+
+   reg 	TRACE_TO_SCREEN;
+   initial TRACE_TO_SCREEN = $test$plusargs("trace_to_screen");
+
    assign clk = `CPU_clk;
 
    integer cycle_counter = 0 ;
@@ -87,9 +88,8 @@ module mor1kx_monitor();
 	  insns = insns + 1;
 	  execute_insn = `EXECUTE_STAGE_INSN;
 
-`ifdef MOR1KX_MONITOR_TRACE_ENABLE
-	  mor1k_trace_print(execute_insn, `CPU_SR, `EXECUTE_PC, `CPU_FLAG);
-`endif
+	   if(TRACE_ENABLE)
+	     mor1k_trace_print(execute_insn, `CPU_SR, `EXECUTE_PC, `CPU_FLAG);
 	  
 	  // Check instructions for simulation controls
 	  if (execute_insn == 32'h15_00_00_01)
@@ -163,45 +163,39 @@ module mor1kx_monitor();
 	 if (sr[`OR1K_SPR_SR_SM] === 1'b0)
 	   begin
 	      $fwrite(ftrace,"U ");
-`ifdef MOR1KX_MONITOR_TRACE_TO_SCREEN	      
-	      $write("U ");
-`endif	      
+	      if(TRACE_TO_SCREEN)
+		$write("U ");
 	   end
 	 else
 	   begin
 	      $fwrite(ftrace,"S ");
-`ifdef MOR1KX_MONITOR_TRACE_TO_SCREEN	      
-	      $write("S ");
-`endif
+	      if(TRACE_TO_SCREEN)
+		$write("S ");
 	   end
 	 
 	 // PC next
 	 $fwrite(ftrace,"%08h: ", pc);
-`ifdef MOR1KX_MONITOR_TRACE_TO_SCREEN	      
-	 $write("%08h: ", pc);
-`endif
+	 if(TRACE_TO_SCREEN)
+	   $write("%08h: ", pc);
 	 
 	 // Instruction raw
 	 $fwrite(ftrace,"%08h ",insn);
-`ifdef MOR1KX_MONITOR_TRACE_TO_SCREEN	      
-	 $write("%08h ",insn);
-`endif
+	 if(TRACE_TO_SCREEN)
+	   $write("%08h ",insn);
 	 
 	 mor1k_insn_to_string(insn, insn_disas);
 	 
 	 // Instruction, disassembled
 	 $fwrite(ftrace,"%0s", insn_disas);
-`ifdef MOR1KX_MONITOR_TRACE_TO_SCREEN	      
-	 $write("%0s", insn_disas);
-`endif
+	 if(TRACE_TO_SCREEN)
+	   $write("%0s", insn_disas);
 	 
 	 for (regimm_chars=regimm_chars;
 	      regimm_chars < 16; regimm_chars = regimm_chars + 1)
 	   begin
 	      $fwrite(ftrace," ");
-`ifdef MOR1KX_MONITOR_TRACE_TO_SCREEN	      
-	      $write(" ");
-`endif
+	      if(TRACE_TO_SCREEN)
+		$write(" ");
 	   end
 	 
 	 if (rD_used)
@@ -211,46 +205,40 @@ module mor1kx_monitor();
 		   // Wait 1 cycle for MFSPR result
 		   @(posedge `CPU_clk);
 		   $fwrite(ftrace,"r%0d",rD_num);
-`ifdef MOR1KX_MONITOR_TRACE_TO_SCREEN	      
-		   $write("r%0d",rD_num);
-`endif
+		   if(TRACE_TO_SCREEN)
+		     $write("r%0d",rD_num);
 		end
 	      else
 		begin
 		   $fwrite(ftrace,"r%0d",rD_num);
-`ifdef MOR1KX_MONITOR_TRACE_TO_SCREEN	      
-		   $write("r%0d",rD_num);
-`endif
+		   if(TRACE_TO_SCREEN)
+		     $write("r%0d",rD_num);
 		end // else: !if(insn[`OR1K_OPCODE_SELECT]===`OR1K_OPCODE_MFSPR)
 
 	      // Tab 1 more if we're a single-number register 
 	      if (rD_num < 10) begin
 		 $fwrite(ftrace,"\t\t");
-`ifdef MOR1KX_MONITOR_TRACE_TO_SCREEN	      
-		 $write("\t\t");
-`endif
+		 if(TRACE_TO_SCREEN)
+		   $write("\t\t");
 	      end
 	      else begin
 		 $fwrite(ftrace,"\t");
-`ifdef MOR1KX_MONITOR_TRACE_TO_SCREEN	      
-		 $write("\t");
-`endif
+		 if(TRACE_TO_SCREEN)
+		   $write("\t");
 	      end
 	      
 	      // Finally write what ended up in the in rD
 	      $fwrite(ftrace,"= %08h  ",`RF_RESULT_IN);
-`ifdef MOR1KX_MONITOR_TRACE_TO_SCREEN	      
-	      $write("= %08h  ",`RF_RESULT_IN);
-`endif
+	      if(TRACE_TO_SCREEN)
+		$write("= %08h  ",`RF_RESULT_IN);
 	   end
 	 else if (insn[`OR1K_OPCODE_SELECT]===`OR1K_OPCODE_MTSPR)
 	   begin
 	      // Clobber imm_16bit here to calculate MTSPR
 	      imm_16bit = imm_16bit | `GPR_GET(rA_num);
 	      $fwrite(ftrace,"SPR[%04x]  = %08h  ", imm_16bit, `GPR_GET(rB_num));
-`ifdef MOR1KX_MONITOR_TRACE_TO_SCREEN	      
-	      $write("SPR[%04x]  = %08h  ", imm_16bit, `GPR_GET(rB_num));
-`endif
+	      if(TRACE_TO_SCREEN)
+		$write("SPR[%04x]  = %08h  ", imm_16bit, `GPR_GET(rB_num));
 	      
 	   end // if (insn[`OR1K_OPCODE_SELECT]===`OR1K_OPCODE_MTSPR)
 	 else if (insn[`OR1K_OPCODE_SELECT]>=`OR1K_OPCODE_SD &&
@@ -259,31 +247,27 @@ module mor1kx_monitor();
 	      addr_result = signext_imm_16bit + `GPR_GET(rA_num);
 	      $fwrite(ftrace,"[%08h] = %08h  ",addr_result[31:0],
 		     `GPR_GET(rB_num));
-`ifdef MOR1KX_MONITOR_TRACE_TO_SCREEN	      
-	      $write("[%08h] = %08h  ",addr_result[31:0],
-		     `GPR_GET(rB_num));
-`endif	     
+	      if(TRACE_TO_SCREEN)
+		$write("[%08h] = %08h  ",addr_result[31:0],
+		       `GPR_GET(rB_num));
 	   end
 	 else
 	   begin
 	      // Skip destination field
 	      $fwrite(ftrace,"\t\t\t    ");
-`ifdef MOR1KX_MONITOR_TRACE_TO_SCREEN	      
-	      $write("\t\t\t    ");
-`endif
+	      if(TRACE_TO_SCREEN)
+		$write("\t\t\t    ");
 	   end
 
 	 /* Write flag */
 	 $fwrite(ftrace,"flag: %0d", flag);
-`ifdef MOR1KX_MONITOR_TRACE_TO_SCREEN	      
-	 $write("flag: %0d", flag);
-`endif	 
+	 if(TRACE_TO_SCREEN)
+	   $write("flag: %0d", flag);
 
 	 /* End of line */
 	 $fwrite(ftrace,"\n");
-`ifdef MOR1KX_MONITOR_TRACE_TO_SCREEN	      
-	 $write("\n");
-`endif
+	 if(TRACE_TO_SCREEN)
+	   $write("\n");
 	 
       end
    endtask // mor1k_trace_print
