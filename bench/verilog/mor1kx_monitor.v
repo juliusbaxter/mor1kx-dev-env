@@ -53,7 +53,7 @@ module mor1kx_monitor();
    
    assign clk = `CPU_clk;
 
-   integer cycle_counter = 0 ;
+   reg [63:0] cycle_counter = 0 ;
    
    /* Log file management code */
    initial
@@ -114,12 +114,12 @@ module mor1kx_monitor();
 	    begin
 	       cycle_counter = 0;
 	       $fdisplay(fgeneral, "%0t: l.nop reset counter", $time);
-	       $display("l.nop reset counter");
 	    end
 	   if (execute_insn == 32'h15_00_00_06)
 	     begin
-		$fdisplay(fgeneral, "%0t: l.nop report cycle counted: %d", $time, cycle_counter);
-		$display("l.nop report cycle counted: %d", cycle_counter);		
+		$fdisplay(fgeneral, "%0t: l.nop report cycle counter: %d", $time, cycle_counter);
+		`GPR_SET(11,cycle_counter[31:0]);
+		`GPR_SET(12,cycle_counter[63:32]);
 	    end	   
 
 	  if (execute_insn == 32'h15_00_00_0c)
