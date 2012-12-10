@@ -63,6 +63,7 @@ TESTS ?= or1k-rfe			\
 	or1k-trapdelayslot		\
 	or1k-illegalinsn		\
 	or1k-illegalinsndelayslot 	\
+	or1k-lsu			\
 	or1k-lsualign			\
 	or1k-lsualigndelayslot		\
 	or1k-lsuerror			\
