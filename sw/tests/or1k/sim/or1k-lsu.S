@@ -5,6 +5,7 @@
 	Stefan Kristiansson, stefan.kristiansson@saunalahti.fi
 
 */
+#include <or1k-asm.h>
 #include "spr-defs.h"
 
 /* =================================================== [ exceptions ] === */
