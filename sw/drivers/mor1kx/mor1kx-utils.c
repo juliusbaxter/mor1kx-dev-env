@@ -1,5 +1,4 @@
 #include "spr-defs.h"
-#include "or1200-utils.h"
 #include "board.h" // For timer rate (IN_CLK, TICKS_PER_SEC)
 
 /* For writing into SPR. */
