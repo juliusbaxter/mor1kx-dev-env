@@ -1,11 +1,12 @@
 #include <or1k-asm.h>
+#include <or1k-support-defs.h>
 #include "spr-defs.h"
 #include "board.h"
 
 /* ======================================================= [ macros ] === */
 
 #define REDZONE 128
-#define EXCEPTION_STACK_SIZE (128 + REDZONE)
+#define EXCEPTION_STACK_SIZE (128 + 8 + REDZONE)
 	
 #define CLEAR_GPR(gpr) \
 	l.or    gpr, r0, r0
@@ -215,13 +216,20 @@ ENTRY(_start)
 	CLEAR_GPR(r3)
 	CLEAR_GPR(r4)
 	/* nop to reset cycle counter */
-	l.nop	0x5
+	l.nop	NOP_CNT_RESET
 	OR1K_DELAYED_NOP(OR1K_INST(l.jal   main))
-	
+
 	/* If program exits, call exit routine */
-	/* report cycles */
-	l.nop	0x6
-	l.addi  r3, r11, 0
+	/* Save r11 */
+	l.or	r4,r11,r11
+	/* l.nop 0x6 moves the simulator cycle count to regs 11,12 */
+	l.nop	NOP_GET_TICKS
+	/* report upper 32-bits first */
+	l.or	r3,r12,r12
+	l.nop	0x2
+	l.or	r3, r11,r11
+	l.nop	0x2
+	l.addi  r3, r4, 0
 	OR1K_DELAYED_NOP(OR1K_INST(l.jal   exit))
 
 
@@ -256,9 +264,18 @@ default_exception_handler:
 	l.sw    0x6c(r1), r29
 	l.sw    0x70(r1), r30
 	l.sw    0x74(r1), r31
+	l.sw    0x78(r1), r4 /* EPCR */	
+	l.mfspr r5,r0,SPR_ESR_BASE
+	l.sw    0x7c(r1), r5 /* ESR */
+	
 
 	OR1K_DELAYED_NOP(OR1K_INST(l.jal   default_exception_handler_c))
-	
+
+	l.lwz   r2, 0x78(r1) /* EPCR */
+	l.mtspr	r0,r2, SPR_EPCR_BASE
+	l.lwz   r2, 0x7c(r1) /* ESR */
+	l.mtspr	r0,r2, SPR_ESR_BASE
+
 	l.lwz    r2, 0x00(r1)
 	l.lwz    r3, 0x04(r1)
 	l.lwz    r4, 0x08(r1)
