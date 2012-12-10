@@ -223,12 +223,18 @@ ENTRY(_start)
 	/* Save r11 */
 	l.or	r4,r11,r11
 	/* l.nop 0x6 moves the simulator cycle count to regs 11,12 */
+	/* Put some nops around this op so that the RF isn't
+	doing anything else when we write to it it */
+	l.nop
+	l.nop
 	l.nop	NOP_GET_TICKS
+	l.nop
+	l.nop
 	/* report upper 32-bits first */
 	l.or	r3,r12,r12
-	l.nop	0x2
+	l.nop	NOP_REPORT
 	l.or	r3, r11,r11
-	l.nop	0x2
+	l.nop	NOP_REPORT
 	l.addi  r3, r4, 0
 	OR1K_DELAYED_NOP(OR1K_INST(l.jal   exit))
 
