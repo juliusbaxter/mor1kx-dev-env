@@ -1,6 +1,6 @@
 #include "spr-defs.h"
 #include "board.h" // For timer rate (IN_CLK, TICKS_PER_SEC)
-
+#include <or1k-support-defs.h>
 /* For writing into SPR. */
 void 
 mtspr(unsigned long spr, unsigned long value)
@@ -59,7 +59,7 @@ void
 cpu_enable_timer(void)
 {
   mtspr(SPR_TTMR, SPR_TTMR_IE | SPR_TTMR_RT | ((IN_CLK/TICKS_PER_SEC) & 
-					       SPR_TTMR_TP));
+					       SPR_TTMR_PERIOD));
   mtspr(SPR_SR, SPR_SR_TEE | mfspr(SPR_SR));
 
 }
@@ -81,7 +81,7 @@ cpu_timer_tick(void)
   timer_ticks++;
   // Reset timer mode register to interrupt with same interval
   mtspr(SPR_TTMR, SPR_TTMR_IE | SPR_TTMR_RT | 
-	((IN_CLK/TICKS_PER_SEC) & SPR_TTMR_TP));
+	((IN_CLK/TICKS_PER_SEC) & SPR_TTMR_PERIOD));
 }
 
 /* Reset tick counter */
@@ -103,12 +103,12 @@ cpu_get_timer_ticks(void)
 void 
 cpu_sleep_10ms(void)
 {
-  unsigned long ttcr = mfspr(SPR_TTCR) & SPR_TTCR_CNT;
+  unsigned long ttcr = mfspr(SPR_TTCR) & SPR_TTCR_PERIOD;
   unsigned long first_time = cpu_get_timer_ticks();
   while (first_time == cpu_get_timer_ticks()); // Wait for tick to occur
   // Now wait until we're past the tick value we read before to know we've
   // gone at least enough
-  while(ttcr > (mfspr(SPR_TTCR) & SPR_TTCR_CNT));
+  while(ttcr > (mfspr(SPR_TTCR) & SPR_TTCR_PERIOD));
 
 }
   
