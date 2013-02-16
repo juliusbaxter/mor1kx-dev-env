@@ -1,5 +1,5 @@
-#ifndef _OR1200_UTILS_H_
-#define _OR1200_UTILS_H_
+#ifndef _MOR1KX_UTILS_H_
+#define _MOR1KX_UTILS_H_
 
 // Pull in interrupt defines here
 #include "int.h"
