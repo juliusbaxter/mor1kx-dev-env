@@ -1,7 +1,13 @@
 #ifndef _CPU_UTILS_H_
 #define _CPU_UTILS_H_
 
-// Somehow in future detect which CPU we're using, but for now hardcode OR1200
-#include "or1200-utils.h"
+#if OPENRISC_CPU_TYPE==mor1kx
+# include "mor1kx-utils.h"
+#else
+# if OPENRISC_CPU_TYPE==or1200
+#  include "or1200-utils.h"
+# endif
+#endif
+
 
 #endif

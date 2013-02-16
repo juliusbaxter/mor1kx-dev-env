@@ -273,8 +273,9 @@ default_exception_handler:
 	l.sw    0x78(r1), r4 /* EPCR */	
 	l.mfspr r5,r0,SPR_ESR_BASE
 	l.sw    0x7c(r1), r5 /* ESR */
-	
 
+	l.ori	r6, r1, 0 /* Pass exception stack pointer as arg 4*/
+	
 	OR1K_DELAYED_NOP(OR1K_INST(l.jal   default_exception_handler_c))
 
 	l.lwz   r2, 0x78(r1) /* EPCR */
@@ -313,9 +314,7 @@ default_exception_handler:
 	l.lwz    r30, 0x70(r1)
 	l.lwz    r31, 0x74(r1)
 
-
 	l.addi  r1, r1, EXCEPTION_STACK_SIZE
 
 	l.rfe
 	l.nop
-

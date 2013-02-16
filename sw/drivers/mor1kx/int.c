@@ -4,7 +4,7 @@
  *
  */
 
-#include "or1200-utils.h"
+#include "cpu-utils.h"
 #include "spr-defs.h"
 #include "int.h"
 

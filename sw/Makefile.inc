@@ -146,6 +146,7 @@ MARCH_FLAGS ?=-msoft-mul -msoft-div -msoft-float
 OR32_CFLAGS ?=-g -nostdlib -O2 $(MARCH_FLAGS) \
 		$(INCLUDE_FLAGS) \
 		-I$(SW_ROOT)/lib/include \
+		-DOPENRISC_CPU_DRIVER=$(OPENRISC_CPU_DRIVER) \
 		$(BOARD_C_FLAGS)
 
 LINK_SCRIPT_OPT ?=-T$(CPU_DRIVER)/link.ld
