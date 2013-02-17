@@ -101,13 +101,8 @@ _start:
 	l.movhi	r5, 0
 	l.movhi	r6, 0
 	
-#ifdef OR1200_IMPL_CY
 	// Kick off test
 	l.jal   _main
-#else
-	// Not supported, exit test
-	l.j	_finish
-#endif	
 	l.nop
 
 
@@ -258,18 +253,21 @@ _main:
 
 	// Now check carry on  unsigned multiply
 	// Some stimulus to make a 32-bit multiply overflow
-	l.movhi	r4, 0x1fff
+	l.movhi	r4, 0x7fff
 	l.ori	r4, r4, 0xffff
 	l.movhi	r5, 0x8000
-	l.ori	r6, r0, 2
+	l.ori	r8, r0, 2
 
 	// First multiply 0x7fffffff by 2,  shouldn't overflow
-	l.mulu	r3, r4, r6
+	l.mulu	r3, r4, r8
 	l.nop 	0x2
 	CHECK_CY_CLEAR
 
+	// WARNING - this will not work for the 3-stage multiplier
+	// in the mor1kx, as it will not detect unsigned overflow.
+	
 	// Now multiply 0x80000000 by 2 - should just overflow (for 32-bit)
-	l.mulu	r3, r5, r6
+	l.mulu	r3, r5, r8
 	l.nop 	0x2
 	CHECK_CY_SET
 
