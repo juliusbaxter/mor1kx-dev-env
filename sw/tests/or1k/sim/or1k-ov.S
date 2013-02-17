@@ -381,29 +381,6 @@ _main:
 	l.nop	0x2
 	CHECK_OV_CLEAR
 
-
-	// Now check overflow on  unsigned multiply
-#ifdef REMOVE_THIS
-	// Some stimulus to make a 32-bit multiply overflow
-	l.movhi	r4, 0x5555	;//((2^32))/3 + 2
-	l.ori	r4, r4, 0x5557
-	l.ori	r5, r0, 2
-	l.ori	r6, r0, 3
-
-	// First multiply big negative number by 2 - shouldn't overflow
-	l.mulu	r3, r4, r5
-	l.nop 	0x2
-	CHECK_OV_CLEAR
-
-	// Now multiply by 3 - should just overflow negative
-	l.mulu	r3, r4, r6
-	l.nop 	0x2
-	CHECK_OV_SET
-#endif
-	l.add 	r3, r0, r0	;// Should clear overflow
-	l.nop	0x2
-	CHECK_OV_CLEAR
-	
 	/////////////////////////////////////////////////////////////
 	//                                                         //
 	// Range Exception Tests                                   //
