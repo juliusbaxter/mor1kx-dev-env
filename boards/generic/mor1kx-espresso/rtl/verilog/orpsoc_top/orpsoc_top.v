@@ -636,7 +636,7 @@ module orpsoc_top
        .FEATURE_DEBUGUNIT("ENABLED"),
  `endif
        .OPTION_SHIFTER		("SERIAL"),
-       .FEATURE_MULTIPLIER	("THREESTAGE"),
+       .FEATURE_MULTIPLIER	("SERIAL"),
        .OPTION_CPU0		("ESPRESSO")
 
        )
