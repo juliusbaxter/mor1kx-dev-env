@@ -778,6 +778,8 @@ module mor1kx_monitor #(parameter LOG_DIR= "../out") ();
 		    $sformat(insnstring, "l.div   r%0d,r%0d,r%0d",rD_num,rA_num,rB_num); 
 		  `OR1K_ALU_OPC_DIVU:
 		    $sformat(insnstring, "l.divu  r%0d,r%0d,r%0d",rD_num,rA_num,rB_num);
+		  `OR1K_ALU_OPC_MULU:
+		    $sformat(insnstring, "l.mulu  r%0d,r%0d,r%0d",rD_num,rA_num,rB_num);		  
 		  `OR1K_ALU_OPC_CMOV:
 		    $sformat(insnstring, "l.cmov  r%0d,r%0d,r%0d",rD_num,rA_num,rB_num);
 		  `OR1K_ALU_OPC_FFL1:
