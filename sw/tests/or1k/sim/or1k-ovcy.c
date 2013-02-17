@@ -33,6 +33,8 @@ void range_exception_handler(void)
   // Now remove these from the ESR incase they're set so we don't sit in a loop
   // with the exception being triggered again...
   current_exception_state_struct->esr = last_esr & ~(SPR_SR_CY | SPR_SR_OV);
+  // Also step over the instruction which caused the exception
+  current_exception_state_struct->epcr += 4;
 }
 
 // Exception enable/disable functions depending on the CPU's capabilities
@@ -104,6 +106,13 @@ int do_add_get_sr_by_exception(unsigned long a, unsigned long b,
   (*enable_add_overflow_exception)();
   range_exception_occurred = 0;
 
+  
+  // Note that here the assembly has been observed to have assigned the same 
+  // register for x and a, eg. the disassembly had "l.add r2, r2, r5".
+  // This then may mean that if the instruction is repeated then it will 
+  // not have the same result. The exception handler will step over this
+  // instruction anyway, by incrementing the EPCR.
+  
   asm volatile("l.add %0,%1,%2;\n"
 	       : "=r" (x)
 	       : "r" (a), "r" (b));
