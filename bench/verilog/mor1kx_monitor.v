@@ -1,3 +1,19 @@
+/* ****************************************************************************
+  This Source Code Form is subject to the terms of the 
+  Open Hardware Description License, v. 1.0. If a copy 
+  of the OHDL was not distributed with this file, You 
+  can obtain one at http://juliusbaxter.net/ohdl/ohdl.txt
+
+  Description: mor1kx monitor module
+ 
+  Attaches to hooks provided in the mor1kx pipeline wrapper and provides
+  execution trace, disassembly, and l.nop instruction functions.
+   
+  Copyright (C) 2012, 2013 Authors
+ 
+  Author(s): Julius Baxter <juliusbaxter@gmail.com>
+ 
+***************************************************************************** */
 
 /* Configure these defines to point to the mor1kx instantiation */
 `define MOR1KX_INST dut.mor1kx0
@@ -12,13 +28,12 @@
 `define CPU_FLAG `CPU_WRAPPER.monitor_flag
 `define CPU_SR `CPU_WRAPPER.monitor_spr_sr
 `define EXECUTE_PC `CPU_WRAPPER.monitor_execute_pc
-`define RF_RESULT_IN `CPU_WRAPPER.monitor_rf_result_in
 `define GPR_GET(x) `CPU_INST.get_gpr(x)
 `define GPR_SET(x, y) `CPU_INST.set_gpr(x, y)
 
 `include "mor1kx-defines.v"
 
-
+// Pull in an ORPSoC-specific file
 `include "test-defines.v" // indicate if we should trace or not
 
 // OR1K ISA defines used in this file
@@ -31,9 +46,6 @@
 `define OR1K_ALU_OP_POS 3:0
 `define OR1K_SF_OP 25:21
 `define OR1K_XSYNC_OP_POS 25:21
-
-// ORPSoC-specific simulation include
-`include "test-defines.v"
 
 module mor1kx_monitor #(parameter LOG_DIR= "../out") ();
 
@@ -228,9 +240,9 @@ module mor1kx_monitor #(parameter LOG_DIR= "../out") ();
 	      end
 	      
 	      // Finally write what ended up in the in rD
-	      $fwrite(ftrace,"= %08h  ",`RF_RESULT_IN);
+	      $fwrite(ftrace,"= %08h  ",`GPR_GET(rD_num));
 	      if(TRACE_TO_SCREEN)
-		$write("= %08h  ",`RF_RESULT_IN);
+		$write("= %08h  ",`GPR_GET(rD_num));
 	   end
 	 else if (insn[`OR1K_OPCODE_SELECT]===`OR1K_OPCODE_MTSPR)
 	   begin
