@@ -59,8 +59,6 @@ public:
 	// Constructor
 	OrpsocMor1kxAccess(Vorpsoc_top * orpsoc_top);
 
-	bool getIdAdv();
-	uint32_t getIdInsn();
 	bool getExAdv();
 	uint32_t getExInsn();
 	uint32_t getExPC();

@@ -74,16 +74,6 @@ OrpsocMor1kxAccess::OrpsocMor1kxAccess(Vorpsoc_top * orpsoc_top)
 
 //! @return  The value of the decode stage instruction
 
-bool OrpsocMor1kxAccess::getIdAdv()
-{
-  return mor1kx_cpu_wrapper->monitor_decode_advance;
-}
-
-uint32_t OrpsocMor1kxAccess::getIdInsn()
-{
-  return mor1kx_cpu_wrapper->monitor_decode_insn;
-}
-
 bool OrpsocMor1kxAccess::getExAdv()
 {
   return mor1kx_cpu_wrapper->monitor_execute_advance;

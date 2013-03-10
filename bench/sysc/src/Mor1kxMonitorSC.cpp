@@ -381,7 +381,7 @@ Mor1kxMonitorSC::checkInstruction()
 {
   uint32_t r3;
   double ts;
-  static uint32_t decodeInsn = OR1K_NOP, executeInsn = OR1K_NOP,
+  static uint32_t executeInsn = OR1K_NOP,
     executeInsnDelayed = OR1K_NOP;
   static uint32_t executePCDelayed;
   uint32_t exPC;
@@ -686,11 +686,11 @@ Mor1kxMonitorSC::checkInstruction()
 void 
 Mor1kxMonitorSC::displayState()
 {
-  uint32_t decodeInsn, executeInsn;
+  uint32_t executeInsn;
 
   if (accessor->getExAdv()){
 
-    executeInsn = decodeInsn;
+    executeInsn = accessor->getExInsn();
 
     // Print PC, instruction
     statusFile << "\nEXECUTED(" << std::setfill(' ') <<
@@ -724,8 +724,6 @@ Mor1kxMonitorSC::displayState()
 
   }
 
-  if (accessor->getIdAdv())
-    decodeInsn = accessor->getIdInsn();
 
   return;
 
