@@ -54,13 +54,16 @@ include $(BOARD_ROOT)/Makefile.inc
 include $(PROJECT_ROOT)/scripts/make/Makefile-board-benchsrc.inc
 
 # Software tests we'll run
-TEST ?= or1k-simple
-
-TESTS ?= or1k-rfe			\
+TEST ?= or1k-basic
+TESTS ?= mor1kx-version			\
+	or1k-lsu			\
+	or1k-rfe			\
 	or1k-insnfetchalign		\
 	or1k-insnfetcherror		\
 	or1k-systemcall			\
 	or1k-trap			\
+        or1k-ov                         \
+	or1k-cy				\
 	or1k-trapdelayslot		\
 	or1k-illegalinsn		\
 	or1k-illegalinsndelayslot 	\
@@ -85,9 +88,18 @@ TESTS ?= or1k-rfe			\
 	or1k-simple			\
 	or1k-basic			\
 	or1k-cbasic			\
-	uart-simple			\
+	uart-simple
+
+DEBUG_UNIT_TESTS ?=			\
 	mor1kx-debugsteptest		\
+	mor1kx-debugbkpnttest		\
 	mor1kx-debugexceptsteptest
+
+# If we're running the rtl target, we can have the debug 
+# unit tests.
+ifeq ($(MAKECMDGOALS),rtl-tests)
+TESTS += $(DEBUG_UNIT_TESTS)
+endif
 
 include $(PROJECT_ROOT)/scripts/make/Makefile-simulators.inc
 
