@@ -31,6 +31,15 @@
       end
    endtask // write_mem_32
 
+   task read_mem_32;
+      input [31:0] addr;
+      output [31:0] data;
+      begin
+	 `DBG_CTRL.module_select(4'h0, 0);
+	 `DBG_CTRL.wb_read_32(data, addr,3);
+      end
+   endtask // read_mem_32
+
    task read_spr;
       input [15:0] spr_addr;
       output [31:0] spr;
@@ -49,7 +58,6 @@
       end
    endtask // write_spr
 
-
    task read_npc;
       output [31:0] dat;
       begin
@@ -64,8 +72,19 @@
       end
    endtask // write_npc
 
-   task single_step;
+   task get_stall_status;
+      output stall_status;
       reg [51:0] stall_poll;
+      begin
+	 `DBG_CTRL.module_select(4'h1, 0);
+	 `DBG_CTRL.debug_cpu_rd_ctrl(stall_poll);
+	 // return 1 for stalled, 0 for running
+	 stall_status = stall_poll[1];
+      end
+   endtask
+	 
+   task single_step;
+      reg stalled;
       begin
 	 /* set the single step bit of the DMR1 reg */
 	 write_spr(`OR1K_SPR_DMR1_ADDR, 1<<22);
@@ -73,11 +92,10 @@
 	 write_spr(`OR1K_SPR_DSR_ADDR, 1<<13);
 	 unstall_proc();
 	 /* wait until the processor is stalled again */
-	 `DBG_CTRL.debug_cpu_rd_ctrl(stall_poll);
-	 $display("stall: %h",stall_poll[1]); 
-	 while (!stall_poll[1]) begin
-	   `DBG_CTRL.debug_cpu_rd_ctrl(stall_poll);
-	    $display("stall: %h",stall_poll[1]);
+ 	 get_stall_status(stalled);
+	 while (!stalled) begin
+	    $display("stall: %h",stalled);
+	    get_stall_status(stalled);
 	 end
 	 /* should be stalled again */
 	 /* clear the single step bit of the DMR1 reg */
