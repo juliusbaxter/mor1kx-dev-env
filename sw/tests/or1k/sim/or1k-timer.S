@@ -123,8 +123,8 @@ _main:
 
 	/* Restart timer causing interrupt */
 	l.movhi r4,hi(SPR_TTMR_RT | SPR_TTMR_IE)
-	/* interrupt after 100 cycles */
-	l.ori	r6, r0, 100
+	/* interrupt after 200 cycles */
+	l.ori	r6, r0, 200
 	
 	/* load timer */
 	l.or	r5,r4,r6 /* value we'll interrupt on */
@@ -167,8 +167,8 @@ restart_timer_interrupt_check:
 
 	/* Restart timer causing interrupt */
 	l.movhi r4,hi(SPR_TTMR_CR | SPR_TTMR_IE)
-	/* interrupt after 100 cycles */
-	l.ori	r6, r0, 100
+	/* interrupt after 200 cycles */
+	l.ori	r6, r0, 200
 	
 	/* load timer */
 	l.or	r5,r4,r6 /* value we'll interrupt on */
@@ -241,7 +241,7 @@ one_shot_main_loop:
 	/* increment the main loop tick interrupt counter */
 	l.addi	r1, r1, 1
 
-	l.sfgeui r6, 100
+	l.sfgeui r6, 200
 	OR1K_DELAYED(
 	/* start our instruction counter loop */	
 	OR1K_INST(l.ori	r7,r0,2),
