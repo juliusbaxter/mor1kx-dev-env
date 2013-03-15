@@ -1,1 +1,1 @@
-/localhome/jules/git/mor1kx/rtl/verilog/mor1kx-defines.v
+../../../../../../../mor1kx/rtl/verilog/mor1kx-defines.v
