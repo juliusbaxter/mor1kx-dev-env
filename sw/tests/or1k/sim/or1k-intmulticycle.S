@@ -24,7 +24,7 @@
 */
 //////////////////////////////////////////////////////////////////////
 ////                                                              ////
-//// Copyright (C) 2011, 2012 Authors and OPENCORES.ORG           ////
+//// Copyright (C) 2013 Authors and OPENCORES.ORG                 ////
 ////                                                              ////
 //// This source file may be used and distributed without         ////
 //// restriction provided that this copyright statement is not    ////
@@ -129,15 +129,38 @@ _main:
 	
 	// set up r12 to hold intgen's base address
 	l.movhi	r12,hi(INTGEN_BASE)
-	
+
+load_store_tests:
+	// This test macro loads the countdown timer in the interrupt block
+	// it then writes the value passed to us into memory, and reads it
+	// back. The idea is at some point during those writes the interrupt
+	// will go off, and the test is for the pipeline to gracefully
+	// handle the interrupt and continue whatever it was doing.
+	// The l.nops after are for when the loads/stores may execute very
+	// quickly, and we proceeed to the next test too soon. We could have
+	// a loop but then when something happens and we miss the interrupt
+	// then we'll loop forever.
 #define INTGEN_LOAD_AND_ACCUMULATE_DELAY_VIA_LOADSTORE(x)	\
 	l.ori	r5,r0,lo(x)					;\
 	l.sb	0(r12),r5					;\
 	l.sw	0(r0),r5					;\
 	l.lwz	r8, 0(r0)					;\
 	l.add	r11,r11,r8					;\
-	l.addi	r13,r13,1
-	
+	l.addi	r13,r13,1					;\
+	l.nop							;\
+	l.nop							;\
+	l.nop							;\
+	l.nop							;\
+	l.nop							;\
+	l.nop							;\
+	l.nop							;\
+	l.nop							;\
+	l.nop							;\
+	l.nop							;\
+	l.nop							;\
+	l.nop							;\
+	l.nop							
+
 	/* Test begin */
 	
 	INTGEN_LOAD_AND_ACCUMULATE_DELAY_VIA_LOADSTORE(2)
@@ -195,7 +218,7 @@ _main:
 	INTGEN_LOAD_AND_ACCUMULATE_DELAY_VIA_LOADSTORE(16)
 
 	INTGEN_LOAD_AND_ACCUMULATE_DELAY_VIA_LOADSTORE(17)
-
+	
 	// check load/stores went to plan
 	l.sfnei	r11,182 /* Should equal 182 */
 	l.ori	r3,r11,0
@@ -205,6 +228,11 @@ _main:
 	
 	// check interrupts were serviced correctly
 	l.sfne	r10,r13 // These should be equal
+	l.ori	r3,r10,0
+	l.nop	0x2
+	l.ori	r3,r13,0
+	l.nop	0x2
+	
 	l.bf 	_fail
 	l.nop	
 
