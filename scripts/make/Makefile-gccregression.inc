@@ -22,6 +22,14 @@ $(error If running with GCC_TESTS=1 you must also set the path to the GCC\
 sources with GCC_SRC)
 endif
 
+# A list of stuff to skip which we maintain in this file
+HARDCODED_SKIP_LIST += 20030125-1 #this is a compiler test really, which doesnt work when we use -lm
+HARDCODED_SKIP_LIST += 990413-2 #Has volatile asm stuff which isn't appropriate
+HARDCODED_SKIP_LIST += eeprof-1 #Relies on some profiling stuff which we don't have
+HARDCODED_SKIP_LIST += execute #this is the name of a .exp file which somehow makes it through
+HARDCODED_SKIP_LIST += loop-2f loop-2g # relies on some OS stuff like <sys/mman.h>
+HARDCODED_SKIP_LIST += pr47237 # looks like we're failing some builtin apply thing...
+HARDCODED_SKIP_LIST += 920612-1 920711-1 pr23047 # These fail with -O2 (it precalculates what the called function does and gets it wrong, causing the test to fail by default - CPU appears to execute properly but test still fails?!)
 
 # Make a list of the tests
 GCC_C_TORTURE_TESTS_DIR=$(GCC_SRC)/gcc/testsuite/gcc.c-torture/execute
@@ -32,7 +40,7 @@ GCC_C_TORTURE_TESTS_BASENAME=$(basename $(GCC_C_TORTURE_TESTS))
 #$(warning got the following tests: $(GCC_C_TORTURE_TESTS_BASENAME))
 GCC_C_TORTURE_TESTS_NAMES_WITHOUT_SUFFIX=$(patsubst %.c, %, $(GCC_C_TORTURE_TESTS_BASENAME) )
 # Now filter out any we want to skip
-GCC_C_TORTURE_TESTS_NAMES=$(filter-out $(GCC_C_TORTURE_TESTS_SKIP), $(GCC_C_TORTURE_TESTS_NAMES_WITHOUT_SUFFIX))
+GCC_C_TORTURE_TESTS_NAMES=$(filter-out $(GCC_C_TORTURE_TESTS_SKIP) $(HARDCODED_SKIP_LIST), $(GCC_C_TORTURE_TESTS_NAMES_WITHOUT_SUFFIX))
 
 # Override the tests lists with the gcc regression tests
 
@@ -65,6 +73,7 @@ $(SW_BUILD_DIR):
 
 flash.in: $(SW_BUILD_DIR) $(SW_BUILD_DIR)/$(TEST).flashin
 	$(Q)if [ -L $@ ]; then unlink $@; fi
+	$(Q)if [ -e $@ ]; then rm $@; fi
 	$(Q)ln -s $(SW_BUILD_DIR)/$(TEST).flashin $@
 
 flash16.in: $(SW_BUILD_DIR) $(SW_BUILD_DIR)/$(TEST).flash16
@@ -101,8 +110,10 @@ $(SW_BUILD_DIR)/%.bin: $(SW_BUILD_DIR)/%.elf
 	$(OR32_OBJDUMP) -d $< > $(SW_BUILD_DIR)/$*.dis
 
 #Now rules for building the elf based 
+# Have -lm (link in the maths library) for code requiring the pow() function
+# -O2 is a pretty common level of optimisation to use
 $(SW_BUILD_DIR)/%.elf: $(GCC_C_TORTURE_TESTS_DIR)/%.c
-	$(OR32_CC) $< $(MARCH_FLAGS) $(BOARD_C_FLAGS) -o $@
+	$(OR32_CC) -O2 $< $(MARCH_FLAGS) $(BOARD_C_FLAGS) -o $@ -lm
 
 SW_UTILS_DIR=$(PROJECT_ROOT)/sw/utils
 SW_UTILS_BIN2VMEM=$(SW_UTILS_DIR)/bin2vmem
