@@ -79,6 +79,7 @@ TESTS ?= mor1kx-version			\
 	or1k-timer			\
 	or1k-tickrfforward		\
 	or1k-intloop    		\
+	or1k-intmulticycle 		\
 	or1k-tickloop   		\
 	or1k-dsx			\
 	or1k-intsyscall			\
