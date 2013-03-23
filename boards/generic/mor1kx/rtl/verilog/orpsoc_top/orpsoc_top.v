@@ -638,7 +638,7 @@ module orpsoc_top
 
        .FEATURE_INSTRUCTIONCACHE	("ENABLED"),
        .OPTION_ICACHE_BLOCK_WIDTH	(5),
-       .OPTION_ICACHE_SET_WIDTH		(9),
+       .OPTION_ICACHE_SET_WIDTH		(8),
        .OPTION_ICACHE_WAYS		(2),
        .OPTION_ICACHE_LIMIT_WIDTH	(32),
        .FEATURE_DATACACHE		("ENABLED"),
@@ -646,6 +646,9 @@ module orpsoc_top
        .OPTION_DCACHE_SET_WIDTH		(9),
        .OPTION_DCACHE_WAYS		(2),
        .OPTION_DCACHE_LIMIT_WIDTH	(31),
+
+//       .FEATURE_IMMU			("ENABLED"),
+//       .FEATURE_DMMU			("ENABLED"),
 
        .FEATURE_DSX                     ("ENABLED"),
        .FEATURE_DIVIDER                 ("SERIAL"),
@@ -850,8 +853,8 @@ module orpsoc_top
    defparam ram_wb0.aw = wb_aw;
    defparam ram_wb0.dw = wb_dw;
 
-   defparam ram_wb0.mem_size_bytes = (8192*1024); // 8MB
-   defparam ram_wb0.mem_adr_width = 23; // log2(8192*1024)
+   defparam ram_wb0.mem_size_bytes = (32768*1024); // 32MB
+   defparam ram_wb0.mem_adr_width = 25; // log2(32768*1024)
    
    
    ////////////////////////////////////////////////////////////////////////

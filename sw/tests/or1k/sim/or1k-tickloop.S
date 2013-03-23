@@ -80,19 +80,22 @@
 	.org 0x500
 	.global _tick_handler
 _tick_handler:
-	l.addi 	r17, r17, 1
+# Set r7 to hold value of TTMR, one-shot mode/single run (SR)
+	l.addi 	r5, r0, TICK_COUNTER_VALUE /* Tick timer counter value */
+	l.movhi r6,hi(SPR_TTMR_SR | SPR_TTMR_IE)
+	l.add  	r7,r5,r6
 	l.sfeqi r17,64
+
+	l.addi 	r17, r17, 1
 	l.bnf	_test_not_finished
 	l.nop
 	l.mfspr	r3,r0,SPR_EPCR_BASE	/* Get PC of bad instruction */
 	l.nop 	0x2
 	l.addi	r3,r3,8 	        /* Step over instruction */
 	l.mtspr	r0,r3,SPR_EPCR_BASE
+	/* Stop timer */
+	l.movhi	r7, 0
 _test_not_finished:
-# Set r7 to hold value of TTMR, one-shot mode/single run (SR)
-	l.addi 	r5, r0, TICK_COUNTER_VALUE /* Tick timer counter value */
-	l.movhi r6,hi(SPR_TTMR_SR | SPR_TTMR_IE)
-	l.add  	r7,r5,r6
 	/* Report values , 0x00000500 == tick timer report*/
 	l.ori 	r3, r0, 0x0500
 	l.nop 	2

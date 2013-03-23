@@ -114,6 +114,12 @@ _main:
 	l.sys	0xffff
 	l.addi	r2,r2,1
 
+	/* syscall followed by jump */
+	l.sys	0
+	l.j	jump
+	 l.nop
+jump:
+	l.addi	r2,r2,1
 
 	/* Check results OK */
 	l.sfeq	r1,r2

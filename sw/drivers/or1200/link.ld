@@ -1,4 +1,4 @@
-OUTPUT_ARCH(or32)
+OUTPUT_ARCH(or1k)
 SEARCH_DIR(.)
 __DYNAMIC  =  0;
 

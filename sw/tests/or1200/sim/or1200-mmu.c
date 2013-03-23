@@ -94,7 +94,7 @@
 // Set this to 1 to enable the IMMU tests
 #define DO_IMMU_TESTS 1
 // Set this to 1 to enable the DMMU tests
-#define DO_DMMU_TESTS 0
+#define DO_DMMU_TESTS 1
 
 // Symbols defined in linker script
 extern unsigned long _endtext;
@@ -445,6 +445,7 @@ void ipage_fault_handler (void)
 /* Invalidate all entries in DTLB and enable DMMU */
 void dmmu_enable (void)
 {
+#if DO_DMMU_TESTS==1
   /* Register DTLB miss handler */
   add_handler(0x9, dtlb_miss_handler);
   //excpt_dtlbmiss = (unsigned long)dtlb_miss_handler;
@@ -455,18 +456,21 @@ void dmmu_enable (void)
 
   /* Enable DMMU */
   lo_dmmu_en ();
-
+#endif
 }
 
 /* Disable DMMU */
 void dmmu_disable (void)
 {
+#if DO_DMMU_TESTS==1
   mtspr (SPR_SR, mfspr (SPR_SR) & ~SPR_SR_DME);
+#endif
 }
 
 /* Invalidate all entries in ITLB and enable IMMU */
 void immu_enable (void)
 {
+#if DO_IMMU_TESTS==1
   /* Register ITLB miss handler */
   add_handler(0xa, itlb_miss_handler);
   //excpt_itlbmiss = (unsigned long)itlb_miss_handler;
@@ -477,13 +481,15 @@ void immu_enable (void)
 
   /* Enable IMMU */
   lo_immu_en ();
-
+#endif
 }
 
 /* Disable IMMU */
 void immu_disable (void)
 {
+#if DO_IMMU_TESTS==1
   mtspr (SPR_SR, mfspr (SPR_SR) & ~SPR_SR_IME);
+#endif
 }
 
 void write_pattern(unsigned long start, unsigned long end)

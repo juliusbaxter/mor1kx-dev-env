@@ -29,7 +29,7 @@
 ####                                                              ####
 ######################################################################
 
-OR32_TOOL_PREFIX ?=or32-elf-
+OR32_TOOL_PREFIX ?=or1k-elf-
 
 OR32_LD=$(OR32_TOOL_PREFIX)ld
 OR32_AS=$(OR32_TOOL_PREFIX)as
