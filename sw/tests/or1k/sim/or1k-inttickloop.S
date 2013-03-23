@@ -228,6 +228,9 @@ update_irq_delay:
 	l.nop
 
 finished:
+	// Disable tick timer
+	l.mtspr r0,r0,SPR_TTMR
+	
 	// Make sure that for every interrupt we asked to generate, that
 	// we actually serviced it.
 	l.or r3, r0, r10
