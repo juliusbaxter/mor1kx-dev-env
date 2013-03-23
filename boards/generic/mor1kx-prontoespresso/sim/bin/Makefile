@@ -77,6 +77,7 @@ TESTS ?= mor1kx-version			\
 	or1k-intloop    		\
 	or1k-intmulticycle 		\
 	or1k-tickloop   		\
+	or1k-inttickloop    		\
 	or1k-ffl1			\
 	or1k-sf				\
 	or1k-csimple			\

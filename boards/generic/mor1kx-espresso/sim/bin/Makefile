@@ -81,6 +81,7 @@ TESTS ?= mor1kx-version			\
 	or1k-intloop    		\
 	or1k-intmulticycle 		\
 	or1k-tickloop   		\
+	or1k-inttickloop    		\
 	or1k-dsx			\
 	or1k-intsyscall			\
 	or1k-ticksyscall		\
