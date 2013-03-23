@@ -175,9 +175,49 @@ _main:
 	l.j	0
 	INTGEN_LOAD(20)
 	l.j	0
+	INTGEN_LOAD(21)
+	l.j	0
+	INTGEN_LOAD(22)
+	l.j	0
+	INTGEN_LOAD(23)
+	l.j	0
+	INTGEN_LOAD(24)
+	l.j	0
+	INTGEN_LOAD(25)
+	l.j	0
+	INTGEN_LOAD(26)
+	l.j	0
+	INTGEN_LOAD(27)
+	l.j	0
+	INTGEN_LOAD(28)
+	l.j	0
+	INTGEN_LOAD(29)
+	l.j	0
+	INTGEN_LOAD(30)
+	l.j	0
+	INTGEN_LOAD(31)
+	l.j	0
+	INTGEN_LOAD(32)
+	l.j	0
+	INTGEN_LOAD(33)
+	l.j	0
+	INTGEN_LOAD(34)
+	l.j	0
+	INTGEN_LOAD(35)
+	l.j	0
+	INTGEN_LOAD(36)
+	l.j	0
+	INTGEN_LOAD(37)
+	l.j	0
+	INTGEN_LOAD(38)
+	l.j	0
+	INTGEN_LOAD(39)
+	l.j	0
+	INTGEN_LOAD(40)
+	l.j	0
 
 
-	l.sfnei	r10,19
+	l.sfnei	r10,39
 	l.bf _fail
 	l.nop
 	
