@@ -16,11 +16,15 @@
 ***************************************************************************** */
 
 /* Configure these defines to point to the mor1kx instantiation */
-`define MOR1KX_INST dut.mor1kx0
+`ifndef MOR1KX_INST
+ `define MOR1KX_INST dut.mor1kx0
+`endif
 
 /* The rest of these shouldn't need changing if the wrapper hooks have been 
  set up correctly in mor1kx_cpu. */
-`define CPU_WRAPPER `MOR1KX_INST.mor1kx_cpu
+`ifndef CPU_WRAPPER
+ `define CPU_WRAPPER `MOR1KX_INST.mor1kx_cpu
+`endif
 `define CPU_INST `CPU_WRAPPER.`MOR1KX_CPU_PIPELINE.mor1kx_cpu
 `define EXECUTE_STAGE_INSN `CPU_WRAPPER.monitor_execute_insn
 `define EXECUTE_STAGE_ADV `CPU_WRAPPER.monitor_execute_advance
