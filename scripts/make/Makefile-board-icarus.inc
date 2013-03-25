@@ -14,6 +14,9 @@ endif
 ifeq ($(MOR1KX_CPU),)
 MOR1KX_CPU=fourstage
 endif
+ifneq ($(MOR1KX_CPU_WRAPPER_PATH),)
+MOR1KX_CPU_WRAPPER_DEFINE="+define+CPU_WRAPPER="$(MOR1KX_CPU_WRAPPER_PATH)
+endif
 
 # Rule to make VPI library for Icarus Verilog
 $(ICARUS_VPI_LIB): $(VPI_SRCS)
@@ -39,6 +42,7 @@ $(ICARUS_SCRIPT):  $(RTL_VERILOG_SRC) $(RTL_VERILOG_INCLUDES) \
 	$(Q)echo "+incdir+"$(BOARD_BENCH_VERILOG_INCLUDE_DIR) >> $@;
 	$(Q)echo "+incdir+"$(COMMON_BENCH_VERILOG_INCLUDE_DIR) >> $@;
 	$(Q)echo "+define+MOR1KX_CPU_PIPELINE="$(MOR1KX_CPU) >> $@;
+	$(Q)echo $(MOR1KX_CPU_WRAPPER_DEFINE) >> $@;
 	$(Q)echo "-y "$(BOARD_BENCH_VERILOG_DIR) >> $@;
 	$(Q)echo "-y "$(COMMON_BENCH_VERILOG_DIR) >> $@;
 	$(Q)for path in $(BENCH_VERILOG_SUBDIRS); do echo "+incdir+"$$path >> $@; done
