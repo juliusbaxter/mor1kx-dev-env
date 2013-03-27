@@ -29,24 +29,10 @@
 
 #include "OrpsocMor1kxAccess.h"
 
+#include "Vorpsoc_top__Syms.h"
+
 #include "Vorpsoc_top.h"
 #include "Vorpsoc_top_orpsoc_top.h"
-
-//#include "Vorpsoc_top_mor1kx__FG454e41424c4544.h"
-#include "Vorpsoc_top_mor1kx__pi1.h"
-
-#ifdef MOR1KX_CPU_prontoespresso
-#include "Vorpsoc_top_mor1kx_cpu__pi3.h"
-#include "Vorpsoc_top_mor1kx_cpu_prontoespresso__pi4.h"
-#endif
-#ifdef MOR1KX_CPU_espresso
-#include "Vorpsoc_top_mor1kx_cpu__pi3.h"
-#include "Vorpsoc_top_mor1kx_cpu_espresso__pi4.h"
-#endif
-#ifdef MOR1KX_CPU_cappuccino
-#include "Vorpsoc_top_mor1kx_cpu__pi5.h"
-#include "Vorpsoc_top_mor1kx_cpu_cappucino__pi8.h"
-#endif
 
 //! Constructor for the ORPSoC access class
 
@@ -57,17 +43,7 @@
 
 OrpsocMor1kxAccess::OrpsocMor1kxAccess(Vorpsoc_top * orpsoc_top)
 {
-	mor1kx_cpu_wrapper = orpsoc_top->v->mor1kx0->mor1kx_cpu;
-#ifdef MOR1KX_CPU_prontoespresso
-	mor1kx_cpu = orpsoc_top->v->mor1kx0->mor1kx_cpu->prontoespresso__DOT__mor1kx_cpu;
-#endif
-#ifdef MOR1KX_CPU_espresso
-	mor1kx_cpu = orpsoc_top->v->mor1kx0->mor1kx_cpu->espresso__DOT__mor1kx_cpu;
-#endif
-#ifdef MOR1KX_CPU_cappuccino
-	mor1kx_cpu = orpsoc_top->v->mor1kx0->mor1kx_cpu->cappuccino__DOT__mor1kx_cpu;
-#endif
-
+	this->orpsoc_top = orpsoc_top;
 
 }				// OrpsocMor1kxAccess ()
 
@@ -111,11 +87,10 @@ uint32_t OrpsocMor1kxAccess::getSprEsr()
 
 uint32_t OrpsocMor1kxAccess::getGpr(uint32_t regNum)
 {
-  return (mor1kx_cpu->get_gpr) (regNum);
+  return (mor1kx_pipeline->get_gpr) (regNum);
 }
 
 void OrpsocMor1kxAccess::setGpr(uint32_t regNum, uint32_t value)
 {
-  (mor1kx_cpu->set_gpr) (regNum, value);
+  (mor1kx_pipeline->set_gpr) (regNum, value);
 }
-

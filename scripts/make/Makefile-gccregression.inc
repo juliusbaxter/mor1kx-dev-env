@@ -53,7 +53,7 @@ ifeq ( , $(findstring $(GCC_C_TESTS_START_AT),$(GCC_C_TORTURE_TESTS_NAMES)))
 $(error Asked to start at GCC test $(GCC_C_TESTS_START_AT) but it doesnt exist)
 endif
 
-GCC_C_TORTURE_TESTS_LIST_STARTING_AT=$(shell seen=0;for t in $(GCC_C_TORTURE_TESTS_NAMES); do if [ $$seen -eq 1 ]; then echo $$t; fi; if [ $$t = $(GCC_C_TESTS_START_AT) ]; then seen=1; fi; done)
+GCC_C_TORTURE_TESTS_LIST_STARTING_AT=$(shell seen=0;for t in $(GCC_C_TORTURE_TESTS_NAMES); do if [ $$seen -eq 1 ]; then echo $$t; fi; if [ $$t = $(GCC_C_TESTS_START_AT) ]; then seen=1; echo $$t; fi; done)
 
 $(echo Starting GCC tests at $(GCC_C_TESTS_START_AT))
 

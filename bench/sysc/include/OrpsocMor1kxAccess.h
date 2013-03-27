@@ -35,17 +35,16 @@
 class Vorpsoc_top;
 class Vorpsoc_top_orpsoc_top;
 
+#define mor1kx_cpu_wrapper orpsoc_top->v->mor1kx0->mor1kx_cpu
+
 #ifdef MOR1KX_CPU_prontoespresso
-class Vorpsoc_top_mor1kx_cpu__pi3;
-class Vorpsoc_top_mor1kx_cpu_prontoespresso__pi4;
+#define mor1kx_pipeline orpsoc_top->v->mor1kx0->mor1kx_cpu->prontoespresso__DOT__mor1kx_cpu
 #endif
 #ifdef MOR1KX_CPU_espresso
-class Vorpsoc_top_mor1kx_cpu__pi3;
-class Vorpsoc_top_mor1kx_cpu_espresso__pi4;
+#define mor1kx_pipeline orpsoc_top->v->mor1kx0->mor1kx_cpu->espresso__DOT__mor1kx_cpu
 #endif
-#ifdef MOR1KX_CPU_fourstage
-class Vorpsoc_top_mor1kx_cpu__pi5;
-class Vorpsoc_top_mor1kx_cpu_fourstage__pi8;
+#ifdef MOR1KX_CPU_cappuccino
+#define mor1kx_pipeline orpsoc_top->v->mor1kx0->mor1kx_cpu->cappuccino__DOT__mor1kx_cpu
 #endif
 
 //! Access functions to the Verilator model
@@ -73,19 +72,8 @@ public:
 	uint32_t getSprEsr();
 
 private:
-#ifdef MOR1KX_CPU_prontoespresso
-	Vorpsoc_top_mor1kx_cpu__pi3* mor1kx_cpu_wrapper;
-	Vorpsoc_top_mor1kx_cpu_prontoespresso__pi4 * mor1kx_cpu;
-#endif
-#ifdef MOR1KX_CPU_espresso
-	Vorpsoc_top_mor1kx_cpu__pi3* mor1kx_cpu_wrapper;
-	Vorpsoc_top_mor1kx_cpu_espresso__pi4 * mor1kx_cpu;
-#endif
-#ifdef MOR1KX_CPU_fourstage
-	Vorpsoc_top_mor1kx_cpu__pi5* mor1kx_cpu_wrapper;
-	Vorpsoc_top_mor1kx_cpu_fourstage__pi8 * mor1kx_cpu;
-#endif
 
+	Vorpsoc_top *orpsoc_top;
 };				// OrpsocMor1kxAccess ()
 
 #endif // ORPSOC_MOR1KX_ACCESS__H

@@ -29,13 +29,10 @@
 
 #include "OrpsocMemoryAccess.h"
 
+#include "Vorpsoc_top__Syms.h"
+
 #include "Vorpsoc_top.h"
 #include "Vorpsoc_top_orpsoc_top.h"
-// Need RAM instantiation has parameters after module name
-// Include for ram_wb
-#include "Vorpsoc_top_ram_wb__M800000_MB17.h"
-// Include for ram_wb_b3
-#include "Vorpsoc_top_ram_wb_b3__M800000_MB17.h"
 
 //! Constructor for the ORPSoC access class
 
@@ -47,13 +44,7 @@
 OrpsocMemoryAccess::OrpsocMemoryAccess(Vorpsoc_top * orpsoc_top)
 {
 
-	// Assign main memory accessor objects
-	// For old ram_wb: ram_wb_sc_sw = orpsoc_top->v->ram_wb0->ram0;
-	//ram_wb_sc_sw = orpsoc_top->v->wb_ram_b3_0;
-	wishbone_ram = orpsoc_top->v->ram_wb0->ram_wb_b3_0;
-
-	// Assign arbiter accessor object
-	//wb_arbiter = orpsoc_top->v->wb_conbus;
+	this->orpsoc_top = orpsoc_top;
 
 }				// OrpsocMemoryAccess ()
 
@@ -122,4 +113,3 @@ void OrpsocMemoryAccess::do_ram_readmemh(void)
 	(wishbone_ram->do_readmemh) ();
 
 }				// do_ram_readmemh ()
-
