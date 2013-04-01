@@ -654,51 +654,50 @@ module orpsoc_top
 
    /* mor1kx_cpu AUTO_TEMPLATE
     (
-    .spr_bus_dat_dmmu_i	(0),
-    .spr_bus_ack_dmmu_i	(0),
-    .spr_bus_dat_immu_i	(0),
-    .spr_bus_ack_immu_i	(0),
-    .spr_bus_dat_mac_i	(0),
-    .spr_bus_ack_mac_i	(0),
-    .spr_bus_dat_pmu_i	(0),
-    .spr_bus_ack_pmu_i	(0),
-    .spr_bus_dat_pcu_i	(0),
-    .spr_bus_ack_pcu_i	(0),
-    .spr_bus_dat_fpu_i	(0),
-    .spr_bus_ack_fpu_i	(0),
-     
-    .du_addr_i		(or1k_dbg_adr_i[15:0]),
-    .du_stb_i		(or1k_dbg_stb_i),
-    .du_dat_i		(or1k_dbg_dat_i),
-    .du_we_i		(or1k_dbg_we_i),
-    .du_dat_o		(or1k_dbg_dat_o),
-    .du_ack_o		(or1k_dbg_ack_o),
-    .du_stall_i		(or1k_dbg_stall_i),
-    .du_stall_o		(or1k_dbg_bp_o),
-    .spr_bus_addr_o	(),
-    .spr_bus_we_o	(),
-    .spr_bus_stb_o	(),
-    .spr_bus_dat_o	(),
-    .spr_sr_o   	(),    
+      .ibus_adr_o			(ibus_adr_o),		
+      .ibus_req_o			(ibus_req_o),		
+      .dbus_adr_o			(dbus_adr_o),		
+      .dbus_dat_o			(dbus_dat_o),		
+      .dbus_req_o			(dbus_req_o),		
+      .dbus_bsel_o			(dbus_bsel_o),		
+      .dbus_we_o			(dbus_we_o),		
+      .du_dat_o				(or1k_dbg_dat_o),	
+      .du_ack_o				(or1k_dbg_ack_o),	
+      .du_stall_o			(or1k_dbg_bp_o),	
+      .spr_bus_addr_o			(),			
+      .spr_bus_we_o			(),			
+      .spr_bus_stb_o			(),			
+      .spr_bus_dat_o			(),			
+      .spr_sr_o				(),			
 
-    .clk		(wb_clk),
-    .rst		(wb_rst),
-     
-    .ibus_adr_o		(ibus_adr_o),
-    .ibus_req_o		(ibus_req_o),
-    .dbus_adr_o		(dbus_adr_o),
-    .dbus_dat_o		(dbus_dat_o),
-    .dbus_req_o		(dbus_req_o),
-    .dbus_bsel_o	(dbus_bsel_o),
-    .dbus_we_o		(dbus_we_o),
-    .ibus_err_i		(ibus_err_i),
-    .ibus_ack_i		(ibus_ack_i),
-    .ibus_dat_i		(ibus_dat_i),
-    .dbus_err_i		(dbus_err_i),
-    .dbus_ack_i		(dbus_ack_i),
-    .dbus_dat_i		(dbus_dat_i),
-    .irq_i		({12'd0,cpu_irq}),
-    ); */
+      .clk				(wb_clk),		
+      .rst				(wb_rst),		
+      .ibus_err_i			(ibus_err_i),		
+      .ibus_ack_i			(ibus_ack_i),		
+      .ibus_dat_i			(ibus_dat_i),		
+      .dbus_err_i			(dbus_err_i),		
+      .dbus_ack_i			(dbus_ack_i),		
+      .dbus_dat_i			(dbus_dat_i),		
+      .irq_i				({12'd0,cpu_irq}),	
+      .du_addr_i			(or1k_dbg_adr_i[15:0]),	
+      .du_stb_i				(or1k_dbg_stb_i),	
+      .du_dat_i				(or1k_dbg_dat_i),	
+      .du_we_i				(or1k_dbg_we_i),	
+      .du_stall_i			(or1k_dbg_stall_i),	
+      .spr_bus_dat_dmmu_i		(0),			
+      .spr_bus_ack_dmmu_i		(1'd0),			
+      .spr_bus_dat_immu_i		('d0),			
+      .spr_bus_ack_immu_i		(1'd0),			
+      .spr_bus_dat_mac_i		('d0),			
+      .spr_bus_ack_mac_i		(1'd0),			
+      .spr_bus_dat_pmu_i		('d0),			
+      .spr_bus_ack_pmu_i		(1'd0),			
+      .spr_bus_dat_pcu_i		('d0),			
+      .spr_bus_ack_pcu_i		(1'd0),			
+      .spr_bus_dat_fpu_i		('d0),			
+      .spr_bus_ack_fpu_i		(1'd0),
+    );
+    */
 
    mor1kx_cpu  
      	   #(
@@ -766,8 +765,6 @@ module orpsoc_top
       .spr_bus_dat_fpu_i		('d0),			 // Templated
       .spr_bus_ack_fpu_i		(1'd0));			 // Templated
 
-
-
    reg [31:0] 			   cpu_rom [0:2097152];
 
    initial
@@ -784,19 +781,19 @@ module orpsoc_top
      else
        ibus_ack_i_r <= ibus_req_o;
    
-   assign ibus_ack_i = ibus_ack_i_r/* & ibus_req_o*/;
+   assign ibus_ack_i = ibus_ack_i_r;
    
    assign ibus_err_i = (ibus_adr_o > 'h800000) && ibus_req_o;
 
    // Behavioural writing into the program memory required for some tests
    
    always @*
-     if (dbus_ack_i & dbus_we_o & (dbus_adr_o < 'h400000))
-       begin
+     if (dbus_ack_i & dbus_we_o & (dbus_adr_o < 'h800000))
 	  // Write into the program memory - only support full words for now
-	  cpu_rom[dbus_adr_o[23:2]] = dbus_dat_o;
-       end
-
+       cpu_rom[dbus_adr_o[23:2]] = dbus_dat_o;
+     else if (wbm_d_dbg_ack_i & wbm_d_dbg_we_o & (wbm_d_dbg_adr_o < 'h800000))
+       cpu_rom[wbm_d_dbg_adr_o[23:2]] = wbm_d_dbg_dat_o;
+	      
    mor1kx_bus_if_wb32
      #(.BUS_IF_TYPE("CLASSIC"))
    mor1kx_dbus_bridge
