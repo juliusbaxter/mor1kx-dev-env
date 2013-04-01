@@ -6,7 +6,10 @@ BOARD_NAME=mor1kx-rom-prontoespresso
 BOARD=$(FPGA_VENDOR)/$(BOARD_NAME)
 DESIGN_NAME=orpsoc
 
+# Define for verilog testbench
 MOR1KX_CPU_WRAPPER_PATH=dut.mor1kx_cpu
+# Define for cycle-accurate model
+SYSC_MOR1KX_CPU_WRAPPER=orpsoc_top->v->mor1kx_cpu
 MOR1KX_CPU=prontoespresso
 
 # This selects the sw driver for low-level things
