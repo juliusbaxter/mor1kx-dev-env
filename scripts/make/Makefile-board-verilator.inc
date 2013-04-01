@@ -86,6 +86,10 @@ ifdef MOR1KX_CPU
 VLT_CFLAGS += -DMOR1KX_CPU_$(MOR1KX_CPU)
 endif
 
+ifdef SYSC_MOR1KX_CPU_WRAPPER
+VLT_CFLAGS += -DMOR1KX_CPU_WRAPPER=\"$(SYSC_MOR1KX_CPU_WRAPPER)\"
+endif
+
 # VCD Enabled by default when building, enable it at runtime
 VLT_FLAGS +=--trace --exe
 TRACE_FLAGS=-DVM_TRACE=1 -I${SYSTEMPERL}/src

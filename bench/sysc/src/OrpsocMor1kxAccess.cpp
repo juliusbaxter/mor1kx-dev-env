@@ -52,37 +52,37 @@ OrpsocMor1kxAccess::OrpsocMor1kxAccess(Vorpsoc_top * orpsoc_top)
 
 bool OrpsocMor1kxAccess::getExAdv()
 {
-  return mor1kx_cpu_wrapper->monitor_execute_advance;
+  return MOR1KX_CPU_WRAPPER->monitor_execute_advance;
 }
 
 uint32_t OrpsocMor1kxAccess::getExInsn()
 {
-  return mor1kx_cpu_wrapper->monitor_execute_insn;
+  return MOR1KX_CPU_WRAPPER->monitor_execute_insn;
 }
 
 uint32_t OrpsocMor1kxAccess::getExPC()
 {
-  return mor1kx_cpu_wrapper->monitor_execute_pc;
+  return MOR1KX_CPU_WRAPPER->monitor_execute_pc;
 }
 
 uint32_t OrpsocMor1kxAccess::getSprSr()
 {
-  return mor1kx_cpu_wrapper->monitor_spr_sr;
+  return MOR1KX_CPU_WRAPPER->monitor_spr_sr;
 }
 
 uint32_t OrpsocMor1kxAccess::getSprEpcr()
 {
-  return mor1kx_cpu_wrapper->monitor_spr_epcr;
+  return MOR1KX_CPU_WRAPPER->monitor_spr_epcr;
 }
 
 uint32_t OrpsocMor1kxAccess::getSprEear()
 {
-  return mor1kx_cpu_wrapper->monitor_spr_eear;
+  return MOR1KX_CPU_WRAPPER->monitor_spr_eear;
 }
 
 uint32_t OrpsocMor1kxAccess::getSprEsr()
 {
-  return mor1kx_cpu_wrapper->monitor_spr_esr;
+  return MOR1KX_CPU_WRAPPER->monitor_spr_esr;
 }
 
 uint32_t OrpsocMor1kxAccess::getGpr(uint32_t regNum)

@@ -35,16 +35,18 @@
 class Vorpsoc_top;
 class Vorpsoc_top_orpsoc_top;
 
-#define mor1kx_cpu_wrapper orpsoc_top->v->mor1kx0->mor1kx_cpu
+#ifndef MOR1KX_CPU_WRAPPER
+#define MOR1KX_CPU_WRAPPER orpsoc_top->v->mor1kx0->mor1kx_cpu
+#endif
 
 #ifdef MOR1KX_CPU_prontoespresso
-#define mor1kx_pipeline orpsoc_top->v->mor1kx0->mor1kx_cpu->prontoespresso__DOT__mor1kx_cpu
+#define mor1kx_pipeline MOR1KX_CPU_WRAPPER ->prontoespresso__DOT__mor1kx_cpu
 #endif
 #ifdef MOR1KX_CPU_espresso
-#define mor1kx_pipeline orpsoc_top->v->mor1kx0->mor1kx_cpu->espresso__DOT__mor1kx_cpu
+#define mor1kx_pipeline MOR1KX_CPU_WRAPPER ->espresso__DOT__mor1kx_cpu
 #endif
 #ifdef MOR1KX_CPU_cappuccino
-#define mor1kx_pipeline orpsoc_top->v->mor1kx0->mor1kx_cpu->cappuccino__DOT__mor1kx_cpu
+#define mor1kx_pipeline MOR1KX_CPU_WRAPPER ->cappuccino__DOT__mor1kx_cpu
 #endif
 
 //! Access functions to the Verilator model
