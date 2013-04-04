@@ -5,7 +5,7 @@
 #ifdef GPIO_NUM_CORES
 const int GPIO_BASE_ADR[GPIO_NUM_CORES] = {GPIO0_BASE, GPIO1_BASE};
 #else
-const int GPIO_BASE_ADR[1] = {GPIO0_BASE};
+const int GPIO_BASE_ADR[1] = {0};
 #endif
 
 void gpio_init(int core)
