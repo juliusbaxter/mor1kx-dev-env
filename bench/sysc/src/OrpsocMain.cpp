@@ -101,6 +101,10 @@ int sc_main(int argc, char *argv[])
 	sc_signal < bool > uart_tx;
 #endif
 
+#ifdef GPIO0
+	sc_signal < uint32_t >  gpio0_io;
+#endif
+
 	gSimRunning = 0;
 
 	// Are we running "quiet"?
@@ -167,6 +171,7 @@ int sc_main(int argc, char *argv[])
 	
 	// Instantiate the Verilator model, VCD trace handler and accessor
 	orpsoc = new Vorpsoc_top("orpsoc");
+
 
 	memaccessor = new OrpsocMemoryAccess(orpsoc);
 	memoryload = new MemoryLoad(memaccessor);
@@ -332,6 +337,9 @@ int sc_main(int argc, char *argv[])
 #ifdef UART0
 	orpsoc->uart0_srx_pad_i(uart_rx);	// External UART
 	orpsoc->uart0_stx_pad_o(uart_tx);
+#endif
+#ifdef GPIO0
+        orpsoc->gpio0_pad_io(gpio0_io);
 #endif
 
 	// Connect up the SystemC  modules

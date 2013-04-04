@@ -50,6 +50,13 @@ parameter intgen_wb_adr = 8'he1;
 parameter intgen_data_width = 8;
 parameter intgen_addr_width = 1;
 
+// GPIO params
+parameter gpio0_io_width = 32;
+parameter gpio0_wb_adr = 8'h91;
+parameter wbs_d_gpio0_data_width = 32;
+parameter gpio_addr_width = 8;
+
+
 // ROM
 parameter wbs_i_rom0_data_width = 32;
 parameter wbs_i_rom0_addr_width = 6;
@@ -87,10 +94,11 @@ parameter ibus_arb_slave1_adr = 4'h0;        // Main memory
 ///////////////////////////
 // Has auto foward to last slave when no address hits
 parameter dbus_arb_wb_addr_match_width = 8;
-parameter dbus_arb_wb_num_slaves = 2;
+parameter dbus_arb_wb_num_slaves = 3;
 // Slave addresses
-parameter dbus_arb_slave0_adr = 4'h0; // Main memory (SDRAM/FPGA SRAM)
-parameter dbus_arb_slave1_adr = 8'hxx; // Default slave - address don't care (X)
+parameter dbus_arb_slave0_adr = 8'h0; // Main memory (SDRAM/FPGA SRAM)
+parameter dbus_arb_slave1_adr = gpio0_wb_adr;
+parameter dbus_arb_slave2_adr = 8'hxx; // Default slave - address don't care (X)
 
 ///////////////////////////////
 //                           //

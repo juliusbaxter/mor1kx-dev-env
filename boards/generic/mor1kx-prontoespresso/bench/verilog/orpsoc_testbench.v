@@ -71,6 +71,12 @@ module orpsoc_testbench;
    wire 		     uart0_stx_pad_o;
    wire 		     uart0_srx_pad_i;
 `endif
+
+`ifdef GPIO0
+   tri [gpio0_io_width-1:0]  gpio0_pad_io;
+   // Invert lower half and loop back
+   assign gpio0_pad_io[31:16] = ~gpio0_pad_io[15:0];
+`endif
    
    orpsoc_top dut
      (
@@ -85,6 +91,10 @@ module orpsoc_testbench;
       .uart0_stx_pad_o			(uart0_stx_pad_o),
       .uart0_srx_pad_i			(uart0_srx_pad_i),
 `endif
+`ifdef GPIO0
+      .gpio0_pad_io                      (gpio0_pad_io),
+`endif
+      
       .rst_n_pad_i			(rst_n)
       );
 

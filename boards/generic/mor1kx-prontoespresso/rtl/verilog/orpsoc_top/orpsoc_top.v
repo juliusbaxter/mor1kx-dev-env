@@ -43,6 +43,9 @@ module orpsoc_top
 `ifdef UART0
     uart0_srx_pad_i, uart0_stx_pad_o, 
 `endif
+`ifdef GPIO0
+    gpio0_pad_io,
+`endif
     clk_pad_i,
     rst_n_pad_i  
     );
@@ -61,6 +64,9 @@ module orpsoc_top
 `ifdef UART0
    input  uart0_srx_pad_i;
    output uart0_stx_pad_o;
+`endif
+`ifdef GPIO0
+   inout [gpio0_io_width-1:0] gpio0_pad_io;
 `endif
    
    ////////////////////////////////////////////////////////////////////////
@@ -231,6 +237,20 @@ module orpsoc_top
    wire 			     wbs_d_uart0_err_o;
    wire 			     wbs_d_uart0_rty_o;   
 
+   // gpio0 wires
+   wire [31:0] 			     wbs_d_gpio0_adr_i;
+   wire [wbs_d_gpio0_data_width-1:0] wbs_d_gpio0_dat_i;
+   wire [3:0] 			     wbs_d_gpio0_sel_i;
+   wire 			     wbs_d_gpio0_we_i;
+   wire 			     wbs_d_gpio0_cyc_i;
+   wire 			     wbs_d_gpio0_stb_i;
+   wire [2:0] 			     wbs_d_gpio0_cti_i;
+   wire [1:0] 			     wbs_d_gpio0_bte_i;   
+   wire [wbs_d_gpio0_data_width-1:0] wbs_d_gpio0_dat_o;   
+   wire 			     wbs_d_gpio0_ack_o;
+   wire 			     wbs_d_gpio0_err_o;
+   wire 			     wbs_d_gpio0_rty_o;   
+   
       
    // intgen wires
    wire [31:0] 			     wbs_d_intgen_adr_i;
@@ -363,18 +383,31 @@ module orpsoc_top
       .wbs0_err_o			(wbs_d_mc0_err_o),
       .wbs0_rty_o			(wbs_d_mc0_rty_o),
 
-      .wbs1_adr_i			(wbm_b_d_adr_o),
-      .wbs1_dat_i			(wbm_b_d_dat_o),
-      .wbs1_sel_i			(wbm_b_d_sel_o),
-      .wbs1_we_i			(wbm_b_d_we_o),
-      .wbs1_cyc_i			(wbm_b_d_cyc_o),
-      .wbs1_stb_i			(wbm_b_d_stb_o),
-      .wbs1_cti_i			(wbm_b_d_cti_o),
-      .wbs1_bte_i			(wbm_b_d_bte_o),
-      .wbs1_dat_o			(wbm_b_d_dat_i),
-      .wbs1_ack_o			(wbm_b_d_ack_i),
-      .wbs1_err_o			(wbm_b_d_err_i),
-      .wbs1_rty_o			(wbm_b_d_rty_i),
+      .wbs1_adr_i			(wbs_d_gpio0_adr_i),
+      .wbs1_dat_i			(wbs_d_gpio0_dat_i),
+      .wbs1_sel_i			(wbs_d_gpio0_sel_i),
+      .wbs1_we_i			(wbs_d_gpio0_we_i),
+      .wbs1_cyc_i			(wbs_d_gpio0_cyc_i),
+      .wbs1_stb_i			(wbs_d_gpio0_stb_i),
+      .wbs1_cti_i			(wbs_d_gpio0_cti_i),
+      .wbs1_bte_i			(wbs_d_gpio0_bte_i),
+      .wbs1_dat_o			(wbs_d_gpio0_dat_o),
+      .wbs1_ack_o			(wbs_d_gpio0_ack_o),
+      .wbs1_err_o			(wbs_d_gpio0_err_o),
+      .wbs1_rty_o			(wbs_d_gpio0_rty_o),
+
+      .wbs2_adr_i			(wbm_b_d_adr_o),
+      .wbs2_dat_i			(wbm_b_d_dat_o),
+      .wbs2_sel_i			(wbm_b_d_sel_o),
+      .wbs2_we_i			(wbm_b_d_we_o),
+      .wbs2_cyc_i			(wbm_b_d_cyc_o),
+      .wbs2_stb_i			(wbm_b_d_stb_o),
+      .wbs2_cti_i			(wbm_b_d_cti_o),
+      .wbs2_bte_i			(wbm_b_d_bte_o),
+      .wbs2_dat_o			(wbm_b_d_dat_i),
+      .wbs2_ack_o			(wbm_b_d_ack_i),
+      .wbs2_err_o			(wbm_b_d_err_i),
+      .wbs2_rty_o			(wbm_b_d_rty_i),
 
       // Clock, reset inputs
       .wb_clk			(wb_clk),
@@ -385,6 +418,7 @@ module orpsoc_top
    defparam arbiter_dbus0.wb_num_slaves = dbus_arb_wb_num_slaves;
    defparam arbiter_dbus0.slave0_adr = dbus_arb_slave0_adr;
    defparam arbiter_dbus0.slave1_adr = dbus_arb_slave1_adr;
+   defparam arbiter_dbus0.slave2_adr = dbus_arb_slave2_adr;
 
    //
    // Wishbone byte-wide bus arbiter
@@ -926,6 +960,53 @@ module orpsoc_top
 `endif //  `ifdef INTGEN
    assign wbs_d_intgen_err_o = 0;
    assign wbs_d_intgen_rty_o = 0;
+
+
+`ifdef GPIO0
+
+   wire        gpio0_irq;
+
+   wire [gpio0_io_width-1:0] gpio0_i;
+   wire [gpio0_io_width-1:0] gpio0_o;
+   wire [gpio0_io_width-1:0] gpio0_oe;
+
+   genvar 		   gpio0_var;
+   
+   generate
+      for (gpio0_var=0;gpio0_var<gpio0_io_width;gpio0_var=gpio0_var+1)
+	begin : gpio_oes
+	   assign gpio0_pad_io[gpio0_var] = gpio0_oe[gpio0_var] ? gpio0_o[gpio0_var] : 1'bz;
+	end
+   endgenerate
+   
+   assign gpio0_i = gpio0_pad_io;
+   
+   gpio gpio0
+     (
+      .wb_clk_i		(wb_clk),
+      .wb_rst_i		(wb_rst),
+      .wb_cyc_i		(wbs_d_gpio0_cyc_i),
+      .wb_adr_i		(wbs_d_gpio0_adr_i[7:0]),
+      .wb_dat_i		(wbs_d_gpio0_dat_i),
+      .wb_sel_i		(wbs_d_gpio0_sel_i),
+      .wb_we_i		(wbs_d_gpio0_we_i),
+      .wb_stb_i		(wbs_d_gpio0_stb_i),
+      
+      .wb_dat_o		(wbs_d_gpio0_dat_o),
+      .wb_ack_o		(wbs_d_gpio0_ack_o),
+      .wb_err_o		(wbs_d_gpio0_err_o),
+      
+      .wb_inta_o	(gpio0_irq),
+
+      .aux_i		(32'd0),
+      
+      // External GPIO Interface
+      .ext_pad_i	(gpio0_i),
+      .ext_pad_o	(gpio0_o),
+      .ext_padoe_o	(gpio0_oe)
+      );
+   
+`endif
    
    ////////////////////////////////////////////////////////////////////////
    //
@@ -940,7 +1021,11 @@ module orpsoc_top
 `else   
    assign cpu_irq[2] = 0;
 `endif
+`ifdef GPIO0
+   assign cpu_irq[3] = gpio0_irq;
+`else
    assign cpu_irq[3] = 0;
+`endif
    assign cpu_irq[4] = 0;
    assign cpu_irq[5] = 0;
 `ifdef SPI0

@@ -44,7 +44,7 @@
 `define INTGEN
 `define MOR1KX
 //`define OR1200
-
+`define GPIO0
 
 // end of included module defines - keep this comment line here
 

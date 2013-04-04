@@ -18,6 +18,8 @@
 #define INTGEN_BASE         0xe1000000
 #define INTGEN_IRQ                  19
 
+#define GPIO0_BASE          0x91000000
+#define GPIO0_IRQ                    3
 
 //
 // OR1200 tick timer period define
