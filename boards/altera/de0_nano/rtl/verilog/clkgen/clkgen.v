@@ -134,12 +134,13 @@ module clkgen
  
    wire   pll_lock;
 
+   assign sdram_clk_o = wb_clk_o;
    pll pll0 
    (
     .areset (async_rst),
     .inclk0 (sys_clk_pad_i),
 `ifdef VERSATILE_SDRAM      
-    .c0     (sdram_clk_o),
+//    .c0     (sdram_clk_o),
 `else
     .c0     (),
 `endif      
