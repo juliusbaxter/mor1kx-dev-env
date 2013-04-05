@@ -259,10 +259,7 @@ module orpsoc_top
    //
    wire 		      wb_clk, wb_rst;
    wire 		      sdram_clk, sdram_rst;
-   wire 		      ddr2_if_clk, ddr2_if_rst;
-   wire 		      clk200;
    wire 		      usb_clk;
-   wire 		      spw_clk;
    wire 		      eth_smii_clk, eth_smii_rst;
    wire 		      dbg_tck;
    wire 		      vga0_pclk;
@@ -1257,7 +1254,7 @@ module orpsoc_top
 
 `ifdef MOR1KX
 
-   parameter MOR1KX_CPU0_OPTION_CPU = "CAPPUCCINO";
+   parameter MOR1KX_CPU0_OPTION_CPU = "PRONTO_ESPRESSO";
 
    wire [31:0] 				  cpu_irq;
 
@@ -1266,16 +1263,9 @@ module orpsoc_top
        .FEATURE_DEBUGUNIT("ENABLED"),
        .FEATURE_CMOV("ENABLED"),
        .FEATURE_FFL1("REGISTERED"),
-       .FEATURE_INSTRUCTIONCACHE("ENABLED"),
-       .OPTION_ICACHE_BLOCK_WIDTH(4),
-       .OPTION_ICACHE_SET_WIDTH(8),
-       .OPTION_ICACHE_WAYS(2),
-       .OPTION_ICACHE_LIMIT_WIDTH(32),
-       .FEATURE_DATACACHE("ENABLED"),
-       .OPTION_DCACHE_BLOCK_WIDTH(4),
-       .OPTION_DCACHE_SET_WIDTH(8),
-       .OPTION_DCACHE_WAYS(2),
-       .OPTION_DCACHE_LIMIT_WIDTH(31),
+       .OPTION_SHIFTER		("SERIAL"),
+       .FEATURE_MULTIPLIER	("SERIAL"),
+       .FEATURE_DIVIDER  	("SERIAL"),
        .OPTION_CPU0(MOR1KX_CPU0_OPTION_CPU),
        .OPTION_RESET_PC(32'hf0000100)
        )
