@@ -70,6 +70,7 @@ TESTS ?= mor1kx-version			\
 	or1k-cmov			\
 	or1k-shortbranch		\
 	or1k-shortjump  		\
+	or1k-regjmp	  		\
 	or1k-timer			\
 	or1k-tickrfforward		\
 	or1k-intsyscall			\
