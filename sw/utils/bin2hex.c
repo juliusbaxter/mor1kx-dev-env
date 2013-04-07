@@ -107,8 +107,12 @@ int main(int argc, char **argv)
 	    
 	    // This will always be in argv[3]
 	    if (strcmp("-size_word", argv[3]) == 0)
-	      // We will calculate the number of bytes first
-	      write_size_word=1;
+	      {
+		// We will calculate the number of bytes first
+		write_size_word=1;
+		skip_first_4bytes = 1;
+
+	      }
 	    
 	  }
 
