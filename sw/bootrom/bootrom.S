@@ -33,10 +33,11 @@
 ////                                                              ////
 //////////////////////////////////////////////////////////////////////
 
+#include <or1k-asm.h>
+	
 // Defines for which bootrom app to use are in board.h - TODO: use the
 // processed orspoc-defines.v file for this define. It makes more sense
 // as this software ends up as gates.
-	
 #include "board.h"
 
 #ifdef BOOTROM_SPI_FLASH
@@ -74,58 +75,78 @@ spi_init:
 	l.sb  	SPI_SPSS(r4), r0         /* Clear SPI slave selects */
 	l.ori 	r6, r0, SPI_SPSS_INIT
 	l.sb  	SPI_SPSS(r4), r6         /* Set appropriate slave select */
-	l.jal	spi_xfer
-	l.ori 	r3, r0, 0x3              /* READ command opcode for SPI device*/
-	l.jal 	spi_xfer
+	OR1K_DELAYED(
+	/* increment exception counter regardless of test */
+	OR1K_INST(l.ori r3, r0, 0x3), /* READ command opcode for SPI device*/
+	OR1K_INST(l.jal	spi_xfer))
+	OR1K_DELAYED(
+	OR1K_INST(
 #ifdef BOOTROM_ADDR_BYTE2
 	l.ori 	r3, r0, BOOTROM_ADDR_BYTE2 /* Use addr if defined. MSB first */
 #else	
 	l.or 	r3, r0, r0
-#endif	
-	l.jal 	spi_xfer
+#endif
+	),
+	OR1K_INST(l.jal 	spi_xfer))
+
+	OR1K_DELAYED(
+	OR1K_INST(
 #ifdef BOOTROM_ADDR_BYTE1
 	l.ori 	r3, r0, BOOTROM_ADDR_BYTE1
 #else	
 	l.or 	r3, r0, r0
-#endif	
-	l.jal 	spi_xfer
+#endif
+	),
+	OR1K_INST(l.jal 	spi_xfer))
+
+	OR1K_DELAYED(
+	OR1K_INST(
 #ifdef BOOTROM_ADDR_BYTE0
 	l.ori 	r3, r0, BOOTROM_ADDR_BYTE0
 #else	
 	l.or 	r3, r0, r0
-#endif	
+#endif
+	),
+	OR1K_INST(l.jal 	spi_xfer))
+	
 	l.movhi r6, 0
 	l.movhi r7, 0xffff	
 
-copy:	
-	l.jal 	spi_xfer         /* Read a byte into r3 */
-	l.add 	r8, r1, r6       /* Calculate store address */
+copy:
+	OR1K_DELAYED(
+	OR1K_INST(l.add 	r8, r1, r6), /* Calculate store address */
+	OR1K_INST(l.jal 	spi_xfer)    /* Read a byte into r3 */
+	)
 	l.sb 	0(r8), r3        /* Write byte to memory */
 	l.addi 	r6, r6, 1        /* Increment counter */
 	l.sfeqi r6, 0x4          /* Is this the first word ?*/
-	l.bf 	store_sizeword   /* put sizeword in the register */
+	OR1K_DELAYED_NOP(
+	OR1K_INST(l.bf 	store_sizeword))   /* put sizeword in the register */
 	l.sfeq 	r6, r7           /* Check if we've finished loading the words */
-	l.bnf 	copy             /* Continue copying if not last word */
-	l.nop
+	OR1K_DELAYED_NOP(
+	OR1K_INST(l.bnf 	copy)) /* Continue copying if not last word */
 
 goto_reset:
 	l.ori 	r1, r1, RESET_ADDR
-	l.jr 	r1
-	l.sb  	SPI_SPSS(r4), r0 /* Clear SPI slave selects */
+	OR1K_DELAYED(
+	OR1K_INST(l.sb  	SPI_SPSS(r4), r0), /* Clear SPI slave selects */
+	OR1K_INST(l.jr 	r1)
+	)
+	
 	
 store_sizeword:
 #ifdef SPI_RETRY_IF_INSANE_SIZEWORD
 	l.lwz 	r7, 0(r1)        /* Size word is in first word of SDRAM */
 	l.srli	r10, r7, 16	 /* Chop the sizeword we read in half */
 	l.sfgtui r10, 0x0200	 /* It's unlikely we'll ever load > 32MB */
-	l.bf	boot_init
-	l.nop
-	l.j 	copy
-	l.nop
-
+	OR1K_DELAYED_NOP(
+	OR1K_INST(l.bf	boot_init))
+	OR1K_DELAYED_NOP(
+	OR1K_INST(l.j 	copy))
 #else	
-	l.j 	copy
-	l.lwz 	r7, 0(r1)         /* Size word is in first word of SDRAM */
+	OR1K_DELAYED(
+	OR1K_INST(l.lwz 	r7, 0(r1)), /* Size word is in first word of SDRAM */
+        OR1K_INST(l.j copy))
 #endif
 	
 spi_xfer:
@@ -134,11 +155,13 @@ spi_xfer:
 spi_xfer_poll:	
 	l.andi 	r3, r3, SPI_SPSR_RX_CHECK /* AND read fifo bit empty */
 	l.sfeqi r3, SPI_SPSR_RX_CHECK    /* is bit set? ... */
-	l.bf 	spi_xfer_poll     /* ... if so, rxfifo empty, keep polling */
-	l.lbz 	r3, SPI_SPSR(r4) /* Read SPSR */
-	l.jr 	r9
-	l.lbz 	r3, SPI_SPDR(r4) /* Get data byte */
-
+	OR1K_DELAYED(
+	OR1K_INST(l.lbz 	r3, SPI_SPSR(r4)), /* Read SPSR */
+	/* ... if so, rxfifo empty, keep polling */
+	OR1K_INST(l.bf 	spi_xfer_poll))     
+	OR1K_DELAYED(
+	OR1K_INST(l.lbz 	r3, SPI_SPDR(r4)), /* Get data byte */
+	OR1K_INST(l.jr 	r9))
 
 #endif
 
