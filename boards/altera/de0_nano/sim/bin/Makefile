@@ -49,8 +49,38 @@ include $(BOARD_ROOT)/Makefile.inc
 # Simulation-specific paths and files from this one
 include $(PROJECT_ROOT)/scripts/make/Makefile-board-benchsrc.inc
 
-TEST ?= or1200-simple
-TESTS ?= or1200-simple or1200-cbasic or1200-dctest or1200-float or1200-mmu or1200-basic or1200-except or1200-tick or1200-ticksyscall uart-simple
+TEST ?= or1k-basic
+TESTS ?= mor1kx-version			\
+	or1k-lsu                        \
+	or1k-rfe			\
+	or1k-insnfetchalign		\
+	or1k-insnfetcherror		\
+	or1k-systemcall			\
+	or1k-trap			\
+	or1k-illegalinsn		\
+	or1k-lsualign			\
+	or1k-lsuerror			\
+	or1k-alignillegalinsn		\
+	or1k-lwjr			\
+	or1k-cmov			\
+	or1k-shortbranch		\
+	or1k-shortjump  		\
+	or1k-timer			\
+	or1k-tickrfforward		\
+	or1k-intsyscall			\
+	or1k-ticksyscall		\
+	or1k-intloop    		\
+	or1k-intmulticycle 		\
+	or1k-tickloop   		\
+	or1k-inttickloop    		\
+	or1k-ffl1			\
+	or1k-sf				\
+	or1k-csimple			\
+	or1k-basic			\
+	or1k-cbasic			\
+        or1k-ov                         \
+	or1k-cy				\
+	uart-simple
 
 include $(PROJECT_ROOT)/scripts/make/Makefile-simulators.inc
 
