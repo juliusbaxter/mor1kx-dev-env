@@ -1456,7 +1456,11 @@ module orpsoc_top
      #(
        .TECHNOLOGY			("ALTERA"),
        .CLK_FREQ_MHZ			(100),	// sdram_clk freq in MHZ
+`ifdef SYNTHESIS
        .POWERUP_DELAY			(200),	// power up delay in us
+`else
+       .POWERUP_DELAY			(0),	// power up delay in us
+`endif
        .WB_PORTS			(3),	// Number of wishbone ports
        .ROW_WIDTH			(13),	// Row width
        .COL_WIDTH			(9),	// Column width
