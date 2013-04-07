@@ -23,6 +23,8 @@ export MARCH_FLAGS
 BOARD_C_FLAGS=-mno-delay
 export BOARD_C_FLAGS
 
+HEX_IMAGE_PADDING=0xb0000
+export HEX_IMAGE_PADDING
 
 # Path down to root of project
 PROJECT_ROOT=$(BOARD_ROOT)/../../..
