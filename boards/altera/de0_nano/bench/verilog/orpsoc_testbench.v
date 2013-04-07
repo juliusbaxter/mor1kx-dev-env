@@ -316,7 +316,9 @@ module orpsoc_testbench;
    
 `ifdef SPI0
    // SPI Flash
-   AT26DFxxx spi0_flash
+   AT26DFxxx
+     #(.MEMSIZE(4096*1024))
+   spi0_flash
      (// Outputs
       .SO					(spi0_miso_i),
       // Inputs
