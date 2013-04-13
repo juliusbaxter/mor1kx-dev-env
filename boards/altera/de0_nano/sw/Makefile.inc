@@ -1,5 +1,8 @@
 # Expecting BOARD_SW_ROOT already set to indicate how far below directory we're
 # in the board's software root path is.
+BOARD_ROOT=$(BOARD_SW_ROOT)/..
+
+include $(BOARD_ROOT)/Makefile.inc
 
 # Root from the board's sw/ path
 PROJ_ROOT=../../../..
@@ -13,11 +16,6 @@ BOARD=altera/de0_nano
 
 # Set RTL_VERILOG_INCLUDE_DIR so software
 RTL_VERILOG_INCLUDE_DIR=$(shell pwd)/$(BOARD_SW_ROOT)/../rtl/verilog/include
-
-# Set the processor capability flags
-#MARCH_FLAGS =-mhard-mul -mhard-div -msoft-float
-MARCH_FLAGS =-mhard-mul -msoft-div -msoft-float
-export MARCH_FLAGS
 
 # Finally include the main software include file
 
