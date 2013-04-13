@@ -67,7 +67,7 @@
 //`define ETH0
 //`define SDC_CONTROLLER
 //`define VGA0
-`define EINT
+//`define EINT
 // end of included module defines - keep this comment line here, scripts depend on it!!
 
 `ifdef SPI0

@@ -84,7 +84,8 @@ module orpsoc_testbench;
    wire 		     uart0_srx_pad_i;
 `endif
 `ifdef GPIO0
-   wire [gpio0_io_width-1:0] gpio0_io;
+   wire [gpio0_io_width-1:0] gpio0_pad_io;
+   wire [4:0] 		     gpio0_pad_i;
 `endif
 `ifdef VERSATILE_SDRAM   
    wire [12:0] 		     sdram_a_pad_o;
@@ -232,7 +233,8 @@ module orpsoc_testbench;
       .i2c3_scl_io			(i2c_scl),
 `endif
 `ifdef GPIO0
-      .gpio0_io				(gpio0_io),
+      .gpio0_pad_io     		(gpio0_pad_io),
+      .gpio0_pad_i                      (gpio0_pad_i),
 `endif
 `ifdef ETH0
  `ifdef SMII0      
@@ -313,6 +315,15 @@ module orpsoc_testbench;
    assign tms_pad_i = 1;
  `endif // !`ifdef VPI_DEBUG_ENABLE
 `endif //  `ifdef JTAG_DEBUG
+
+`ifdef GPIO0
+   // Simulate a active-low pushbutton input (delayed bit0)
+   wire #100000 gpio0_delayed_pushbutton;
+   assign gpio0_delayed_pushbutton = ~gpio0_pad_io[0];
+   assign gpio0_pad_io = {gpio0_io_width{1'bz}};
+   assign gpio0_pad_i = {~gpio0_pad_io[3:0], gpio0_delayed_pushbutton};
+`endif
+
    
 `ifdef SPI0
    // SPI Flash

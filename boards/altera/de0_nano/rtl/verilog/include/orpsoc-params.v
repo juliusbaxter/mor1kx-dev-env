@@ -85,12 +85,10 @@ parameter i2c_3_wb_adr_width = 3;
 parameter wbs_d_i2c3_data_width = 8;
 
 // GPIO 0 params
-parameter wbs_d_gpio0_data_width = 8;
+parameter wbs_d_gpio0_data_width = 32;
 parameter gpio0_wb_adr_width = 3;
 parameter gpio0_io_width = 8;
 parameter gpio0_wb_adr = 8'h91;
-parameter gpio0_dir_reset_val = 0;
-parameter gpio0_o_reset_val = 0;
 
 // UART 0 params
 parameter wbs_d_uart0_data_width = 8;
@@ -178,12 +176,13 @@ parameter ibus_arb_slave1_adr = 4'h0; // Main memory (SDRAM/FPGA SRAM)
 ///////////////////////////
 // Has auto foward to last slave when no address hits
 parameter dbus_arb_wb_addr_match_width = 8;
-parameter dbus_arb_wb_num_slaves = 5;
+parameter dbus_arb_wb_num_slaves = 6;
 // Slave addresses
 parameter dbus_arb_slave0_adr = 4'h0; // Main memory (SDRAM/FPGA SRAM)
 parameter dbus_arb_slave1_adr = eth0_wb_adr; // Ethernet 0
 parameter dbus_arb_slave2_adr = sdc_wb_adr;
 parameter dbus_arb_slave3_adr = vga0_wb_adr;
+parameter dbus_arb_slave4_adr = gpio0_wb_adr;
 
 ///////////////////////////////
 //                           //
@@ -194,7 +193,7 @@ parameter bbus_arb_wb_addr_match_width = 8;
 parameter bbus_arb_wb_num_slaves = 12; // Update this when changing slaves!
 // Slave addresses
 parameter bbus_arb_slave0_adr  = uart0_wb_adr;
-parameter bbus_arb_slave1_adr  = gpio0_wb_adr;
+parameter bbus_arb_slave1_adr  = usb1_wb_adr;
 parameter bbus_arb_slave2_adr  = usb0_wb_adr; 
 parameter bbus_arb_slave3_adr  = i2c_0_wb_adr;
 parameter bbus_arb_slave4_adr  = i2c_1_wb_adr;
@@ -204,7 +203,7 @@ parameter bbus_arb_slave7_adr  = spi0_wb_adr;
 parameter bbus_arb_slave8_adr  = spi1_wb_adr; 
 parameter bbus_arb_slave9_adr  = spi2_wb_adr; 
 parameter bbus_arb_slave10_adr = flashrom_wb_adr;
-parameter bbus_arb_slave11_adr = usb1_wb_adr;
+parameter bbus_arb_slave11_adr = 0 /* UNASSIGNED */;
 parameter bbus_arb_slave12_adr = 0 /* UNASSIGNED */;
 parameter bbus_arb_slave13_adr = 0 /* UNASSIGNED */;
 parameter bbus_arb_slave14_adr = 0 /* UNASSIGNED */;

@@ -45,18 +45,11 @@
 #define FLASHROM_SIZE            0x100
 
 #define GPIO_0_BASE         0x91000000
+#define GPIO0_IRQ                    3
 
 #define UART0_BASE  	    0x90000000
 #define UART0_IRQ                    2
 #define UART0_BAUD_RATE 	115200
-
-#define UART1_BASE  	    0x93000000
-#define UART1_IRQ                    3
-#define UART1_BAUD_RATE 	115200
-
-#define UART2_BASE  	    0x94000000
-#define UART2_IRQ                    5
-#define UART2_BAUD_RATE 	115200
 
 #define SPI0_BASE           0xb0000000
 #define SPI0_IRQ                     6
@@ -106,13 +99,13 @@
 //
 // UART driver initialisation
 // 
-#define UART_NUM_CORES 3
+#define UART_NUM_CORES 1
 
 #define UART_BASE_ADDRESSES_CSV						\
-	UART0_BASE, UART2_BASE, UART2_BASE
+	UART0_BASE
 
 #define UART_BAUD_RATES_CSV						\
-	UART0_BAUD_RATE, UART1_BAUD_RATE, UART1_BAUD_RATE
+	UART0_BAUD_RATE
 
 // 
 // i2c_master_slave core driver configuration
@@ -123,6 +116,7 @@
 #define I2C_MASTER_SLAVE_BASE_ADDRESSES_CSV		\
 	I2C_0_BASE, I2C_1_BASE, I2C_2_BASE,I2C_3_BASE
 
-
+#define GPIO_NUM_CORES 1
+#define GPIO_BASE_ADDRESSES_CSV GPIO_0_BASE
 
 #endif

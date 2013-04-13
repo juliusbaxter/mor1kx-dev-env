@@ -87,7 +87,8 @@ module orpsoc_top
     usb1dat_pad_i, usb1dat_pad_o, usb1ctrl_pad_o, usb1fullspeed_pad_o,
 `endif    
 `ifdef GPIO0
-    gpio0_io,
+    gpio0_pad_io,
+    gpio0_pad_i,
 `endif
   
 `ifdef ETH0
@@ -116,6 +117,7 @@ module orpsoc_top
     vga0_r_pad_o, vga0_g_pad_o, vga0_b_pad_o,
     vga0_data_en_o,
 `endif
+   
 `ifdef EINT
 	eint_pad_i,
 `endif
@@ -205,7 +207,8 @@ module orpsoc_top
    output 		      usb1fullspeed_pad_o;
 `endif   
 `ifdef GPIO0
-   inout [gpio0_io_width-1:0] gpio0_io;   
+   inout [gpio0_io_width-1:0] gpio0_pad_io;
+   input [4:0] 		      gpio0_pad_i;
 `endif 
 `ifdef ETH0
  `ifdef SMII0   
@@ -825,18 +828,33 @@ module orpsoc_top
       .wbs3_err_o			(wbs_d_vga0_err_o),
       .wbs3_rty_o			(wbs_d_vga0_rty_o),
 
-      .wbs4_adr_i			(wbm_b_d_adr_o),
-      .wbs4_dat_i			(wbm_b_d_dat_o),
-      .wbs4_sel_i			(wbm_b_d_sel_o),
-      .wbs4_we_i			(wbm_b_d_we_o),
-      .wbs4_cyc_i			(wbm_b_d_cyc_o),
-      .wbs4_stb_i			(wbm_b_d_stb_o),
-      .wbs4_cti_i			(wbm_b_d_cti_o),
-      .wbs4_bte_i			(wbm_b_d_bte_o),
-      .wbs4_dat_o			(wbm_b_d_dat_i),
-      .wbs4_ack_o			(wbm_b_d_ack_i),
-      .wbs4_err_o			(wbm_b_d_err_i),
-      .wbs4_rty_o			(wbm_b_d_rty_i),
+      
+      .wbs4_adr_i			(wbs_d_gpio0_adr_i),
+      .wbs4_dat_i			(wbs_d_gpio0_dat_i),
+      .wbs4_sel_i			(wbs_d_gpio0_sel_i),
+      .wbs4_we_i			(wbs_d_gpio0_we_i),
+      .wbs4_cyc_i			(wbs_d_gpio0_cyc_i),
+      .wbs4_stb_i			(wbs_d_gpio0_stb_i),
+      .wbs4_cti_i			(wbs_d_gpio0_cti_i),
+      .wbs4_bte_i			(wbs_d_gpio0_bte_i),
+      .wbs4_dat_o			(wbs_d_gpio0_dat_o),
+      .wbs4_ack_o			(wbs_d_gpio0_ack_o),
+      .wbs4_err_o			(wbs_d_gpio0_err_o),
+      .wbs4_rty_o			(wbs_d_gpio0_rty_o),
+
+      
+      .wbs5_adr_i			(wbm_b_d_adr_o),
+      .wbs5_dat_i			(wbm_b_d_dat_o),
+      .wbs5_sel_i			(wbm_b_d_sel_o),
+      .wbs5_we_i			(wbm_b_d_we_o),
+      .wbs5_cyc_i			(wbm_b_d_cyc_o),
+      .wbs5_stb_i			(wbm_b_d_stb_o),
+      .wbs5_cti_i			(wbm_b_d_cti_o),
+      .wbs5_bte_i			(wbm_b_d_bte_o),
+      .wbs5_dat_o			(wbm_b_d_dat_i),
+      .wbs5_ack_o			(wbm_b_d_ack_i),
+      .wbs5_err_o			(wbm_b_d_err_i),
+      .wbs5_rty_o			(wbm_b_d_rty_i),
 
 
       // Clock, reset inputs
@@ -850,6 +868,7 @@ module orpsoc_top
    defparam arbiter_dbus0.slave1_adr = dbus_arb_slave1_adr;
    defparam arbiter_dbus0.slave2_adr = dbus_arb_slave2_adr;
    defparam arbiter_dbus0.slave3_adr = dbus_arb_slave3_adr;
+   defparam arbiter_dbus0.slave4_adr = dbus_arb_slave4_adr;
 
    //
    // Wishbone byte-wide bus arbiter
@@ -888,17 +907,17 @@ module orpsoc_top
       .wbs0_err_o			(wbs_d_uart0_err_o),
       .wbs0_rty_o			(wbs_d_uart0_rty_o),
 
-      .wbs1_adr_i			(wbs_d_gpio0_adr_i),
-      .wbs1_dat_i			(wbs_d_gpio0_dat_i),
-      .wbs1_we_i			(wbs_d_gpio0_we_i),
-      .wbs1_cyc_i			(wbs_d_gpio0_cyc_i),
-      .wbs1_stb_i			(wbs_d_gpio0_stb_i),
-      .wbs1_cti_i			(wbs_d_gpio0_cti_i),
-      .wbs1_bte_i			(wbs_d_gpio0_bte_i),
-      .wbs1_dat_o			(wbs_d_gpio0_dat_o),
-      .wbs1_ack_o			(wbs_d_gpio0_ack_o),
-      .wbs1_err_o			(wbs_d_gpio0_err_o),
-      .wbs1_rty_o			(wbs_d_gpio0_rty_o),
+      .wbs1_adr_i			(wbs_d_usb1_adr_i),
+      .wbs1_dat_i			(wbs_d_usb1_dat_i),
+      .wbs1_we_i			(wbs_d_usb1_we_i),
+      .wbs1_cyc_i			(wbs_d_usb1_cyc_i),
+      .wbs1_stb_i			(wbs_d_usb1_stb_i),
+      .wbs1_cti_i			(wbs_d_usb1_cti_i),
+      .wbs1_bte_i			(wbs_d_usb1_bte_i),
+      .wbs1_dat_o			(wbs_d_usb1_dat_o),
+      .wbs1_ack_o			(wbs_d_usb1_ack_o),
+      .wbs1_err_o			(wbs_d_usb1_err_o),
+      .wbs1_rty_o			(wbs_d_usb1_rty_o),
 
       .wbs2_adr_i			(wbs_d_usb0_adr_i),
       .wbs2_dat_i			(wbs_d_usb0_dat_i),
@@ -1008,17 +1027,17 @@ module orpsoc_top
       .wbs10_err_o			(wbs_d_flashrom_err_o),
       .wbs10_rty_o			(wbs_d_flashrom_rty_o),
 
-      .wbs11_adr_i			(wbs_d_usb1_adr_i),
-      .wbs11_dat_i			(wbs_d_usb1_dat_i),
-      .wbs11_we_i			(wbs_d_usb1_we_i),
-      .wbs11_cyc_i			(wbs_d_usb1_cyc_i),
-      .wbs11_stb_i			(wbs_d_usb1_stb_i),
-      .wbs11_cti_i			(wbs_d_usb1_cti_i),
-      .wbs11_bte_i			(wbs_d_usb1_bte_i),
-      .wbs11_dat_o			(wbs_d_usb1_dat_o),
-      .wbs11_ack_o			(wbs_d_usb1_ack_o),
-      .wbs11_err_o			(wbs_d_usb1_err_o),
-      .wbs11_rty_o			(wbs_d_usb1_rty_o),
+      .wbs11_adr_i			(),
+      .wbs11_dat_i			(),
+      .wbs11_we_i			(),
+      .wbs11_cyc_i			(),
+      .wbs11_stb_i			(),
+      .wbs11_cti_i			(),
+      .wbs11_bte_i			(),
+      .wbs11_dat_o			(8'd0),
+      .wbs11_ack_o			(1'b0),
+      .wbs11_err_o			(1'b0),
+      .wbs11_rty_o			(1'b0),
 
       // Clock, reset inputs
       .wb_clk			(wb_clk),
@@ -1267,6 +1286,7 @@ module orpsoc_top
        .FEATURE_MULTIPLIER	("SERIAL"),
        .FEATURE_DIVIDER  	("SERIAL"),
        .OPTION_CPU0(MOR1KX_CPU0_OPTION_CPU),
+       .OPTION_PIC_TRIGGER      ("LATCHED_LEVEL"),
        .OPTION_RESET_PC(32'hf0000100)
        )
      mor1kx0
@@ -2657,35 +2677,57 @@ module orpsoc_top
 `ifdef GPIO0
    ////////////////////////////////////////////////////////////////////////
    //
-   // GPIO 0
+   // GPIO 0 - LEDs
    // 
    ////////////////////////////////////////////////////////////////////////
 
-   gpio gpio0
+   wire        gpio0_irq;
+
+   wire [gpio0_io_width+5-1:0] gpio0_i;
+   wire [gpio0_io_width+5-1:0] gpio0_o;
+   wire [gpio0_io_width+5-1:0] gpio0_oe;
+
+   genvar 		   gpio0_var;
+
+   generate
+      for (gpio0_var=0;gpio0_var<gpio0_io_width;gpio0_var=gpio0_var+1)
+	begin : gpio_oes
+	   assign gpio0_pad_io[gpio0_var] = gpio0_oe[gpio0_var] ? gpio0_o[gpio0_var] : 1'bz;
+	end
+   endgenerate
+    
+   assign gpio0_i = {gpio0_pad_i, gpio0_pad_io};
+   
+   gpio
+     #(.GPIO_WIDTH(gpio0_io_width+5))
+     gpio0
      (
-      // GPIO bus
-      .gpio_io				(gpio0_io[gpio0_io_width-1:0]),
-      // Wishbone slave interface
-      .wb_adr_i				(wbs_d_gpio0_adr_i[gpio0_wb_adr_width-1:0]),
-      .wb_dat_i				(wbs_d_gpio0_dat_i),
-      .wb_we_i				(wbs_d_gpio0_we_i),
-      .wb_cyc_i				(wbs_d_gpio0_cyc_i),
-      .wb_stb_i				(wbs_d_gpio0_stb_i),
-      .wb_cti_i				(wbs_d_gpio0_cti_i),
-      .wb_bte_i				(wbs_d_gpio0_bte_i),
-      .wb_dat_o				(wbs_d_gpio0_dat_o),
-      .wb_ack_o				(wbs_d_gpio0_ack_o),
-      .wb_err_o				(wbs_d_gpio0_err_o),
-      .wb_rty_o				(wbs_d_gpio0_rty_o),
+      .wb_clk_i		(wb_clk),
+      .wb_rst_i		(wb_rst),
+      .wb_cyc_i		(wbs_d_gpio0_cyc_i),
+      .wb_adr_i		(wbs_d_gpio0_adr_i[7:0]),
+      .wb_dat_i		(wbs_d_gpio0_dat_i),
+      .wb_sel_i		(wbs_d_gpio0_sel_i),
+      .wb_we_i		(wbs_d_gpio0_we_i),
+      .wb_stb_i		(wbs_d_gpio0_stb_i),
       
-      .wb_clk				(wb_clk),
-      .wb_rst				(wb_rst)
+      .wb_dat_o		(wbs_d_gpio0_dat_o),
+      .wb_ack_o		(wbs_d_gpio0_ack_o),
+      .wb_err_o		(wbs_d_gpio0_err_o),
+      
+      .wb_inta_o	(gpio0_irq),
+
+      .aux_i		(32'd0),
+      
+      // External GPIO Interface
+      .ext_pad_i	(gpio0_i),
+      .ext_pad_o	(gpio0_o),
+      .ext_padoe_o	(gpio0_oe)
       );
 
-   defparam gpio0.gpio_io_width = gpio0_io_width;
-   defparam gpio0.gpio_dir_reset_val = gpio0_dir_reset_val;
-   defparam gpio0.gpio_o_reset_val = gpio0_o_reset_val;
-
+   assign wbs_d_gpio0_rty_o = 0;
+   
+   
    ////////////////////////////////////////////////////////////////////////
 `else // !`ifdef GPIO0
    assign wbs_d_gpio0_dat_o = 0;
@@ -2779,9 +2821,9 @@ module orpsoc_top
 `else   
    assign cpu_irq[2] = 0;
 `endif
-`ifdef UART1
-   assign cpu_irq[3] = uart1_irq;
-`else   
+`ifdef GPIO0
+   assign cpu_irq[3] = gpio0_irq;
+`else
    assign cpu_irq[3] = 0;
 `endif
 `ifdef ETH0
