@@ -56,7 +56,7 @@
 //
 // By default it is defined.
 //
-//`define GPIO_STRICT_32BIT_ACCESS
+`define GPIO_STRICT_32BIT_ACCESS
 //
 `ifdef GPIO_STRICT_32BIT_ACCESS
 `else
@@ -68,7 +68,7 @@
 // if the number of I/O lines is in range 17-24, GPIO_WB_BYTES3 is defined,
 // if the number of I/O lines is in range 25-32, GPIO_WB_BYTES4 is defined,
 
-`define GPIO_WB_BYTES4
+//`define GPIO_WB_BYTES4
 //`define GPIO_WB_BYTES3
 //`define GPIO_WB_BYTES2
 //`define GPIO_WB_BYTES1
