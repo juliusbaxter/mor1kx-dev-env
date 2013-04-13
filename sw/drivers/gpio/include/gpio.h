@@ -19,5 +19,10 @@ void gpio_init(int core);
 void set_gpio_direction(int core, unsigned int dirs);
 unsigned int gpio_read(int core);
 void gpio_write(int core, unsigned int value);
+void gpio_enable_ints(int core);
+void gpio_disable_ints(int core);
+void gpio_int_enable_line(int core, unsigned int line_num, int trigger);
+void gpio_int_disable_line(int core, unsigned int line_num);
+void gpio_clear_ints(int core, unsigned int line_num);
 
 #endif
