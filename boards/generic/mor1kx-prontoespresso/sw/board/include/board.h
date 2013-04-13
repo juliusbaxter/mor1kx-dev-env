@@ -21,6 +21,9 @@
 #define GPIO0_BASE          0x91000000
 #define GPIO0_IRQ                    3
 
+#define GPIO_NUM_CORES 1
+#define GPIO_BASE_ADDRESSES_CSV GPIO0_BASE
+
 //
 // OR1200 tick timer period define
 //
