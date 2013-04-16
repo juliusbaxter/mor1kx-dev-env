@@ -10,7 +10,7 @@
 
 int main()
 {
-  int * test_loc = (int*) 0x4;
+  volatile int * test_loc = (volatile int*) 0x4;
   while(test_loc[0] == 0);
   report(test_loc[0]);
   exit(0);
