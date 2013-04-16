@@ -62,12 +62,22 @@
 #define SPI_SPSR_RX_CHECK 0x01 /* Check bit 0 is cleared, fifo !empty*/
 	
 #define RAM_LOAD_BASE SDRAM_BASE
-#define RESET_ADDR 0x100
+#define RESET_ADDR (SDRAM_BASE+0x100)
 
 boot_init:	
 	l.movhi r0, 0
 	l.movhi r1, RAM_LOAD_BASE
 	l.movhi r4, hi(SPI_BASE)
+	l.sb  	SPI_SPSS(r4), r0         /* Clear SPI slave selects */
+#ifdef BOOTROM_SPI_FLASH_DELAY
+	l.addi	r3, r0, BOOTROM_SPI_FLASH_DELAY
+	l.movhi	r5, 0
+delay:
+	l.addi	r5,r5,1
+	l.sfeq  r3,r5
+	OR1K_DELAYED_NOP(
+	OR1K_INST(l.bnf	delay))
+#endif
 	
 spi_init:
 	l.ori 	r2, r0, SPI_SPCR_XFER_GO /* Setup SPCR with enable bit set */
