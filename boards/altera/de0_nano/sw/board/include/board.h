@@ -17,6 +17,7 @@
 // synthesis time. See bootloader/bootloader.S for details on each option.
 #ifndef PRELOAD_RAM
 #define BOOTROM_SPI_FLASH
+#define BOOTROM_SPI_FLASH_DELAY 1024
 //#define BOOTROM_GOTO_RESET
 //#define BOOTROM_LOOP_AT_ZERO
 //#define BOOTROM_LOOP_IN_ROM
@@ -25,7 +26,7 @@
 #endif
 
 // Address bootloader should start from in FLASH
-// Offset 0x0c0000
+// Offset 0x0b0000
 #define BOOTROM_ADDR_BYTE2 0x0b
 #define BOOTROM_ADDR_BYTE1 0x00
 #define BOOTROM_ADDR_BYTE0 0x00
@@ -118,5 +119,9 @@
 
 #define GPIO_NUM_CORES 1
 #define GPIO_BASE_ADDRESSES_CSV GPIO_0_BASE
+
+
+#define SPI_NUM_CORES 3
+#define SPI_BASE_ADDRESSES_CSV SPI0_BASE, SPI1_BASE, SPI2_BASE
 
 #endif
