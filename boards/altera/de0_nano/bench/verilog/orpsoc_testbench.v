@@ -85,7 +85,7 @@ module orpsoc_testbench;
 `endif
 `ifdef GPIO0
    wire [gpio0_io_width-1:0] gpio0_pad_io;
-   wire [4:0] 		     gpio0_pad_i;
+   wire [gpio0_i_width-1:0]  gpio0_pad_i;
 `endif
 `ifdef VERSATILE_SDRAM   
    wire [12:0] 		     sdram_a_pad_o;
@@ -114,8 +114,7 @@ module orpsoc_testbench;
    wire [spi1_ss_width-1:0]  spi1_ss_o;
 `endif
 `ifdef SPI2
-   wire 		     spi2_mosi_o; 
-   wire 		     spi2_miso_i;  
+   wire 		     spi2_sd_io;  
    wire 		     spi2_sck_o;
    wire [spi2_ss_width-1:0]  spi2_ss_o;
 `endif
@@ -198,8 +197,7 @@ module orpsoc_testbench;
 `endif
 `ifdef SPI2
       .spi2_sck_o			(spi2_sck_o),
-      .spi2_mosi_o			(spi2_mosi_o),
-      .spi2_miso_i			(spi2_miso_i),
+      .spi2_sd_io			(spi2_sd_io),
  `ifdef SPI2_SLAVE_SELECTS                        
       .spi2_ss_o			(spi2_ss_o),
  `endif      
@@ -317,11 +315,11 @@ module orpsoc_testbench;
 `endif //  `ifdef JTAG_DEBUG
 
 `ifdef GPIO0
-   // Simulate a active-low pushbutton input (delayed bit0)
+   // Simulate an active-low pushbutton input (delayed bit0)
    wire #100000 gpio0_delayed_pushbutton;
    assign gpio0_delayed_pushbutton = ~gpio0_pad_io[0];
    assign gpio0_pad_io = {gpio0_io_width{1'bz}};
-   assign gpio0_pad_i = {~gpio0_pad_io[3:0], gpio0_delayed_pushbutton};
+   assign gpio0_pad_i = {~gpio0_pad_io[4:0], gpio0_delayed_pushbutton};
 `endif
 
    
@@ -437,25 +435,33 @@ module orpsoc_testbench;
 `endif
 
 `ifdef SPI2
- `ifdef SPI2_SLAVE_SELECTS
-   wire [spi2_ss_width-1:0] spi2_leds;
-   genvar 		    spi2;   
-   generate
-      for (spi2 = 0; spi2 < spi2_ss_width; spi2 = spi2+1) begin : spi2_gen
-	 spi_slave spi2_slave
-	   (.clk(clk), 
-	    .SCK(spi2_sck_o), .MOSI(spi2_mosi_o), 
-	    .MISO(spi2_miso_i), .SSEL(spi2_ss_o[spi2]),
-	    .LED(spi2_leds[spi2]));
-      end
-   endgenerate
- `else // !`ifdef SPI2_SLAVE_SELECTS
-   spi_slave spi2_slave
-     (.clk(clk), 
-      .SCK(spi2_sck_o), .MOSI(spi2_mosi_o), 
-      .MISO(spi2_miso_i), .SSEL(1'b0),
-      .LED());
- `endif // !`ifdef SPI2_SLAVE_SELECTS   
+
+   reg [4:0] spi2_bit_counter = 0;
+   reg [7:0] spi2_cmd_byte;
+
+   wire      spi2_slave_oe = (spi2_bit_counter > 8 && spi2_cmd_byte[7]);
+   
+   reg [31:0]	     spi2_read_data = {8'h00,8'h00,8'h00,8'he5};
+   
+   assign spi2_sd_io = spi2_slave_oe ? spi2_read_data[spi2_bit_counter-9] :  1'bz;
+   
+   always @(negedge spi2_sck_o)
+     if (spi2_ss_o)
+       spi2_bit_counter <= 0;
+     else
+       spi2_bit_counter <= spi2_bit_counter + 1;
+
+   always @(posedge spi2_sck_o)
+     if (spi2_bit_counter < 9)
+       spi2_cmd_byte[8-spi2_bit_counter] <= spi2_sd_io;
+
+   always @(posedge spi2_ss_o)
+     begin
+	spi2_cmd_byte = 0;
+	spi2_bit_counter = 0;
+     end
+   
+   
 `endif
 
 `ifdef VERSATILE_SDRAM

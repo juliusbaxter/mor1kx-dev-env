@@ -88,6 +88,7 @@ parameter wbs_d_i2c3_data_width = 8;
 parameter wbs_d_gpio0_data_width = 32;
 parameter gpio0_wb_adr_width = 3;
 parameter gpio0_io_width = 8;
+parameter gpio0_i_width = 6;
 parameter gpio0_wb_adr = 8'h91;
 
 // UART 0 params

@@ -56,8 +56,8 @@
 `define UART0
 `define SPI0
 `define SPI1
-//`define SPI2
-`define I2C0
+`define SPI2
+//`define I2C0
 //`define I2C1
 //`define I2C2
 //`define I2C3

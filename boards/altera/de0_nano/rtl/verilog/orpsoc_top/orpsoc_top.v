@@ -63,7 +63,7 @@ module orpsoc_top
     `endif
 `endif
 `ifdef SPI2
-    spi2_sck_o, spi2_mosi_o, spi2_miso_i,
+    spi2_sck_o, spi2_sd_io,
     `ifdef SPI2_SLAVE_SELECTS
     spi2_ss_o,
     `endif
@@ -174,11 +174,10 @@ module orpsoc_top
 `endif
 `ifdef SPI2
    output 		      spi2_sck_o;
-   output 		      spi2_mosi_o;
+   inout 		      spi2_sd_io;
  `ifdef SPI2_SLAVE_SELECTS
    output [spi2_ss_width-1:0] spi2_ss_o;
  `endif
-   input 		      spi2_miso_i;
 `endif
 `ifdef I2C0
    inout 		      i2c0_sda_io, i2c0_scl_io;
@@ -208,7 +207,7 @@ module orpsoc_top
 `endif   
 `ifdef GPIO0
    inout [gpio0_io_width-1:0] gpio0_pad_io;
-   input [4:0] 		      gpio0_pad_i;
+   input [gpio0_i_width-1:0]  gpio0_pad_i;
 `endif 
 `ifdef ETH0
  `ifdef SMII0   
@@ -1416,6 +1415,7 @@ module orpsoc_top
 
       // Wishbone debug master
       .wb_clk_i				(wb_clk),
+      .wb_rst_i				(wb_rst),
       .wb_dat_i				(wbm_d_dbg_dat_i),
       .wb_ack_i				(wbm_d_dbg_ack_i),
       .wb_err_i				(wbm_d_dbg_err_i),
@@ -1426,7 +1426,8 @@ module orpsoc_top
       .wb_sel_o				(wbm_d_dbg_sel_o),
       .wb_we_o				(wbm_d_dbg_we_o ),
       .wb_cti_o				(wbm_d_dbg_cti_o),
-      .wb_bte_o				(wbm_d_dbg_bte_o)
+      .wb_bte_o				(wbm_d_dbg_bte_o),
+      .wb_cab_o                         ()
      );
 
 `else
@@ -2046,7 +2047,7 @@ module orpsoc_top
 `ifdef SPI2   
    ////////////////////////////////////////////////////////////////////////
    //
-   // SPI2 controller
+   // SPI2 controller - configured to talk to the ADXL345 accelerometer
    // 
    ////////////////////////////////////////////////////////////////////////
 
@@ -2054,7 +2055,54 @@ module orpsoc_top
    // Wires
    //
    wire 			     spi2_irq;
+   wire 			     spi2_mosi_o, spi2_miso_i;
 
+
+   // Logic to turn a 4-pin SPI connection into a 3-pin
+   reg 				     spi2_oe;
+   reg [3:0] 			     spi2_bit_counter;
+   reg 				     spi2_sck_r;
+   reg 				     spi2_will_read;
+   wire 			     spi2_sck_rising_edge = !spi2_sck_r & spi2_sck_o;
+   wire 			     spi2_sck_falling_edge = spi2_sck_r & !spi2_sck_o;
+   
+
+   assign spi2_sd_io = spi2_oe ? spi2_mosi_o : 1'bz;
+   assign spi2_miso_i = spi2_sd_io;
+   
+   always @(posedge wb_clk)
+     spi2_sck_r <= spi2_sck_o;
+   
+   always @(posedge wb_clk)
+     if (wb_rst)
+       spi2_oe <= 0;	  
+     else if (spi2_ss_o) // SPI select is active low
+       // Deassert when deselecting the slave
+       spi2_oe <= 0;
+     else if (spi2_bit_counter==5'd8 && !spi2_ss_o && spi2_sck_falling_edge && 
+	      spi2_will_read)
+       // Deassert when bus turnaround
+       spi2_oe <= 0;
+     else if (spi2_bit_counter==5'd0 && !spi2_ss_o && spi2_sck_falling_edge)
+       // Assert when dropping slave-select line and clock also goes low
+       spi2_oe <= 1;
+
+   always @(posedge wb_clk)
+     if (spi2_ss_o)
+       spi2_will_read <= 0;
+     else if (spi2_bit_counter==0 && !spi2_ss_o & spi2_sck_rising_edge)
+       // First bit is R/!W, so if it's high we'll read after 8 cycles
+       spi2_will_read <= spi2_mosi_o;
+
+   always @(posedge wb_clk)
+     if (wb_rst)
+       spi2_bit_counter    <= 0;
+     else if (spi2_ss_o)
+       spi2_bit_counter    <= 0;
+     else if (!spi2_ss_o && spi2_sck_rising_edge && !spi2_bit_counter[3])
+       // Increment on rising edges when slave is selected, and if less than 8
+       spi2_bit_counter    <= spi2_bit_counter + 1;
+   
    //
    // Assigns
    //
@@ -2682,10 +2730,10 @@ module orpsoc_top
    ////////////////////////////////////////////////////////////////////////
 
    wire        gpio0_irq;
-
-   wire [gpio0_io_width+5-1:0] gpio0_i;
-   wire [gpio0_io_width+5-1:0] gpio0_o;
-   wire [gpio0_io_width+5-1:0] gpio0_oe;
+   
+   wire [gpio0_io_width+gpio0_i_width-1:0] gpio0_i;
+   wire [gpio0_io_width+gpio0_i_width-1:0] gpio0_o;
+   wire [gpio0_io_width+gpio0_i_width-1:0] gpio0_oe;
 
    genvar 		   gpio0_var;
 
@@ -2695,11 +2743,11 @@ module orpsoc_top
 	   assign gpio0_pad_io[gpio0_var] = gpio0_oe[gpio0_var] ? gpio0_o[gpio0_var] : 1'bz;
 	end
    endgenerate
-    
+
    assign gpio0_i = {gpio0_pad_i, gpio0_pad_io};
    
    gpio
-     #(.GPIO_WIDTH(gpio0_io_width+5))
+     #(.GPIO_WIDTH(gpio0_io_width+gpio0_i_width))
      gpio0
      (
       .wb_clk_i		(wb_clk),
