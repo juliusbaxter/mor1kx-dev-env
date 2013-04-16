@@ -1,5 +1,23 @@
 <?xml version="1.0" encoding="US-ASCII" standalone="yes"?>
 <cof>
+  <!-- Use this file like so, to generate an image for the configuration  -->
+  <!-- flash on the de0 nano.  -->
+  <!-- First copy the software (gpiodemo.hex as it is by deafult - with  -->
+  <!-- sizeword in word zero) to the run directory, then copy this file  -->
+  <!-- there. (Obviously change the name of the software if needed) then  -->
+  <!-- run: -->
+
+  <!-- quartus_cpf -c orpsoc.cof -->
+
+  <!-- That will generate orpsoc.jic. Then flash that onto the board with: -->
+
+  <!-- quartus_pgm \-\-mode=jtag -o pi\;orpsoc.jic -->
+
+  <!-- Note: remove the backslashes infront of the dashes infront of the mode -->
+  <!-- command in that last line - they're only there so these commands can be -->
+  <!-- embedded in XML -->
+
+  <!-- It helps to powercycle the board after this. -->
 	<eprom_name>EPCS64</eprom_name>
 	<flash_loader_device>EP4CE22</flash_loader_device>
 	<output_filename>orpsoc.jic</output_filename>
