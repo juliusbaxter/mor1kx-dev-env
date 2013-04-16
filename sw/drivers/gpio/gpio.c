@@ -85,6 +85,10 @@ void gpio_int_disable_line(int core, unsigned int line_num)
   REG32(GPIO_BASE_ADR[core] + GPIO_INTE	) &= ~(1<<line_num);
 }
 
+unsigned int gpio_get_ints(int core)
+{
+  return (unsigned int)REG32(GPIO_BASE_ADR[core] + GPIO_INTS	);
+}
 
 void gpio_clear_ints(int core, unsigned int line_num)
 {

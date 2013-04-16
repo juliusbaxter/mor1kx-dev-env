@@ -24,5 +24,5 @@ void gpio_disable_ints(int core);
 void gpio_int_enable_line(int core, unsigned int line_num, int trigger);
 void gpio_int_disable_line(int core, unsigned int line_num);
 void gpio_clear_ints(int core, unsigned int line_num);
-
+unsigned int gpio_get_ints(int core);
 #endif
