@@ -20,7 +20,7 @@ int int_init()
     int_handlers[i].handler = 0;
     int_handlers[i].arg = 0;
   }
-  
+
   return 0;
 }
 
@@ -83,3 +83,9 @@ void int_main()
 }
   
 
+void int_clear_all_pending(void)
+{
+  // Clear all pending interrupts in the PICSR
+  mtspr(SPR_PICSR, 0);
+}
+  

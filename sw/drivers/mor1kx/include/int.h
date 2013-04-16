@@ -31,4 +31,8 @@ int int_init();
 
 /* Actual interrup handler function */
 void int_main();
+
+/* Function to clear all pending interrupts */
+void int_clear_all_pending(void);
+
 #endif // _INT_H_
