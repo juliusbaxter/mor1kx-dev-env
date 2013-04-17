@@ -21,8 +21,12 @@ if [ -e rtl/verilog/mor1kx ]; then
     exit 1
 fi
 
-git clone http://github.com/openrisc/mor1kx.git rtl/verilog/mor1kx-github
-ln -s $PWD/rtl/verilog/mor1kx-github/rtl/verilog rtl/verilog/mor1kx
+if [ ! -d modules ]; then
+    mkdir modules
+fi
+
+git clone http://github.com/openrisc/mor1kx.git modules/mor1kx-github
+ln -s $PWD/modules/mor1kx-github/rtl/verilog rtl/verilog/mor1kx
 
 
 #Now link in the mor1kx include files
