@@ -12,8 +12,18 @@ The reasons why this is forked from ORPSoCv2 are:
   * We really do need Verilator support becuase it's used for linting and for
     verification, when we run the GCC regression suite on the generated model.
 
-Setup
-=====
+Setup automatically
+===================
+
+A script to install the mor1kx core automatically, and create some other
+required directories is available. Run it from the mor1kx-dev-env root dir:
+
+ ./scripts/bash/setup.sh
+
+Adjust the permissions on it as required.
+
+Setup automatically
+===================
 
 To set up the project, please symbolically link in the mor1kx git repo directory
 to rtl/verilog.
