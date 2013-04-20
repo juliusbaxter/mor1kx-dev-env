@@ -148,6 +148,32 @@ clean:
 clean-sw:
 	$(MAKE) -C $(PROJECT_ROOT)/sw/lib distclean
 
+# Build the image so we can boot it from the SPI flash
+swimage.bin: $(SW_ELF)
+	or1k-elf-objcopy $(SW_ELF) -O binary $@
+
+B2BSW_EXE = bin2binsizeword
+B2BSW_DIR = $(PROJECT_ROOT)/sw/utils/
+B2BSW     = $(B2BSW_DIR)/$(B2BSW_EXE)
+
+$(B2BSW): 
+	$(MAKE) -C $(B2BSW_DIR) $(B2BSW_EXE)
+
+flashimage.bin: swimage.bin $(B2BSW)
+	$(B2BSW) $< $@
+
+flashimage.hex: flashimage.bin
+	bin2hex.py $< $@
+
+$(DESIGN_NAME).cof:
+	cp -v ../bin/$@ $@
+
+$(DESIGN_NAME).jic: $(DESIGN_NAME).cof flashimage.hex asm
+	quartus_cpf -c orpsoc.cof
+
+pgm_flash: $(DESIGN_NAME).jic
+	quartus_pgm --mode=jtag -o pi\;$(DESIGN_NAME).jic
+
 distclean: clean-sw clean
 
 

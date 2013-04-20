@@ -2,7 +2,7 @@
 <cof>
   <!-- Use this file like so, to generate an image for the configuration  -->
   <!-- flash on the de0 nano.  -->
-  <!-- First copy the software (gpiodemo.hex as it is by deafult - with  -->
+  <!-- First copy the software (flashimage.hex as it is by deafult - with  -->
   <!-- sizeword in word zero) to the run directory, then copy this file  -->
   <!-- there. (Obviously change the name of the software if needed) then  -->
   <!-- run: -->
@@ -30,7 +30,7 @@
 	<!-- 	<hex_offset>1048576</hex_offset> -->
 	<!-- </hex_block> -->
 	<hex_block>
-		<hex_filename>gpiodemo.hex</hex_filename>
+		<hex_filename>flashimage.hex</hex_filename>
 		<hex_addressing>relative</hex_addressing>
 		<hex_offset>720896</hex_offset>
 	</hex_block>
