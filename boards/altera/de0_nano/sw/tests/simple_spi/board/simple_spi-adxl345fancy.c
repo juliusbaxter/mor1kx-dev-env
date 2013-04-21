@@ -1,9 +1,13 @@
 /*
   SPI controller simple test
 
-  Use interrupts from the ADXL345 to indicate things.
+  This demonstrates 3 modes of use of the ADXL325.
 
-  In this case the GPIO line comes through the GPIO controller.
+  Switch between them with pushbutton 1
+
+  1st is tap detection to switch PWM patterns
+  2nd is dumping the accelerometer sample to the LEDs
+  3rd is dumping the orientation of the board to the LEDs
 
 */
 
@@ -18,6 +22,8 @@ const int SPI_MASTER = 2;
 const int GPIO_CORE = 0;
 #define  GPIO_ADXL345_INT_BIT_NUM 13
 #define GPIO_ADXL345_INT_LINE (1<<GPIO_ADXL345_INT_BIT_NUM)
+#define PUSHBUTTON_LINE_NUM 8
+#define PUSHBUTTON_LINE ( 1 << PUSHBUTTON_LINE_NUM )
 
 #define LED_LSB 0x01
 #define LED_MSB 0x80
@@ -123,7 +129,8 @@ int adxl345_3wire_spi_init(void)
   return 1;
 }
 
-void adxl345_enable_measure_mode(int full_res)
+// full_rese = 1 or 0; range = 0 to 3
+void adxl345_enable_measure_mode(int full_res, int range)
 {
   // Go into standby mode to configure
   adxl345_write_reg(0x2d, 0);
@@ -208,12 +215,12 @@ static void continuous_dump_data_to_LEDs(void)
   
   int scale = 2;
   
-  leds_init();
+  //leds_init();
 
-  adxl345_update_range(3);
+  //adxl345_update_range(3);
 
-  while (1)
-    {
+  //while (1)
+  //{
       adxl345_read_xyz(xyz_samples);
       swapped_sample = SHORT_BYTE_SWAP (xyz_samples[0]);
       if (swapped_sample<0)
@@ -222,7 +229,7 @@ static void continuous_dump_data_to_LEDs(void)
 	byte_sample =  swapped_sample /=3;
       byte_sample = swapped_sample&0xff;
       dump_byte(byte_sample);
-    }
+      //}
 }
 
 
@@ -265,12 +272,12 @@ static int get_orientation(void)
 
 static void dump_orientation_to_LEDS(void)
 {
-  leds_init();
+  //leds_init();
 
-  adxl345_enable_measure_mode(0);
+  //adxl345_enable_measure_mode(0);
 
-  while(1)
-    {
+  //while(1)
+  //{
       int orientation = get_orientation();
 
       // Map the orientation onto LEDs
@@ -282,7 +289,17 @@ static void dump_orientation_to_LEDS(void)
 
       set_LED(orientation);
 
-    }
+      //}
+}
+
+static volatile int mode = 0;
+
+void pushbutton_interrupt(void)
+{
+  // Switch the mode
+  mode++;
+  if (mode==3)
+    mode = 0;
 }
 
 void adxl345_double_tap_interrupt(void)
@@ -315,7 +332,6 @@ void gpio_interrupt_handler(void* int_data)
 {
   // Check what the interrupt was from
   unsigned int gpio_ints = gpio_get_ints(GPIO_CORE);
-  set_LED(5);
   if (gpio_ints & GPIO_ADXL345_INT_LINE)
     {
       // Interrupt from the accelerometer
@@ -323,6 +339,13 @@ void gpio_interrupt_handler(void* int_data)
   
       gpio_clear_ints(GPIO_CORE, GPIO_ADXL345_INT_BIT_NUM);
     }
+
+  if (gpio_ints & PUSHBUTTON_LINE)
+    {
+      pushbutton_interrupt();
+      gpio_clear_ints(GPIO_CORE, PUSHBUTTON_LINE_NUM);
+    }
+
 }
 
 
@@ -412,6 +435,8 @@ static void led_direction_position_update(void)
   
 }
 
+static volatile int last_run_mode = -1;
+
 void run_LED_patterns(void)
 {
 
@@ -432,61 +457,106 @@ void run_LED_patterns(void)
 
   while (1)
     {
-      leds_off();
 
-      for (i=0;i<total_loops;i++)
-	if (i==on_boundary)
-	  leds_on();
-
-      leds_off();
-
-      // Calculate amount we'll be on for next time
-      if (current_step<=step_min && brightness_direction==0)
+      if (mode==0)
 	{
-          brightness_direction = 1;
 
-	  // When the LED has dimmed back down, switch the LED we're dimming
-	  led_direction_position_update();
+	  if (last_run_mode != mode)
+	    {
+	      adxl345_enable_measure_mode(1, 0x3);
+	      last_run_mode = mode;
+	    }
 
-	}
-      else if (current_step>=step_max && brightness_direction==1)
-	brightness_direction = 0;
+	  leds_off();
 
-      // Additional time spent at a particular brightness
-      if (longer_at_lower && (current_step <= longer_at_lower_thresh))
-	{
-	  if (longer_at_lower_loop < longer_at_lower)
-	    longer_at_lower_loop++;
+	  for (i=0;i<total_loops;i++)
+	    if (i==on_boundary)
+	      leds_on();
+
+	  leds_off();
+
+	  // Calculate amount we'll be on for next time
+	  if (current_step<=step_min && brightness_direction==0)
+	    {
+	      brightness_direction = 1;
+
+	      // When the LED has dimmed back down, switch the LED we're dimming
+	      led_direction_position_update();
+
+	    }
+	  else if (current_step>=step_max && brightness_direction==1)
+	    brightness_direction = 0;
+
+	  // Additional time spent at a particular brightness
+	  if (longer_at_lower && (current_step <= longer_at_lower_thresh))
+	    {
+	      if (longer_at_lower_loop < longer_at_lower)
+		longer_at_lower_loop++;
+	      else
+		{
+		  longer_at_lower_loop = 0;
+	      
+		  // Adjust the brightness step
+		  if (brightness_direction)
+		    current_step += step_percent;
+		  else
+		    current_step -= step_percent;
+		}
+	    }
 	  else
 	    {
-	      longer_at_lower_loop = 0;
-	      
-	      // Adjust the brightness step
 	      if (brightness_direction)
 		current_step += step_percent;
 	      else
 		current_step -= step_percent;
 	    }
-	}
-      else
-	{
-	  if (brightness_direction)
-	    current_step += step_percent;
+
+
+	  if (just_keep_off_threshold && current_step <=just_keep_off_threshold)
+	    on_boundary = total_loops; // should keep LED off
 	  else
-	    current_step -= step_percent;
+	    // Calculate next on boundary
+	    on_boundary = total_loops - ((total_loops/step_resolution)*current_step);
+
 	}
+      else if (mode==1)
+	{
 
+	  if (last_run_mode != mode)
+	    {
+	      adxl345_enable_measure_mode(0, 0x1);
+	      last_run_mode = mode;
+	    }
 
-      if (just_keep_off_threshold && current_step <=just_keep_off_threshold)
-	on_boundary = total_loops; // should keep LED off
-      else
-	// Calculate next on boundary
-	on_boundary = total_loops - ((total_loops/step_resolution)*current_step);
+	  continuous_dump_data_to_LEDs();
 
+	}
+      else if (mode==2)
+	{
+	  
+	  if (last_run_mode != mode)
+	    {
+	      adxl345_enable_measure_mode(0, 0x0);
+	      last_run_mode = mode;
+	    }
+
+	  dump_orientation_to_LEDS();
+	}
     }
   
 }
 
+
+static void gpio_set_up_pushbutton_int(int core)
+{
+  // Assume general interrupt infrastructure already set up
+  
+  gpio_clear_ints(core, PUSHBUTTON_LINE_NUM);
+
+  // Set falling edge triggered line on pushbutton
+  gpio_int_enable_line(core, PUSHBUTTON_LINE_NUM, 0);
+
+}
 
 
 int main()
@@ -499,13 +569,15 @@ int main()
   some_datas[0] = adxl345_3wire_spi_init();
   some_datas[1] = adxl345_read_reg(0x2d);
 
-  adxl345_enable_measure_mode(1);
+  adxl345_enable_measure_mode(1, 0x3);
  
   // Loop here, update LEDs
   //continuous_dump_data_to_LEDs();
   //dump_orientation_to_LEDS();
 
   configure_double_tap_interrupts(0x30, 0x12, 0x62, 0x80);
+
+  gpio_set_up_pushbutton_int(0);
 
   // Flash LEDs in fancy way, change if we get tap interrupt
   run_LED_patterns();
