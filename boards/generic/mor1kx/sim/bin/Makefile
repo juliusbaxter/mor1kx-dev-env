@@ -88,6 +88,7 @@ TESTS ?= mor1kx-version			\
 	or1k-inttickloop    		\
 	or1k-ffl1			\
 	or1k-sf				\
+	or1k-sfbf			\
 	or1k-simple			\
 	or1k-csimple			\
 	or1k-basic			\
