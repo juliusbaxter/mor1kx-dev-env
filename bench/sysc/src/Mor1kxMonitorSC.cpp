@@ -125,7 +125,11 @@ Mor1kxMonitorSC::Mor1kxMonitorSC(sc_core::sc_module_name name,
   wait_for_stall_cmd_response = false;	// Default
   insn_count = insn_count_rst = 0;
   cycle_count = cycle_count_rst = 0;
-  
+
+  // Branch prediction performance counters
+  branchCondCount = 0;
+  branchMispredictCount = 0;
+
   // Store pointer to the return code for the sim
   returnCode = _returnCode;
 
@@ -377,6 +381,9 @@ Mor1kxMonitorSC::printUsage()
 #define OR1K_NOP_INSN_TOP_BYTE 0x15
 #define OR1K_NOP 0x14000000
 
+#define OR1K_OP_BNF	0x3
+#define OR1K_OP_BF	0x4
+
 void 
 Mor1kxMonitorSC::checkInstruction()
 {
@@ -391,11 +398,20 @@ Mor1kxMonitorSC::checkInstruction()
   int hertz, khertz;
   unsigned long long int psPeriod;
   char insnMSByte;
+  uint8_t opCode;
   uint32_t insnImm;
   char disastr[100];
   static bool executeAdvDelayed = 0;
+  static bool lastBranchMispredict = 0;
   cycle_count++;
   //cout << "cycle_count++ " << cycle_count << endl;
+
+  // Increase the branch misprediction counter on the rising edge of
+  // the branch mispredict signal
+  if (accessor->getBranchMispredict() && !lastBranchMispredict)
+    branchMispredictCount++;
+
+  lastBranchMispredict = accessor->getBranchMispredict();
 
   if (accessor->getExAdv()){
 
@@ -410,6 +426,12 @@ Mor1kxMonitorSC::checkInstruction()
 	cout << disastr << endl;
       }
 #endif
+
+    opCode = (executeInsn >> 26) & 0x3f;
+
+    // Count conditional branches
+    if (opCode == OR1K_OP_BF || opCode == OR1K_OP_BNF)
+      branchCondCount++;
 
     // Extract MSB of instruction
     insnMSByte = (executeInsn >> 24) & 0xff;
@@ -779,6 +801,19 @@ Mor1kxMonitorSC::perfSummary()
     endl;
   std::cout << "* Mor1kxMonitor: simulated " << insn_count <<
     " instructions, 1000's insn/sec. = " << kips << endl;
+
+  // Branch prediction statistics
+  int branchPredictPercent = branchMispredictCount ?
+    100 - 100 * branchMispredictCount / branchCondCount : 100;
+
+  std::cout << endl;
+  std::cout << "* Mor1kxMonitor: executed conditional branches: " <<
+    branchCondCount << endl;
+  std::cout << "* Mor1kxMonitor: mispredicted conditional branches: " <<
+    branchMispredictCount << endl;
+  std::cout << "* Mor1kxMonitor: branch prediction success rate: " <<
+    branchPredictPercent << "%" << endl;
+
   return;
 }				// perfSummary
 

@@ -72,6 +72,7 @@ public:
 	uint32_t getSprEpcr();
 	uint32_t getSprEear();
 	uint32_t getSprEsr();
+	uint32_t getBranchMispredict();
 
 private:
 
