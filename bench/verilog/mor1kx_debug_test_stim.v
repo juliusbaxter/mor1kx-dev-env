@@ -44,6 +44,9 @@ module mor1kx_debug_test_stim;
       write_mem_32(32'h10, 32'd0);
       write_mem_32(32'h14, 32'h14000000);
 
+      // Flush the instruction cache for these addresses
+      write_spr(`OR1K_SPR_ICBIR_ADDR, 32'h10);
+
       // Set the PC to 0x10
       read_npc(saved_npc);
       write_npc(32'h10);
