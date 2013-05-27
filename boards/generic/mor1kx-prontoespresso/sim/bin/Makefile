@@ -89,6 +89,7 @@ TESTS ?= mor1kx-version			\
 	uart-simple
 
 DEBUG_UNIT_TESTS ?=			\
+	mor1kx-debugtest		\
 	mor1kx-debugsteptest		\
 	mor1kx-debugbkpnttest		\
 	mor1kx-debugexceptsteptest
