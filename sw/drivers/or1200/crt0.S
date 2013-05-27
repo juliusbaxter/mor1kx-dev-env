@@ -256,7 +256,6 @@ default_exception_handler:
 	l.sw    0x6c(r1), r29
 	l.sw    0x70(r1), r30
 	l.sw    0x74(r1), r31
-	l.sw    0x78(r1), r32
 
 	l.jal   default_exception_handler_c
 	l.nop
@@ -291,7 +290,6 @@ default_exception_handler:
 	l.lwz    r29, 0x6c(r1)
 	l.lwz    r30, 0x70(r1)
 	l.lwz    r31, 0x74(r1)
-	l.lwz    r32, 0x78(r1)
 
 	l.addi  r1, r1, EXCEPTION_STACK_SIZE
 

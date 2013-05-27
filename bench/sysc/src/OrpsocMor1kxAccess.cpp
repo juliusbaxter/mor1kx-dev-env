@@ -85,6 +85,11 @@ uint32_t OrpsocMor1kxAccess::getSprEsr()
   return MOR1KX_CPU_WRAPPER->monitor_spr_esr;
 }
 
+uint32_t OrpsocMor1kxAccess::getBranchMispredict()
+{
+  return MOR1KX_CPU_WRAPPER->monitor_branch_mispredict;
+}
+
 uint32_t OrpsocMor1kxAccess::getGpr(uint32_t regNum)
 {
   return (mor1kx_pipeline->get_gpr) (regNum);

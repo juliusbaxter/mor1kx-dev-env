@@ -632,27 +632,31 @@ module orpsoc_top
 
    mor1kx
      #					(
+       .OPTION_CPU0			("CAPPUCCINO"),
  `ifdef JTAG_DEBUG
        .FEATURE_DEBUGUNIT		("ENABLED"),
  `endif
-
        .FEATURE_INSTRUCTIONCACHE	("ENABLED"),
-       .OPTION_ICACHE_BLOCK_WIDTH	(5),
        .OPTION_ICACHE_SET_WIDTH		(8),
+       .OPTION_ICACHE_BLOCK_WIDTH	(5),
        .OPTION_ICACHE_WAYS		(2),
        .OPTION_ICACHE_LIMIT_WIDTH	(32),
        .FEATURE_DATACACHE		("ENABLED"),
+       .OPTION_DCACHE_SET_WIDTH		(8),
        .OPTION_DCACHE_BLOCK_WIDTH	(5),
-       .OPTION_DCACHE_SET_WIDTH		(9),
        .OPTION_DCACHE_WAYS		(2),
        .OPTION_DCACHE_LIMIT_WIDTH	(31),
 
-//       .FEATURE_IMMU			("ENABLED"),
-//       .FEATURE_DMMU			("ENABLED"),
+       .FEATURE_IMMU			("ENABLED"),
+       .FEATURE_DMMU			("ENABLED"),
 
        .FEATURE_DSX                     ("ENABLED"),
        .FEATURE_DIVIDER                 ("SERIAL"),
-       .OPTION_CPU0			("CAPPUCCINO")
+//       .OPTION_PIC_TRIGGER		("LATCHED_LEVEL"),
+       .OPTION_PIC_TRIGGER		("LEVEL"),
+
+       .IBUS_WB_TYPE			("B3_REGISTERED_FEEDBACK"),
+       .DBUS_WB_TYPE			("B3_REGISTERED_FEEDBACK")
        )
      mor1kx0
 					(

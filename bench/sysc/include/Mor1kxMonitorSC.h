@@ -129,6 +129,8 @@ private:
 	unsigned long long insn_count, insn_count_rst;
 	unsigned long long cycle_count, cycle_count_rst;
 	unsigned long long cycles_1, cycles_2, cycles_3;	// Cycle counters for l.nop insns
+	unsigned long long branchCondCount;
+	unsigned long long branchMispredictCount;
 	ofstream memdumpFile;
 	string memdumpFileName;
 	bool do_memdump;

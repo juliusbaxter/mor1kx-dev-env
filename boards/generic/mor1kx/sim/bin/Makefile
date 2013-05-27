@@ -88,14 +88,22 @@ TESTS ?= mor1kx-version			\
 	or1k-inttickloop    		\
 	or1k-ffl1			\
 	or1k-sf				\
+	or1k-sfbf			\
 	or1k-simple			\
 	or1k-csimple			\
 	or1k-basic			\
 	or1k-cbasic			\
-	uart-simple			\
+	uart-simple
+
+DEBUG_UNIT_TESTS ?=			\
 	mor1kx-debugsteptest		\
 	mor1kx-debugexceptsteptest
 
+# If we're running the rtl target, we can have the debug
+# unit tests.
+ifeq ($(MAKECMDGOALS),rtl-tests)
+TESTS += $(DEBUG_UNIT_TESTS)
+endif
 include $(PROJECT_ROOT)/scripts/make/Makefile-simulators.inc
 
 # Gets turned into verilog `define
