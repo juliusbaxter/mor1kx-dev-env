@@ -180,8 +180,10 @@ _start:
 .L7:
 	l.mtspr r0,r6,SPR_ICBIR
 	l.sfne  r6,r5
-	l.bf    .L7
-	l.add   r6,r6,r14
+	OR1K_DELAYED(
+	OR1K_INST(l.add   r6,r6,r14),
+	OR1K_INST(l.bf 	.L7)
+	)	
 	
 	/* Enable IC */
 	l.mfspr r6,r0,SPR_SR
@@ -234,8 +236,11 @@ _start:
 .L9:
         l.mtspr r0,r6,SPR_DCBIR
         l.sfne  r6,r5
-        l.bf    .L9
-	l.add   r6,r6,r14
+	OR1K_DELAYED(
+	OR1K_INST(l.add   r6,r6,r14),
+	OR1K_INST(l.bf 	.L9)
+	)	
+
         /* Enable DC */
         l.mfspr r6,r0,SPR_SR
         l.ori   r6,r6,SPR_SR_DCE

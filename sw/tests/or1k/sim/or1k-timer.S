@@ -137,7 +137,7 @@ restart_timer_interrupt_check:
 	l.sfeq	r2, r0
 	OR1K_DELAYED(
 	OR1K_INST(l.mfspr	r4, r0, SPR_TTCR),
-	l.bf	restart_timer_interrupt_check
+	OR1K_INST(l.bf	restart_timer_interrupt_check)
 	)
 
 	l.sfltu	r4, r6 /* timer should have reset and counting again */
