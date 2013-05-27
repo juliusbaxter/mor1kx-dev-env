@@ -149,6 +149,7 @@ $(SIM_VLT_DIR)/$(VLT_EXE): $(SIM_VLT_DIR)/lib$(VLT_EXE).a \
 	$(Q)cd $(SIM_VLT_DIR) && \
 		g++ $(VLT_DEBUG_COMPILE_FLAGS) \
 		$(VLT_CFLAGS) -I$(COMMON_BENCH_SYSC_INCLUDE_DIR) -I$(SIM_VLT_DIR) \
+		-I$(VERILATOR_ROOT)/include/vltstd \
 		-I$(VERILATOR_ROOT)/include -I$(SYSTEMC)/include -o $(VLT_EXE) \
 		-L. -L$(COMMON_BENCH_SYSC_SRC_DIR) -L$(SYSTEMC)/$(SYSC_LIB_ARCH_DIR) \
 		OrpsocMain.o -l$(VLT_EXE) -lmodules -lsystemc \
@@ -161,6 +162,7 @@ $(SIM_VLT_DIR)/OrpsocMain.o: $(COMMON_BENCH_SYSC_SRC_DIR)/OrpsocMain.cpp
 	cd $(SIM_VLT_DIR) && \
 	g++ $(VLT_DEBUG_COMPILE_FLAGS) $(VLT_CFLAGS) $(TRACE_FLAGS) \
 	-I$(COMMON_BENCH_SYSC_INCLUDE_DIR) -I$(SIM_VLT_DIR) \
+	-I$(VERILATOR_ROOT)/include/vltstd \
 	-I$(VERILATOR_ROOT)/include -I$(SYSTEMC)/include -c \
 	$(COMMON_BENCH_SYSC_SRC_DIR)/OrpsocMain.cpp 
 
