@@ -78,7 +78,9 @@
 /* ---[ 0x200: BUS error ]------------------------------------------------ */
 	.org 0x200
 	.global	_bus_handler
-_bus_handler:	
+	
+_bus_handler:
+	l.ori	r7,r0,1		/* set "exception flag" */
 	l.mfspr	r3,r0,SPR_EPCR_BASE	/* Get EPC */
 	l.nop	2
 	l.mfspr	r3,r0,SPR_EEAR_BASE	/* Get EEA */
@@ -401,17 +403,32 @@ _dbus1:
 	l.movhi r5, 0xee00 /* Address to cause an error */
 	l.lbz r6, 0(r5)
 	l.addi r12, r12, 1 /* Incremement secondary exception counter */
+
+	l.movhi	r7, 0		/* clear "exception flag" */
 	/* Store word */	
 	l.movhi r5, 0xee00 /* Address to cause an error */
 	l.sw 0(r5), r6
+.L1:	l.sfeqi	r7, 0
+	l.bf	.L1		/* wait for "exception flag" */
+	 l.nop
 	l.addi r12, r12, 1 /* Incremement secondary exception counter */
+
+	l.movhi	r7, 0		/* clear "exception flag" */
 	/* Store half */	
 	l.movhi r5, 0xee00 /* Address to cause an error */
 	l.sh 0(r5), r6
+.L2:	l.sfeqi	r7, 0
+	l.bf	.L3		/* wait for "exception flag" */
+	 l.nop
 	l.addi r12, r12, 1 /* Incremement secondary exception counter */
+
+	l.movhi	r7, 0		/* clear "exception flag" */
 	/* Store byte */	
 	l.movhi r5, 0xee00 /* Address to cause an error */
 	l.sb 0(r5), r6
+.L3:	l.sfeqi	r7, 0
+	l.bf	.L3		/* wait for "exception flag" */
+	 l.nop
 	l.addi r12, r12, 1 /* Incremement secondary exception counter */	
 	l.nop
 
@@ -435,24 +452,38 @@ _dbus1:
 	l.lbz r6, 0(r5) /* Data bus error in delay slot */
 	l.nop
 3:	l.addi r12, r12, 1	
+	l.movhi	r7, 0		/* clear "exception flag" */
 	/* Store word */
 	l.movhi r5, 0xee00 /* Address to cause an error */	
 	l.j 4f
 	l.sw 0(r5), r6  /* Data bus error in delay slot */
 	l.nop
-4:	l.addi r12, r12, 1	
+4:	l.sfeqi	r7, 0
+	l.bf	4b		/* wait for "exception flag" */
+	 l.nop
+	l.addi r12, r12, 1	
+
+	l.movhi	r7, 0		/* clear "exception flag" */
 	/* Store half */
 	l.movhi r5, 0xee00 /* Address to cause an error */	
 	l.j 5f
 	l.sh 0(r5), r6  /* Data bus error in delay slot */
 	l.nop
-5:	l.addi r12, r12, 1	
+5:	l.sfeqi	r7, 0
+	l.bf	5b		/* wait for "exception flag" */
+	 l.nop
+	l.addi r12, r12, 1	
+
+	l.movhi	r7, 0		/* clear "exception flag" */
 	/* Store byte */
 	l.movhi r5, 0xee00 /* Address to cause an error */	
 	l.j 6f
 	l.sb 0(r5), r6  /* Data bus error in delay slot */
 	l.nop
-6:	l.addi r12, r12, 1	
+6:	l.sfeqi	r7, 0
+	l.bf	6b		/* wait for "exception flag" */
+	 l.nop
+	l.addi r12, r12, 1	
 #endif
 	
 /* Check 1st and 2nd exception counters are equal */
