@@ -28,6 +28,15 @@
 	l.jr    r4
 	l.nop
 
+	/* Timer exception, clear interrupt bit, and return */
+	.org 0x500
+	l.mfspr	r21,r0, SPR_TTMR
+	l.movhi	r22, hi(SPR_TTMR_IP)
+	l.xor	r21, r21, r22
+	l.mtspr	r0, r21, SPR_TTMR
+	l.addi	r23,r23,1
+	l.rfe
+
 	// Alignment error handler.
 	// Clobbers r3,r4, increments r1
 	// Steps over exception-causing instruction
@@ -236,6 +245,199 @@ _main:
 	l.bf	test_fail
 	 l.nop
 
+
+	/*
+	 * Test byte store and load "bursts"
+	 */
+	l.ori	r1, r0, 0x2000
+	l.sw	0(r1), r0
+	l.sw	4(r1), r0
+	l.sw	8(r1), r0
+	l.sw	12(r1), r0
+	l.sw	16(r1), r0
+	l.sw	20(r1), r0
+	l.sw	24(r1), r0
+
+	l.ori	r2, r0, 2
+	l.ori	r3, r0, 3
+	l.ori	r4, r0, 4
+	l.ori	r5, r0, 5
+	l.ori	r6, r0, 6
+	l.ori	r7, r0, 7
+	l.ori	r8, r0, 8
+	l.ori	r9, r0, 9
+	l.sb	0(r1), r2
+	l.sb	1(r1), r3
+	l.sb	2(r1), r4
+	l.sb	3(r1), r5
+	l.sb	4(r1), r6
+	l.sb	5(r1), r7
+	l.sb	6(r1), r8
+	l.sb	7(r1), r9
+
+	l.movhi	r2, 0
+	l.movhi	r3, 0
+	l.movhi	r4, 0
+	l.movhi	r5, 0
+	l.movhi	r6, 0
+	l.movhi	r7, 0
+	l.movhi	r8, 0
+	l.movhi	r9, 0
+
+	l.lbz	r2, 0(r1)
+	l.lbz	r3, 1(r1)
+	l.lbz	r4, 2(r1)
+	l.lbz	r5, 3(r1)
+	l.lbz	r6, 4(r1)
+	l.lbz	r7, 5(r1)
+	l.lbz	r8, 6(r1)
+	l.lbz	r9, 7(r1)
+
+	l.ori 	r15, r3, 0
+	l.ori	r3, r2, 0
+	l.nop	2
+	l.ori 	r3, r15, 0
+	l.sfnei	r2, 2
+	l.bf	test_fail
+	 l.nop
+
+	l.nop	2
+	l.sfnei	r3, 3
+	l.bf	test_fail
+	 l.nop
+
+	l.ori	r3, r4, 0
+	l.nop	2
+	l.sfnei	r4, 4
+	l.bf	test_fail
+	 l.nop
+
+	l.ori	r3, r5, 0
+	l.nop	2
+	l.sfnei	r5, 5
+	l.bf	test_fail
+	 l.nop
+
+	l.ori	r3, r6, 0
+	l.nop	2
+	l.sfnei	r6, 6
+	l.bf	test_fail
+	 l.nop
+
+	l.ori	r3, r7, 0
+	l.nop	2
+	l.sfnei	r7, 7
+	l.bf	test_fail
+	 l.nop
+
+	l.ori	r3, r8, 0
+	l.nop	2
+	l.sfnei	r8, 8
+	l.bf	test_fail
+	 l.nop
+
+	l.ori	r3, r9, 0
+	l.nop	2
+	l.sfnei	r9, 9
+	l.bf	test_fail
+	 l.nop
+
+	/*
+	 * Test halfword store and load "bursts"
+	 */
+	l.ori	r1, r0, 0x2000
+	l.sw	0(r1), r0
+	l.sw	4(r1), r0
+	l.sw	8(r1), r0
+	l.sw	12(r1), r0
+	l.sw	16(r1), r0
+	l.sw	20(r1), r0
+	l.sw	24(r1), r0
+
+	l.ori	r2, r0, 2
+	l.ori	r3, r0, 3
+	l.ori	r4, r0, 4
+	l.ori	r5, r0, 5
+	l.ori	r6, r0, 6
+	l.ori	r7, r0, 7
+	l.ori	r8, r0, 8
+	l.ori	r9, r0, 9
+	l.sh	0(r1), r2
+	l.sh	2(r1), r3
+	l.sh	4(r1), r4
+	l.sh	6(r1), r5
+	l.sh	8(r1), r6
+	l.sh	10(r1), r7
+	l.sh	12(r1), r8
+	l.sh	14(r1), r9
+
+	l.movhi	r2, 0
+	l.movhi	r3, 0
+	l.movhi	r4, 0
+	l.movhi	r5, 0
+	l.movhi	r6, 0
+	l.movhi	r7, 0
+	l.movhi	r8, 0
+	l.movhi	r9, 0
+
+	l.lhz	r2, 0(r1)
+	l.lhz	r3, 2(r1)
+	l.lhz	r4, 4(r1)
+	l.lhz	r5, 6(r1)
+	l.lhz	r6, 8(r1)
+	l.lhz	r7, 10(r1)
+	l.lhz	r8, 12(r1)
+	l.lhz	r9, 14(r1)
+
+	l.ori 	r15, r3, 0
+	l.ori	r3, r2, 0
+	l.nop	2
+	l.ori 	r3, r15, 0
+	l.sfnei	r2, 2
+	l.bf	test_fail
+	 l.nop
+
+	l.nop	2
+	l.sfnei	r3, 3
+	l.bf	test_fail
+	 l.nop
+
+	l.ori	r3, r4, 0
+	l.nop	2
+	l.sfnei	r4, 4
+	l.bf	test_fail
+	 l.nop
+
+	l.ori	r3, r5, 0
+	l.nop	2
+	l.sfnei	r5, 5
+	l.bf	test_fail
+	 l.nop
+
+	l.ori	r3, r6, 0
+	l.nop	2
+	l.sfnei	r6, 6
+	l.bf	test_fail
+	 l.nop
+
+	l.ori	r3, r7, 0
+	l.nop	2
+	l.sfnei	r7, 7
+	l.bf	test_fail
+	 l.nop
+
+	l.ori	r3, r8, 0
+	l.nop	2
+	l.sfnei	r8, 8
+	l.bf	test_fail
+	 l.nop
+
+	l.ori	r3, r9, 0
+	l.nop	2
+	l.sfnei	r9, 9
+	l.bf	test_fail
+	 l.nop
+
 	/*
 	 * Test finished when ran through once without caches enabled
 	 * and twice with.
@@ -260,10 +462,49 @@ test_fail:
 	l.nop	0x1
 
 test_ok:
+	/* Rerun test with timers enabled if we have them */
+	l.mfspr r2,r0,SPR_UPR
+	l.andi 	r2,r2,SPR_UPR_TTP
+	l.sfeq	r2,r0
+	l.bf	test_finish
+	l.nop
+	/* We do have timers, in this case check it it's enabled yet */
+	l.mfspr	r2,r0,SPR_SR
+	l.andi	r2,r2,SPR_SR_TEE
+	l.sfeq 	r2,r0
+	/* we've not run through with timers so enable them and restart */
+	l.bf	enable_timers_and_restart
+	l.nop
+
+test_finish:
 	l.movhi	r3,0x8000
 	l.ori	r3,r3,0x000d
 	l.nop	0x2
 	l.ori 	r3, r0, 0 /* Clear R3 */
 	l.nop 	0x1 /* Exit simulation */
 	l.nop
+	l.nop
+
+enable_timers_and_restart:
+	/* enable timer interrupts in SR, clear timer mode reg */
+	l.mfspr	r3, r0, SPR_SR
+	l.ori 	r3, r3, SPR_SR_TEE
+	l.mtspr r0, r0, SPR_TTMR
+	l.mtspr	r0, r3, SPR_SR
+
+	/* Setup timer mode register to run in restart mode, with interrupts */
+	l.movhi r4,hi(SPR_TTMR_RT | SPR_TTMR_IE)
+	/* interrupt every 40 cycles */
+	l.ori	r6, r0, 40
+
+	/* load timer */
+	l.or	r5,r4,r6 /* value we'll interrupt on */
+	l.mtspr r0,r0,SPR_TTCR 		# set TTCR
+	l.mtspr r0,r5,SPR_TTMR		# set TTMR
+	l.mtspr r0,r0,SPR_TTCR 		# set TTCR
+
+	/* clear r23, tick interrupt counter */
+	l.movhi	r23, 0
+
+	l.j	_start
 	l.nop
