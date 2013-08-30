@@ -68,7 +68,7 @@
 	// Clobbers r3,r4, increments r1
 	// Steps over exception-causing instruction
 	.org 0x200
-
+	l.ori	r5,r0,1		/* set "exception flag" */
 	l.mfspr	r3,r0,SPR_EPCR_BASE	/* Get PC of bad jump instruction */
 	l.nop 	0x2
 	l.addi	r3,r3,4 	/* Step over error instruction */
@@ -112,13 +112,25 @@ _main:
 
 	l.movhi	r8,0
 
+	l.movhi	r5, 0		/* clear "exception flag" */
 	l.sw	-4(r0),r8
+.L1:	l.sfeqi	r5, 0
+	l.bf	.L1		/* wait for "exception flag" */
+	 l.nop
 	l.addi	r2,r2,1
 
+	l.movhi	r5, 0		/* clear "exception flag" */
 	l.sh	-2(r0),r8
+.L2:	l.sfeqi	r5, 0
+	l.bf	.L2		/* wait for "exception flag" */
+	 l.nop
 	l.addi	r2,r2,1
 
+	l.movhi	r5, 0		/* clear "exception flag" */
 	l.sb	-1(r0),r8
+.L3:	l.sfeqi	r5, 0
+	l.bf	.L3		/* wait for "exception flag" */
+	 l.nop
 	l.addi	r2,r2,1
 
 
